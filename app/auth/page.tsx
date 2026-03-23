@@ -40,8 +40,7 @@ export default function AuthPage() {
     if (result?.error) {
       setError("Email ou mot de passe incorrect");
     } else {
-      router.push("/dashboard");
-      router.refresh();
+      window.location.href = "/dashboard";
     }
   };
 
