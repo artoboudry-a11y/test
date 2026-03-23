@@ -9,8 +9,8 @@ export async function GET() {
   const chores = await prisma.chore.findMany({
     include: {
       assignments: {
-        where: { userId: session.user.id },
         orderBy: { dueDate: "asc" },
+        include: { user: { select: { name: true } } },
       },
     },
     orderBy: { createdAt: "asc" },
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 
   const result = await prisma.chore.findUnique({
     where: { id: chore.id },
-    include: { assignments: { where: { userId: session.user.id } } },
+    include: { assignments: { include: { user: { select: { name: true } } } } },
   });
 
   return NextResponse.json(result, { status: 201 });

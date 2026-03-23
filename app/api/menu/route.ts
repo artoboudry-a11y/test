@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   const weekStart = weekParam ? new Date(weekParam) : getMonday(new Date());
 
   const meals = await prisma.mealPlan.findMany({
-    where: { userId: session.user.id, weekStart },
+    where: { weekStart },
   });
 
   return NextResponse.json({ weekStart, meals });
@@ -33,8 +33,8 @@ export async function POST(req: NextRequest) {
   const { weekStart, day, mealType, meal } = await req.json();
 
   const record = await prisma.mealPlan.upsert({
-    where: { weekStart_day_mealType_userId: { weekStart: new Date(weekStart), day, mealType, userId: session.user.id } },
-    update: { meal },
+    where: { weekStart_day_mealType: { weekStart: new Date(weekStart), day, mealType } },
+    update: { meal, userId: session.user.id },
     create: { weekStart: new Date(weekStart), day, mealType, meal, userId: session.user.id },
   });
 

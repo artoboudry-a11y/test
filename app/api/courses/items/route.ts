@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
   const { listId, name, quantity, category } = await req.json();
 
-  const list = await prisma.shoppingList.findFirst({ where: { id: listId, userId: session.user.id } });
+  const list = await prisma.shoppingList.findFirst({ where: { id: listId } });
   if (!list) return NextResponse.json({ error: "Liste introuvable" }, { status: 404 });
 
   const item = await prisma.shoppingItem.create({

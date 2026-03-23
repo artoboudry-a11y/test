@@ -7,7 +7,6 @@ export async function GET() {
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const recipes = await prisma.recipe.findMany({
-    where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
   });
 
@@ -42,7 +41,7 @@ export async function DELETE(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const { id } = await req.json();
-  await prisma.recipe.deleteMany({ where: { id, userId: session.user.id } });
+  await prisma.recipe.deleteMany({ where: { id } });
 
   return NextResponse.json({ ok: true });
 }

@@ -7,7 +7,6 @@ export async function GET() {
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const contacts = await prisma.emergencyContact.findMany({
-    where: { userId: session.user.id },
     orderBy: { createdAt: "asc" },
   });
 
@@ -32,7 +31,7 @@ export async function PATCH(req: NextRequest) {
 
   const { id, name, phone, relation, notes } = await req.json();
   await prisma.emergencyContact.updateMany({
-    where: { id, userId: session.user.id },
+    where: { id },
     data: { name, phone, relation, notes },
   });
 
@@ -44,7 +43,7 @@ export async function DELETE(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const { id } = await req.json();
-  await prisma.emergencyContact.deleteMany({ where: { id, userId: session.user.id } });
+  await prisma.emergencyContact.deleteMany({ where: { id } });
 
   return NextResponse.json({ ok: true });
 }

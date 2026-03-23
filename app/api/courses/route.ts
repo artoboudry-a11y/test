@@ -7,7 +7,6 @@ export async function GET() {
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const lists = await prisma.shoppingList.findMany({
-    where: { userId: session.user.id },
     include: { items: { orderBy: { createdAt: "asc" } } },
     orderBy: { updatedAt: "desc" },
   });
@@ -33,7 +32,7 @@ export async function DELETE(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const { id } = await req.json();
-  await prisma.shoppingList.deleteMany({ where: { id, userId: session.user.id } });
+  await prisma.shoppingList.delete({ where: { id } });
 
   return NextResponse.json({ ok: true });
 }

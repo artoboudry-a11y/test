@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0, 23, 59, 59);
 
   const entries = await prisma.budgetEntry.findMany({
-    where: { userId: session.user.id, date: { gte: startDate, lte: endDate } },
+    where: { date: { gte: startDate, lte: endDate } },
     orderBy: { date: "desc" },
   });
 
@@ -47,7 +47,7 @@ export async function DELETE(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
   const { id } = await req.json();
-  await prisma.budgetEntry.deleteMany({ where: { id, userId: session.user.id } });
+  await prisma.budgetEntry.deleteMany({ where: { id } });
 
   return NextResponse.json({ ok: true });
 }

@@ -124,7 +124,7 @@ model MealPlan {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([weekStart, day, mealType, userId])
+  @@unique([weekStart, day, mealType])
 }
 
 // ─── RECETTES ───────────────────────────────────────────────────────────────
