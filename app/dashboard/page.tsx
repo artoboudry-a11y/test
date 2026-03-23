@@ -7,65 +7,73 @@ const modules = [
   {
     icon: "🛒",
     title: "Liste de courses",
-    description: "Gérez vos courses en famille, partagez et cochez en temps réel.",
+    description: "Gérez vos courses en famille, créez plusieurs listes et cochez les articles.",
     href: "/dashboard/courses",
-    available: false,
+    available: true,
     color: "emerald",
   },
   {
     icon: "🔄",
     title: "Convertisseur",
-    description: "Convertissez des unités, des devises, des températures et plus encore.",
+    description: "Convertissez des unités, devises, températures, volumes et bien plus.",
     href: "/dashboard/convertisseur",
-    available: false,
+    available: true,
     color: "indigo",
   },
   {
     icon: "🗜️",
-    title: "Compresseur",
-    description: "Compressez vos images et fichiers PDF facilement.",
+    title: "Compresseur d'images",
+    description: "Compressez vos photos en glisser-déposer. 100% local, rien n'est envoyé.",
     href: "/dashboard/compresseur",
-    available: false,
+    available: true,
     color: "amber",
-  },
-  {
-    icon: "📅",
-    title: "Agenda familial",
-    description: "Organisez les événements et rendez-vous de toute la famille.",
-    href: "/dashboard/agenda",
-    available: false,
-    color: "rose",
   },
   {
     icon: "📝",
     title: "Notes",
-    description: "Gardez vos idées, recettes et mémos accessibles partout.",
+    description: "Mémos colorés pour toute la famille — recettes, idées, listes de choses à faire.",
     href: "/dashboard/notes",
-    available: false,
+    available: true,
     color: "sky",
-  },
-  {
-    icon: "💰",
-    title: "Budget",
-    description: "Suivez vos dépenses et gérez votre budget mensuel.",
-    href: "/dashboard/budget",
-    available: false,
-    color: "purple",
   },
   {
     icon: "🍽️",
     title: "Menu de la semaine",
-    description: "Planifiez vos repas et générez automatiquement votre liste de courses.",
+    description: "Planifiez les repas du lundi au dimanche, semaine par semaine.",
     href: "/dashboard/menu",
-    available: false,
+    available: true,
     color: "orange",
   },
   {
-    icon: "⚙️",
-    title: "Paramètres",
-    description: "Gérez les membres de la famille, les accès et les préférences.",
-    href: "/dashboard/settings",
-    available: false,
+    icon: "💰",
+    title: "Budget",
+    description: "Suivez vos revenus et dépenses par mois et par catégorie.",
+    href: "/dashboard/budget",
+    available: true,
+    color: "purple",
+  },
+  {
+    icon: "👨‍🍳",
+    title: "Recettes",
+    description: "Votre livre de recettes familiales avec ingrédients et étapes de préparation.",
+    href: "/dashboard/recettes",
+    available: true,
+    color: "rose",
+  },
+  {
+    icon: "📞",
+    title: "Contacts d'urgence",
+    description: "Numéros importants toujours accessibles : médecin, urgences, école...",
+    href: "/dashboard/contacts",
+    available: true,
+    color: "sky",
+  },
+  {
+    icon: "🧹",
+    title: "Tâches ménagères",
+    description: "Organisez et suivez les corvées quotidiennes, hebdomadaires et mensuelles.",
+    href: "/dashboard/taches",
+    available: true,
     color: "teal",
   },
 ];
@@ -82,45 +90,28 @@ export default async function DashboardPage() {
   const greeting =
     hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
 
+  const availableCount = modules.filter((m) => m.available).length;
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar user={session.user ?? {}} />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         {/* En-tête */}
-        <div className="mb-10">
+        <div className="mb-8">
           <h2 className="text-3xl font-bold text-slate-900">
             {greeting}, {firstName} 👋
           </h2>
           <p className="text-slate-500 mt-2">
-            Bienvenue sur votre plateforme familiale. Que voulez-vous faire aujourd&apos;hui ?
+            Votre plateforme familiale — {availableCount} outils disponibles
           </p>
         </div>
 
-        {/* Bannière de bienvenue */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 mb-10 text-white shadow-lg">
-          <div className="flex items-center gap-4">
-            <div className="text-4xl">🚀</div>
-            <div>
-              <h3 className="font-bold text-lg">La plateforme se construit progressivement !</h3>
-              <p className="text-indigo-100 text-sm mt-1">
-                De nouveaux modules seront ajoutés au fur et à mesure. Pour l&apos;instant,
-                découvrez ce qui est prévu et dites-nous ce que vous voulez en priorité.
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Grille de modules */}
-        <div>
-          <h3 className="text-lg font-semibold text-slate-700 mb-4">
-            Modules disponibles
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {modules.map((mod) => (
-              <ModuleCard key={mod.title} {...mod} />
-            ))}
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {modules.map((mod) => (
+            <ModuleCard key={mod.title} {...mod} />
+          ))}
         </div>
 
         {/* Footer */}
