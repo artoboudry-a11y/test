@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000">
+  <title>NEON BLITZ</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <canvas id="canvas"></canvas>
+
+    <!-- SPLASH SCREEN -->
+    <div id="screen-splash" class="screen active">
+      <div class="splash-logo">
+        <div class="logo-line1">NEON</div>
+        <div class="logo-line2">BLITZ</div>
+        <div class="logo-sub">SPACE ASSAULT</div>
+      </div>
+      <div class="tap-to-start blink">TAP TO START</div>
+      <div class="splash-version">v1.0</div>
+    </div>
+
+    <!-- MAIN MENU -->
+    <div id="screen-menu" class="screen">
+      <div class="menu-logo">
+        <span class="neon-text cyan">NEON</span> <span class="neon-text pink">BLITZ</span>
+      </div>
+      <div class="menu-buttons">
+        <button class="btn btn-primary" id="btn-play">&#9658; PLAY</button>
+        <button class="btn btn-secondary" id="btn-levels">&#9776; SELECT LEVEL</button>
+        <button class="btn btn-secondary" id="btn-scores">&#9733; HIGH SCORES</button>
+        <button class="btn btn-ghost" id="btn-settings">&#9881; SETTINGS</button>
+      </div>
+      <div class="menu-credits">A MOBILE ARCADE EXPERIENCE</div>
+    </div>
+
+    <!-- LEVEL SELECT -->
+    <div id="screen-levels" class="screen">
+      <div class="screen-title">SELECT MISSION</div>
+      <div class="levels-grid" id="levels-grid"></div>
+      <button class="btn btn-ghost back-btn" id="btn-levels-back">&#8592; BACK</button>
+    </div>
+
+    <!-- BRIEFING -->
+    <div id="screen-briefing" class="screen">
+      <div class="briefing-sector" id="briefing-sector">SECTOR 1</div>
+      <div class="briefing-title" id="briefing-title">ASTEROID BELT</div>
+      <div class="briefing-divider"></div>
+      <div class="briefing-text" id="briefing-text"></div>
+      <div class="briefing-enemies" id="briefing-enemies"></div>
+      <div class="briefing-objectives">
+        <div class="obj-title">OBJECTIVES</div>
+        <div id="briefing-objectives"></div>
+      </div>
+      <button class="btn btn-primary" id="btn-launch">&#9654; LAUNCH MISSION</button>
+      <button class="btn btn-ghost back-btn" id="btn-briefing-back">&#8592; ABORT</button>
+    </div>
+
+    <!-- HUD (shown during gameplay) -->
+    <div id="hud" class="hidden">
+      <div id="hud-top">
+        <div id="hud-lives"></div>
+        <div id="hud-score">
+          <div id="hud-score-val">0</div>
+          <div id="hud-combo" class="hidden">x<span id="hud-combo-val">1</span></div>
+        </div>
+        <div id="hud-level-info">
+          <div id="hud-level-name">LVL 1</div>
+          <div id="hud-level-bar-wrap"><div id="hud-level-bar"></div></div>
+        </div>
+      </div>
+      <div id="hud-health-wrap">
+        <div id="hud-health-bar"></div>
+        <div id="hud-shield-bar" class="hidden"></div>
+      </div>
+      <div id="hud-powerup-display" class="hidden">
+        <span id="hud-powerup-icon"></span>
+        <span id="hud-powerup-timer"></span>
+      </div>
+      <button id="btn-pause">&#9646;&#9646;</button>
+    </div>
+
+    <!-- BOSS WARNING -->
+    <div id="screen-boss-warning" class="screen">
+      <div class="boss-warning-text blink">&#9888; WARNING &#9888;</div>
+      <div class="boss-warning-sub">BOSS INCOMING</div>
+      <div class="boss-name" id="boss-name-display"></div>
+    </div>
+
+    <!-- PAUSE MENU -->
+    <div id="screen-pause" class="screen">
+      <div class="screen-title">PAUSED</div>
+      <button class="btn btn-primary" id="btn-resume">&#9654; RESUME</button>
+      <button class="btn btn-secondary" id="btn-restart">&#8635; RESTART</button>
+      <button class="btn btn-ghost" id="btn-pause-menu">&#8962; MAIN MENU</button>
+    </div>
+
+    <!-- LEVEL COMPLETE -->
+    <div id="screen-level-complete" class="screen">
+      <div class="complete-title">MISSION COMPLETE</div>
+      <div class="complete-sector" id="complete-sector"></div>
+      <div class="stars-display" id="stars-display"></div>
+      <div class="score-breakdown" id="score-breakdown"></div>
+      <div class="complete-total" id="complete-total"></div>
+      <button class="btn btn-primary" id="btn-next-level">NEXT MISSION &#9658;</button>
+      <button class="btn btn-ghost" id="btn-complete-menu">&#8962; MENU</button>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="screen-game-over" class="screen">
+      <div class="gameover-title">GAME OVER</div>
+      <div class="gameover-score-label">SCORE</div>
+      <div class="gameover-score" id="gameover-score">0</div>
+      <div class="gameover-best-label">BEST</div>
+      <div class="gameover-best" id="gameover-best">0</div>
+      <button class="btn btn-primary" id="btn-retry">&#8635; RETRY</button>
+      <button class="btn btn-secondary" id="btn-go-levels">SELECT LEVEL</button>
+      <button class="btn btn-ghost" id="btn-go-menu">&#8962; MENU</button>
+    </div>
+
+    <!-- HIGH SCORES -->
+    <div id="screen-scores" class="screen">
+      <div class="screen-title">HIGH SCORES</div>
+      <div class="scores-list" id="scores-list"></div>
+      <button class="btn btn-ghost back-btn" id="btn-scores-back">&#8592; BACK</button>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="screen-settings" class="screen">
+      <div class="screen-title">SETTINGS</div>
+      <div class="settings-list">
+        <div class="setting-item">
+          <span class="setting-label">SOUND FX</span>
+          <button class="toggle-btn" id="toggle-sound" data-on="ON" data-off="OFF">ON</button>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">MUSIC</span>
+          <button class="toggle-btn" id="toggle-music" data-on="ON" data-off="OFF">ON</button>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">VIBRATION</span>
+          <button class="toggle-btn" id="toggle-vibrate" data-on="ON" data-off="OFF">ON</button>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">SHOW FPS</span>
+          <button class="toggle-btn" id="toggle-fps" data-on="YES" data-off="NO">NO</button>
+        </div>
+      </div>
+      <button class="btn btn-ghost back-btn" id="btn-settings-back">&#8592; BACK</button>
+    </div>
+
+    <!-- VICTORY -->
+    <div id="screen-victory" class="screen">
+      <div class="victory-title">VICTORY</div>
+      <div class="victory-sub">GALAXY LIBERATED</div>
+      <div class="victory-score-label">FINAL SCORE</div>
+      <div class="victory-score" id="victory-score">0</div>
+      <div class="victory-stars" id="victory-stars"></div>
+      <div class="victory-message">You have defeated the Neon Empire.<br>The galaxy is safe... for now.</div>
+      <button class="btn btn-primary" id="btn-victory-menu">&#8962; MAIN MENU</button>
+      <button class="btn btn-secondary" id="btn-play-again">&#9658; PLAY AGAIN</button>
+    </div>
+
+    <!-- FPS COUNTER -->
+    <div id="fps-counter" class="hidden">60</div>
+  </div>
+
+  <script src="js/game.js"></script>
+</body>
+</html>

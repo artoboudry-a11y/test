@@ -1,0 +1,17 @@
+{
+  "name": "NEON BLITZ",
+  "short_name": "NEON BLITZ",
+  "description": "A mobile space shooter arcade game",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#00f5ff",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23000' width='192' height='192'/><polygon fill='%2300f5ff' points='96,20 60,172 96,140 132,172'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,943 @@
+/* =========================================
+   NEON BLITZ - Mobile Space Shooter Styles
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --cyan: #00f5ff;
+  --pink: #ff006e;
+  --purple: #7b00ff;
+  --green: #00ff88;
+  --orange: #ff6600;
+  --yellow: #ffdd00;
+  --dark: #040810;
+  --dark2: #080f1a;
+  --panel: rgba(0,30,60,0.85);
+  --glow-cyan: 0 0 10px #00f5ff, 0 0 30px #00f5ff40;
+  --glow-pink: 0 0 10px #ff006e, 0 0 30px #ff006e40;
+  --glow-green: 0 0 10px #00ff88, 0 0 30px #00ff8840;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  touch-action: none;
+}
+
+#app {
+  position: relative;
+  width: min(390px, 100vw);
+  height: min(844px, 100vh);
+  overflow: hidden;
+  background: var(--dark);
+}
+
+#canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: block;
+}
+
+/* ========== SCREENS ========== */
+.screen {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  z-index: 10;
+  padding: 20px;
+}
+
+.screen.active { display: flex; }
+.hidden { display: none !important; }
+
+/* ========== SPLASH ========== */
+#screen-splash {
+  background: radial-gradient(ellipse at center, #020a1a 0%, #000 70%);
+}
+
+.splash-logo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo-line1 {
+  font-size: 72px;
+  font-weight: 900;
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+  letter-spacing: 12px;
+  line-height: 1;
+  animation: pulse-cyan 2s ease-in-out infinite;
+}
+
+.logo-line2 {
+  font-size: 72px;
+  font-weight: 900;
+  color: var(--pink);
+  text-shadow: var(--glow-pink);
+  letter-spacing: 8px;
+  line-height: 1;
+  animation: pulse-pink 2s ease-in-out infinite 0.5s;
+}
+
+.logo-sub {
+  font-size: 14px;
+  color: #ffffff80;
+  letter-spacing: 6px;
+  margin-top: 8px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.tap-to-start {
+  font-size: 18px;
+  color: #fff;
+  letter-spacing: 4px;
+  margin-top: 40px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.splash-version {
+  position: absolute;
+  bottom: 20px;
+  font-size: 11px;
+  color: #ffffff30;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 2px;
+}
+
+/* ========== MAIN MENU ========== */
+#screen-menu {
+  background: transparent;
+  gap: 14px;
+}
+
+.menu-logo {
+  font-size: 48px;
+  font-weight: 900;
+  margin-bottom: 20px;
+  letter-spacing: 6px;
+}
+
+.neon-text.cyan {
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+}
+
+.neon-text.pink {
+  color: var(--pink);
+  text-shadow: var(--glow-pink);
+}
+
+.menu-credits {
+  position: absolute;
+  bottom: 30px;
+  font-size: 10px;
+  color: #ffffff30;
+  letter-spacing: 3px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* ========== BUTTONS ========== */
+.btn {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 16px 40px;
+  min-width: 260px;
+  transition: all 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.3s ease;
+}
+
+.btn:active::before {
+  left: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--cyan), #0088aa);
+  color: #000;
+  box-shadow: 0 0 20px rgba(0,245,255,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+  box-shadow: 0 0 10px rgba(0,245,255,0.6);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--purple), #3d0080);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(123,0,255,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #ffffff80;
+  border: 1px solid #ffffff20;
+  font-size: 14px;
+  padding: 12px 30px;
+}
+
+.btn-ghost:active {
+  color: #fff;
+  border-color: #ffffff60;
+}
+
+.back-btn {
+  position: absolute;
+  bottom: 30px;
+  min-width: auto;
+  padding: 10px 20px;
+}
+
+/* ========== SCREEN TITLES ========== */
+.screen-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+}
+
+/* ========== LEVEL SELECT ========== */
+#screen-levels {
+  justify-content: flex-start;
+  padding-top: 80px;
+}
+
+.levels-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  padding-bottom: 80px;
+}
+
+.level-card {
+  background: var(--panel);
+  border: 1px solid #ffffff15;
+  border-radius: 8px;
+  padding: 16px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.level-card.unlocked:active {
+  transform: scale(0.97);
+}
+
+.level-card.locked {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.level-card-num {
+  font-size: 11px;
+  color: #ffffff50;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.level-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.level-card-stars {
+  font-size: 16px;
+  color: #ffdd0060;
+}
+
+.level-card-stars .earned {
+  color: var(--yellow);
+  text-shadow: 0 0 8px var(--yellow);
+}
+
+.level-card-lock {
+  font-size: 24px;
+  color: #ffffff30;
+}
+
+.level-card[data-color="cyan"] { border-color: #00f5ff30; }
+.level-card[data-color="pink"] { border-color: #ff006e30; }
+.level-card[data-color="purple"] { border-color: #7b00ff30; }
+.level-card[data-color="orange"] { border-color: #ff660030; }
+.level-card[data-color="green"] { border-color: #00ff8830; }
+
+/* ========== BRIEFING ========== */
+#screen-briefing {
+  justify-content: flex-start;
+  padding-top: 60px;
+  gap: 12px;
+}
+
+.briefing-sector {
+  font-size: 12px;
+  color: var(--cyan);
+  letter-spacing: 4px;
+  opacity: 0.7;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.briefing-title {
+  font-size: 32px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 3px;
+}
+
+.briefing-divider {
+  width: 200px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+}
+
+.briefing-text {
+  font-size: 13px;
+  color: #ffffff80;
+  text-align: center;
+  max-width: 320px;
+  line-height: 1.6;
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: normal;
+}
+
+.briefing-enemies {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.enemy-preview {
+  text-align: center;
+  font-size: 11px;
+  color: #ffffff60;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.enemy-preview-icon {
+  font-size: 24px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.briefing-objectives {
+  background: rgba(0,245,255,0.05);
+  border: 1px solid rgba(0,245,255,0.2);
+  border-radius: 6px;
+  padding: 12px 16px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.obj-title {
+  font-size: 11px;
+  color: var(--cyan);
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+}
+
+.objective-item {
+  font-size: 12px;
+  color: #ffffff80;
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.objective-item::before {
+  content: '►';
+  color: var(--cyan);
+  font-size: 8px;
+}
+
+/* ========== HUD ========== */
+#hud {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+#hud-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 14px 16px;
+}
+
+#hud-lives {
+  font-size: 20px;
+  letter-spacing: 4px;
+}
+
+#hud-score {
+  text-align: center;
+}
+
+#hud-score-val {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 2px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+#hud-combo {
+  font-size: 14px;
+  color: var(--yellow);
+  text-shadow: 0 0 8px var(--yellow);
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  animation: combo-pulse 0.3s ease-out;
+}
+
+#hud-level-info {
+  text-align: right;
+}
+
+#hud-level-name {
+  font-size: 12px;
+  color: #ffffff60;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+#hud-level-bar-wrap {
+  width: 80px;
+  height: 4px;
+  background: #ffffff20;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-left: auto;
+}
+
+#hud-level-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  border-radius: 2px;
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+#hud-health-wrap {
+  position: absolute;
+  bottom: 20px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#hud-health-bar, #hud-shield-bar {
+  height: 6px;
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+#hud-health-bar {
+  background: linear-gradient(90deg, #ff004480, var(--pink));
+  box-shadow: 0 0 8px rgba(255,0,110,0.5);
+}
+
+#hud-shield-bar {
+  background: linear-gradient(90deg, #00f5ff80, var(--cyan));
+  box-shadow: 0 0 8px rgba(0,245,255,0.5);
+}
+
+#hud-powerup-display {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.6);
+  border: 1px solid #ffffff20;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  pointer-events: none;
+}
+
+#btn-pause {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid #ffffff20;
+  color: #fff;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  pointer-events: all;
+  z-index: 6;
+  letter-spacing: 2px;
+}
+
+/* ========== BOSS WARNING ========== */
+#screen-boss-warning {
+  background: rgba(0,0,0,0.92);
+  gap: 12px;
+}
+
+.boss-warning-text {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--orange);
+  text-shadow: 0 0 20px var(--orange), 0 0 40px var(--orange);
+  letter-spacing: 8px;
+}
+
+.boss-warning-sub {
+  font-size: 20px;
+  color: #ff4400;
+  letter-spacing: 6px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.boss-name {
+  font-size: 28px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 15px rgba(255,100,0,0.8);
+  margin-top: 10px;
+  letter-spacing: 3px;
+}
+
+/* ========== PAUSE ========== */
+#screen-pause {
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(4px);
+  gap: 16px;
+}
+
+/* ========== LEVEL COMPLETE ========== */
+#screen-level-complete {
+  gap: 12px;
+  background: transparent;
+}
+
+.complete-title {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--green);
+  text-shadow: var(--glow-green);
+  letter-spacing: 4px;
+  animation: slide-down 0.5s ease-out;
+}
+
+.complete-sector {
+  font-size: 14px;
+  color: #ffffff60;
+  letter-spacing: 4px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.stars-display {
+  font-size: 44px;
+  letter-spacing: 8px;
+  animation: star-pop 0.5s ease-out 0.3s both;
+}
+
+.stars-display .star-earned {
+  color: var(--yellow);
+  text-shadow: 0 0 15px var(--yellow), 0 0 30px #ffaa00;
+}
+
+.stars-display .star-empty {
+  color: #ffffff20;
+}
+
+.score-breakdown {
+  background: var(--panel);
+  border: 1px solid #ffffff15;
+  border-radius: 8px;
+  padding: 14px 20px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #ffffff80;
+  font-family: 'Share Tech Mono', monospace;
+  padding: 4px 0;
+  border-bottom: 1px solid #ffffff0a;
+}
+
+.breakdown-row:last-child { border: none; }
+
+.breakdown-row .val {
+  color: #fff;
+  font-weight: bold;
+}
+
+.complete-total {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* ========== GAME OVER ========== */
+#screen-game-over {
+  gap: 8px;
+}
+
+.gameover-title {
+  font-size: 52px;
+  font-weight: 900;
+  color: var(--pink);
+  text-shadow: var(--glow-pink);
+  letter-spacing: 6px;
+  margin-bottom: 16px;
+  animation: shake 0.5s ease-out;
+}
+
+.gameover-score-label, .gameover-best-label {
+  font-size: 11px;
+  color: #ffffff50;
+  letter-spacing: 4px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.gameover-score {
+  font-size: 42px;
+  font-weight: 900;
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  margin-bottom: 12px;
+}
+
+.gameover-best {
+  font-size: 22px;
+  color: var(--yellow);
+  font-family: 'Share Tech Mono', monospace;
+  margin-bottom: 24px;
+  text-shadow: 0 0 10px var(--yellow);
+}
+
+/* ========== HIGH SCORES ========== */
+#screen-scores {
+  justify-content: flex-start;
+  padding-top: 80px;
+}
+
+.scores-list {
+  width: 100%;
+  max-width: 340px;
+  padding-bottom: 80px;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ffffff0a;
+  animation: slide-right 0.3s ease-out both;
+}
+
+.score-row:nth-child(1) { animation-delay: 0.05s; }
+.score-row:nth-child(2) { animation-delay: 0.1s; }
+.score-row:nth-child(3) { animation-delay: 0.15s; }
+
+.score-rank {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffffff40;
+  width: 30px;
+}
+
+.score-rank.gold { color: #ffd700; text-shadow: 0 0 8px #ffd700; }
+.score-rank.silver { color: #c0c0c0; text-shadow: 0 0 8px #c0c0c0; }
+.score-rank.bronze { color: #cd7f32; text-shadow: 0 0 8px #cd7f32; }
+
+.score-level-info {
+  flex: 1;
+  padding: 0 12px;
+}
+
+.score-level-name {
+  font-size: 12px;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.score-date {
+  font-size: 10px;
+  color: #ffffff40;
+  font-family: 'Share Tech Mono', monospace;
+  margin-top: 2px;
+}
+
+.score-val {
+  font-size: 18px;
+  color: var(--cyan);
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: bold;
+}
+
+.scores-empty {
+  text-align: center;
+  color: #ffffff30;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  padding: 40px 0;
+  letter-spacing: 2px;
+}
+
+/* ========== SETTINGS ========== */
+.settings-list {
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 20px;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 4px;
+  border-bottom: 1px solid #ffffff0a;
+}
+
+.setting-label {
+  font-size: 13px;
+  color: #ffffff80;
+  letter-spacing: 2px;
+}
+
+.toggle-btn {
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 8px 20px;
+  border: 1px solid #ffffff20;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: #ffffff40;
+  min-width: 70px;
+}
+
+.toggle-btn.active {
+  background: rgba(0,245,255,0.15);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 10px rgba(0,245,255,0.2);
+}
+
+/* ========== VICTORY ========== */
+#screen-victory {
+  gap: 10px;
+}
+
+.victory-title {
+  font-size: 60px;
+  font-weight: 900;
+  color: var(--yellow);
+  text-shadow: 0 0 20px var(--yellow), 0 0 50px #ffaa0080;
+  letter-spacing: 8px;
+  animation: victory-glow 1.5s ease-in-out infinite;
+}
+
+.victory-sub {
+  font-size: 16px;
+  color: var(--green);
+  letter-spacing: 4px;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.victory-score-label {
+  font-size: 12px;
+  color: #ffffff50;
+  letter-spacing: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  margin-top: 10px;
+}
+
+.victory-score {
+  font-size: 44px;
+  font-weight: 900;
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.victory-stars {
+  font-size: 32px;
+  letter-spacing: 6px;
+  margin: 6px 0;
+}
+
+.victory-message {
+  font-size: 13px;
+  color: #ffffff60;
+  text-align: center;
+  max-width: 300px;
+  line-height: 1.8;
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: normal;
+  margin: 10px 0;
+}
+
+/* ========== FPS COUNTER ========== */
+#fps-counter {
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  font-size: 12px;
+  color: #ffffff40;
+  font-family: 'Share Tech Mono', monospace;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.blink { animation: blink 1.2s ease-in-out infinite; }
+
+@keyframes pulse-cyan {
+  0%, 100% { text-shadow: 0 0 10px #00f5ff, 0 0 30px #00f5ff40; }
+  50% { text-shadow: 0 0 20px #00f5ff, 0 0 60px #00f5ff80, 0 0 80px #00f5ff20; }
+}
+
+@keyframes pulse-pink {
+  0%, 100% { text-shadow: 0 0 10px #ff006e, 0 0 30px #ff006e40; }
+  50% { text-shadow: 0 0 20px #ff006e, 0 0 60px #ff006e80, 0 0 80px #ff006e20; }
+}
+
+@keyframes combo-pulse {
+  0% { transform: scale(1.5); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+@keyframes slide-down {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-right {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes star-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes victory-glow {
+  0%, 100% { text-shadow: 0 0 20px var(--yellow), 0 0 50px #ffaa0080; }
+  50% { text-shadow: 0 0 40px var(--yellow), 0 0 80px var(--yellow), 0 0 120px #ffaa0060; }
+}
+
+@keyframes level-flash {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ========== PANEL BACKGROUND EFFECT ========== */
+#screen-menu::before,
+#screen-pause::before,
+#screen-scores::before,
+#screen-settings::before,
+#screen-levels::before,
+#screen-briefing::before,
+#screen-level-complete::before,
+#screen-game-over::before,
+#screen-victory::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(0,50,100,0.3) 0%, rgba(0,0,0,0.7) 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar { width: 0; }
+
+/* ========== LEVEL CARD GLOW ON HOVER ========== */
+.level-card.unlocked:hover,
+.level-card.unlocked:active {
+  border-color: var(--cyan) !important;
+  box-shadow: 0 0 15px rgba(0,245,255,0.2);
+}
