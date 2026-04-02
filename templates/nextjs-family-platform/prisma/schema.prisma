@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth (NextAuth.js v5) ────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("user")
+  createdAt     DateTime  @default(now())
+
+  accounts      Account[]
+  sessions      Session[]
+
+  shoppingLists ShoppingList[]
+  notes         Note[]
+  budgetEntries BudgetEntry[]
+  mealPlans     MealPlan[]
+  recipes       Recipe[]
+  chores        Chore[]
+  contacts      EmergencyContact[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Shopping Lists ───────────────────────────────────────────────────────────
+
+model ShoppingList {
+  id        String         @id @default(cuid())
+  name      String
+  createdAt DateTime       @default(now())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     ShoppingItem[]
+}
+
+model ShoppingItem {
+  id        String       @id @default(cuid())
+  name      String
+  quantity  String?
+  category  String?
+  checked   Boolean      @default(false)
+  listId    String
+  list      ShoppingList @relation(fields: [listId], references: [id], onDelete: Cascade)
+}
+
+// ─── Notes ────────────────────────────────────────────────────────────────────
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  color     String   @default("#fef9c3")
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Budget ───────────────────────────────────────────────────────────────────
+
+model BudgetEntry {
+  id          String   @id @default(cuid())
+  label       String
+  amount      Float
+  type        String   // "income" | "expense"
+  category    String?
+  date        DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Meal Planning ────────────────────────────────────────────────────────────
+
+model MealPlan {
+  id        String   @id @default(cuid())
+  date      DateTime
+  mealType  String   // "breakfast" | "lunch" | "dinner"
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Recipes ─────────────────────────────────────────────────────────────────
+
+model Recipe {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  ingredients String   // JSON string
+  steps       String   // JSON string
+  prepTime    Int?     // minutes
+  cookTime    Int?     // minutes
+  servings    Int?
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Chores ───────────────────────────────────────────────────────────────────
+
+model Chore {
+  id          String            @id @default(cuid())
+  title       String
+  description String?
+  frequency   String?           // "daily" | "weekly" | "monthly"
+  createdAt   DateTime          @default(now())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignments ChoreAssignment[]
+}
+
+model ChoreAssignment {
+  id          String   @id @default(cuid())
+  choreId     String
+  assigneeName String
+  dueDate     DateTime?
+  done        Boolean  @default(false)
+  chore       Chore    @relation(fields: [choreId], references: [id], onDelete: Cascade)
+}
+
+// ─── Emergency Contacts ───────────────────────────────────────────────────────
+
+model EmergencyContact {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  relation  String?
+  note      String?
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
