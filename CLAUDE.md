@@ -4,6 +4,18 @@
 
 ---
 
+## TEMPLATES — Bibliothèque de code réutilisable
+
+**INSTRUCTION CRITIQUE :** Avant de coder une nouvelle page ou un composant UI, **consulte toujours `TEMPLATES.md`** et le dossier `templates/` en premier. Si un template correspondant existe, copie-le et adapte-le au lieu de repartir de zéro. Cela garantit un design cohérent et un gain de temps.
+
+Le catalogue complet est dans **`TEMPLATES.md`** à la racine du dépôt.
+
+Templates disponibles : `auth/`, `landing/`, `dashboard/`, `profile/`, `settings/`, `pricing/`, `error-pages/`, `layout/` (navbar, footer, sidebar).
+
+Chaque template existe en version **Next.js + Tailwind** et certains aussi en **HTML/CSS vanilla**.
+
+---
+
 ## Repository Overview
 
 This repository hosts two distinct projects across separate branches:
