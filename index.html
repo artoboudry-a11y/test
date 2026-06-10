@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="TradePilot — analyse des marchés en temps réel et signaux d'achat">
+  <title>TradePilot — Analyse des marchés</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="logo">📈</span>
+      <div>
+        <h1>TradePilot</h1>
+        <p id="status-line">Connexion aux marchés…</p>
+      </div>
+    </div>
+    <div id="fng" class="fng" title="Indice Peur & Avidité du marché crypto"></div>
+  </header>
+
+  <nav id="tabs">
+    <button class="tab active" data-tab="crypto">⚡ Crypto<small>temps réel</small></button>
+    <button class="tab" data-tab="stocks">🏛 Actions<small>US &amp; Europe</small></button>
+    <button class="tab" data-tab="trends">🔥 Foule<small>tendances</small></button>
+    <button class="tab" data-tab="portfolio">💼 Objectif<small>10 € → 10 000 €</small></button>
+  </nav>
+
+  <main>
+    <div id="banner" class="banner hidden"></div>
+
+    <section id="panel-crypto" class="panel active">
+      <div class="panel-head">
+        <h2>Crypto — analyse en temps réel</h2>
+        <p class="sub">Cours en direct (Binance), indicateurs calculés sur bougies 1 h.
+          Avec 10 €, la crypto est le seul marché réellement accessible sans frais fixes :
+          choisis un courtier sans minimum et aux frais &lt; 1 %.</p>
+      </div>
+      <div id="crypto-list" class="cards"><div class="loader">Chargement des marchés…</div></div>
+    </section>
+
+    <section id="panel-stocks" class="panel">
+      <div class="panel-head">
+        <h2>Actions &amp; ETF</h2>
+        <p class="sub" id="stocks-meta">Données mises à jour automatiquement par le robot TradePilot.</p>
+      </div>
+      <div id="stocks-list" class="cards"><div class="loader">Chargement…</div></div>
+    </section>
+
+    <section id="panel-trends" class="panel">
+      <div class="panel-head">
+        <h2>Ce que la foule regarde</h2>
+        <p class="sub">Actifs les plus recherchés par des millions d'utilisateurs (CoinGecko) et
+          activité réelle des traders (nombre de transactions sur 24 h).</p>
+      </div>
+      <div id="trends-list" class="cards"><div class="loader">Chargement…</div></div>
+    </section>
+
+    <section id="panel-portfolio" class="panel">
+      <div class="panel-head">
+        <h2>Mon objectif : 10 € → 10 000 €</h2>
+      </div>
+      <div class="card goal-card">
+        <div class="goal-row">
+          <label>Capital actuel (€)
+            <input type="number" id="capital" min="0" step="0.01" value="10">
+          </label>
+          <label>Objectif (€)
+            <input type="number" id="goal" min="1" step="1" value="10000">
+          </label>
+        </div>
+        <div class="progress"><div id="progress-fill"></div></div>
+        <p id="progress-label"></p>
+        <div class="goal-row">
+          <label>Croissance visée par jour (%)
+            <input type="number" id="daily-rate" min="0.1" max="50" step="0.1" value="1">
+          </label>
+        </div>
+        <p id="goal-projection" class="projection"></p>
+        <h3>Journal de mes positions</h3>
+        <form id="trade-form" class="goal-row">
+          <input type="text" id="trade-asset" placeholder="Actif (ex: BTC)" required>
+          <input type="number" id="trade-amount" placeholder="Montant €" step="0.01" min="0.01" required>
+          <button type="submit" class="btn">Ajouter</button>
+        </form>
+        <ul id="trade-list"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>⚠️ TradePilot est un outil d'<strong>analyse et d'aide à la décision</strong>, pas un conseiller
+      financier. Aucun algorithme ne garantit des gains : les marchés comportent un risque de perte
+      totale. N'investis que ce que tu peux te permettre de perdre, et méfie-toi de quiconque promet
+      des rendements certains.</p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
