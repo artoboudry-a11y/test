@@ -1,5 +1,5 @@
 // Tests unitaires des indicateurs — exécutés en local et en CI.
-import { sma, ema, rsi, macd, momentum, volumeRatio, computeScore, signalFromScore }
+import { sma, ema, rsi, macd, momentum, volumeRatio, computeScore, computeScoreFromMetrics, signalFromScore }
   from '../indicators.js';
 
 let failures = 0;
@@ -61,6 +61,31 @@ check('score borné 0–100', bull.score <= 100 && bear.score >= 0);
 
 const tiny = computeScore({ closes: [1, 2, 3], volumes: [1, 2, 3] });
 check('données minuscules → pas de crash, score défini', Number.isFinite(tiny.score));
+
+console.log('— Score à partir de métriques pré-calculées —');
+const bullM = computeScoreFromMetrics({
+  price: 110, ema20: 105, ema50: 100, rsi: 58, macd: 1.2, macdSignal: 0.8,
+  perfW: 3, perf1M: 8, volume: 2e6, avgVol10: 1.5e6, avgVol30: 1e6,
+});
+check('métriques haussières → score ≥ 55', bullM.score >= 55, `(=${bullM.score})`);
+check('histogramme MACD calculé', approx(bullM.macdHist, 0.4));
+const bearM = computeScoreFromMetrics({
+  price: 90, ema20: 95, ema50: 100, rsi: 28, macd: -1.5, macdSignal: -0.5,
+  perfW: -6, perf1M: -15, volume: 5e5, avgVol10: 6e5, avgVol30: 1e6,
+});
+check('métriques baissières → score < 40', bearM.score < 40, `(=${bearM.score})`);
+const partial = computeScoreFromMetrics({ price: 100, rsi: 50 });
+check('métriques partielles → pas de crash', Number.isFinite(partial.score));
+check('cohérence des deux scoreurs (haussier sain)', (() => {
+  const last = bullCloses[bullCloses.length - 1];
+  const viaMetrics = computeScoreFromMetrics({
+    price: last, ema20: ema(bullCloses, 20), ema50: ema(bullCloses, 50),
+    rsi: rsi(bullCloses, 14), macd: macd(bullCloses).macd, macdSignal: macd(bullCloses).signal,
+    perfW: momentum(bullCloses, 7), perf1M: momentum(bullCloses, 30),
+    avgVol10: 1800, avgVol30: 1080,
+  });
+  return Math.abs(viaMetrics.score - bull.score) <= 12;
+})());
 
 if (failures) { console.error(`\n${failures} test(s) en échec`); process.exit(1); }
 console.log('\nTous les tests passent ✅');

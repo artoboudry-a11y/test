@@ -141,6 +141,49 @@ export function computeScore({ closes, volumes }) {
   };
 }
 
+// Variante de computeScore quand les indicateurs sont déjà calculés par la
+// source (ex : scanner TradingView). Mêmes pondérations que computeScore.
+export function computeScoreFromMetrics({ price, ema20, ema50, rsi: r, macd: m, macdSignal,
+  perfW, perf1M, volume, avgVol10, avgVol30 }) {
+  let trend = 0;
+  if (Number.isFinite(ema20) && Number.isFinite(ema50) && Number.isFinite(price)) {
+    if (price > ema20) trend += 10;
+    if (price > ema50) trend += 8;
+    if (ema20 > ema50) trend += 12;
+  }
+  let momPts = 0;
+  if (Number.isFinite(perfW)) momPts += Math.max(0, Math.min(13, perfW * 1.6 + 5));
+  if (Number.isFinite(perf1M)) momPts += Math.max(0, Math.min(12, perf1M * 0.5 + 4));
+  let rsiPts = 0;
+  if (Number.isFinite(r)) {
+    if (r >= 45 && r <= 65) rsiPts = 20;
+    else if (r > 65 && r <= 75) rsiPts = 12;
+    else if (r >= 35 && r < 45) rsiPts = 10;
+    else if (r > 75) rsiPts = 3;
+    else rsiPts = 5;
+  }
+  let macdHist = null, macdPts = 0;
+  if (Number.isFinite(m) && Number.isFinite(macdSignal)) {
+    macdHist = m - macdSignal;
+    if (macdHist > 0) macdPts += 9;
+    if (m > 0) macdPts += 6;
+  }
+  let vr = null, volPts = 0;
+  if (Number.isFinite(avgVol10) && Number.isFinite(avgVol30) && avgVol30 > 0) vr = avgVol10 / avgVol30;
+  else if (Number.isFinite(volume) && Number.isFinite(avgVol30) && avgVol30 > 0) vr = volume / avgVol30;
+  if (vr !== null) volPts = Math.max(0, Math.min(10, (vr - 0.8) * 12));
+
+  const score = Math.round(Math.max(0, Math.min(100, trend + momPts + rsiPts + macdPts + volPts)));
+  return {
+    score,
+    rsi: Number.isFinite(r) ? Math.round(r * 10) / 10 : null,
+    macdHist,
+    mom7: Number.isFinite(perfW) ? Math.round(perfW * 100) / 100 : null,
+    mom30: Number.isFinite(perf1M) ? Math.round(perf1M * 100) / 100 : null,
+    volRatio: vr === null ? null : Math.round(vr * 100) / 100,
+  };
+}
+
 export function signalFromScore(score) {
   if (score >= 70) return { code: 'STRONG_BUY', label: 'ACHAT FORT' };
   if (score >= 55) return { code: 'BUY', label: 'ACHAT' };
