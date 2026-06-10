@@ -221,7 +221,7 @@ async function refreshStocks() {
     $('#stocks-meta').textContent = `Dernière analyse du robot : ${when} · source ${data.source} · cours de clôture (les actions ne cotent pas en continu).`;
     const assets = data.stocks.map(s => ({
       ...s,
-      currency: (s.market === 'FR' || s.market === 'EU') ? '€' : '$',
+      currency: s.cur || ((s.market === 'FR' || s.market === 'EU') ? '€' : '$'),
       momUnit: 'j',
       trades: null,
     }));
