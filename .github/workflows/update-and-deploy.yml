@@ -42,6 +42,9 @@ jobs:
           node scripts/test_app_smoke.mjs
           FAIL_BINANCE=1 node scripts/test_app_smoke.mjs
 
+      - name: Nettoyage des données simulées écrites par les tests
+        run: git checkout -- data/stocks.json
+
       - name: Récupération des données boursières réelles
         run: node scripts/fetch_stocks.mjs
 
