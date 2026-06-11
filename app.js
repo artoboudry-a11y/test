@@ -1,4 +1,4 @@
-import { computeScore, signalFromScore, volatility, riskLevel, explainFromMetrics } from './indicators.js';
+import { computeScore, signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts } from './indicators.js';
 
 // ---------- Configuration ----------
 const CRYPTOS = [
@@ -162,6 +162,9 @@ function openLiveStream() {
       const price = parseFloat(data.c);
       const open = parseFloat(data.o);
       const chg = ((price - open) / open) * 100;
+      const tracked = state.assets.get(sym);
+      if (tracked) tracked.price = price;
+      maybeCheckAlerts();
       card.querySelector('.price').textContent = fmtPrice(price, '$');
       const chgEl = card.querySelector('.chg');
       chgEl.textContent = fmtPct(chg);
@@ -200,6 +203,7 @@ async function refreshCrypto() {
     applyView('crypto');
     renderRadar();
     if (state.dataSource === 'binance') { banner(null); openLiveStream(); }
+    checkAlerts();
   } catch (e) {
     console.error(e);
     $('#crypto-list').innerHTML = '<div class="loader">Impossible de joindre les marchés. Vérifie ta connexion — nouvelle tentative dans 1 min.</div>';
@@ -232,6 +236,7 @@ async function refreshStocks() {
     state.stockAssets = assets;
     applyView('stocks');
     renderRadar();
+    checkAlerts();
   } catch (e) {
     $('#stocks-list').innerHTML = '<div class="loader">Données actions pas encore générées — le robot GitHub les publiera à sa prochaine exécution.</div>';
   }
@@ -347,9 +352,50 @@ function loadStore() {
   try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
 }
 function saveStore(s) { localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
+function fullStore() {
+  return { capital: 10, goal: 10000, rate: 1, trades: [], alerts: [], ...loadStore() };
+}
+
+// ---------- Alertes de prix ----------
+function currentPrice(symbol) {
+  const c = state.assets.get(symbol);
+  if (c && Number.isFinite(c.price)) return c.price;
+  const st = (state.stockAssets || []).find(a => a.symbol === symbol);
+  return st && Number.isFinite(st.price) ? st.price : null;
+}
+function notifyAlert(al) {
+  const msg = `🔔 Alerte : ${al.symbol} ${al.dir === 'above' ? 'a dépassé' : 'est passé sous'} ${al.price} — cours actuel ${al.hit.price}.`;
+  banner(msg, 'info');
+  try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch { /* non supporté */ }
+  if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+    try { new Notification('TradePilot', { body: msg, icon: 'icons/icon-192.png' }); } catch { /* contexte sans notifications */ }
+  }
+}
+function checkAlerts() {
+  const s = fullStore();
+  const active = s.alerts.filter(a => !a.hit);
+  if (!active.length) return;
+  const { triggered } = evaluateAlerts(active, currentPrice);
+  if (!triggered.length) return;
+  for (const t of triggered) {
+    const al = s.alerts.find(a => a.id === t.id);
+    al.hit = {
+      price: Math.round(t.hitPrice * 10000) / 10000,
+      date: new Date().toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }),
+    };
+    notifyAlert(al);
+  }
+  saveStore(s);
+  renderPortfolio();
+}
+let lastAlertTick = 0;
+function maybeCheckAlerts() {
+  const now = Date.now();
+  if (now - lastAlertTick > 5000) { lastAlertTick = now; checkAlerts(); }
+}
 
 function renderPortfolio() {
-  const s = { capital: 10, goal: 10000, rate: 1, trades: [], ...loadStore() };
+  const s = fullStore();
   $('#capital').value = s.capital;
   $('#goal').value = s.goal;
   $('#daily-rate').value = s.rate;
@@ -364,6 +410,17 @@ function renderPortfolio() {
     `À <b>${s.rate} % par jour</b> composés, il faudrait <b>${Number.isFinite(days) ? days.toLocaleString('fr-FR') + ' jours' : '∞'}</b> (≈ ${years} ans) pour atteindre l'objectif. ` +
     `Pour comparaison, les meilleurs fonds du monde font ~0,08 %/jour en moyenne. ` +
     `Sois patient, réinvestis régulièrement, et méfie-toi de tout ce qui promet plus vite.`;
+  const aul = $('#alert-list');
+  aul.innerHTML = '';
+  s.alerts.forEach((a, i) => {
+    const li = document.createElement('li');
+    const status = a.hit
+      ? `<small class="up">✅ déclenchée le ${a.hit.date} à ${a.hit.price}</small>`
+      : '<small style="color:var(--muted)">⏳ en attente</small>';
+    li.innerHTML = `<span>${a.symbol} ${a.dir === 'above' ? '≥' : '≤'} ${a.price} ${status}</span><button title="Supprimer">✕</button>`;
+    li.querySelector('button').onclick = () => { s.alerts.splice(i, 1); saveStore(s); renderPortfolio(); };
+    aul.appendChild(li);
+  });
   const ul = $('#trade-list');
   ul.innerHTML = '';
   s.trades.forEach((t, i) => {
@@ -377,14 +434,33 @@ function renderPortfolio() {
 function bindPortfolio() {
   for (const [id, key] of [['#capital', 'capital'], ['#goal', 'goal'], ['#daily-rate', 'rate']]) {
     $(id).addEventListener('change', (e) => {
-      const s = { capital: 10, goal: 10000, rate: 1, trades: [], ...loadStore() };
+      const s = fullStore();
       s[key] = parseFloat(e.target.value) || s[key];
       saveStore(s); renderPortfolio();
     });
   }
+  $('#alert-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const s = fullStore();
+    const price = parseFloat($('#alert-price').value);
+    if (!Number.isFinite(price) || price <= 0) return;
+    s.alerts.push({
+      id: Date.now(),
+      symbol: $('#alert-symbol').value.trim().toUpperCase(),
+      dir: $('#alert-dir').value === 'below' ? 'below' : 'above',
+      price,
+    });
+    saveStore(s);
+    e.target.reset();
+    renderPortfolio();
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {});
+    }
+    checkAlerts();
+  });
   $('#trade-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    const s = { capital: 10, goal: 10000, rate: 1, trades: [], ...loadStore() };
+    const s = fullStore();
     s.trades.push({
       asset: $('#trade-asset').value.trim().toUpperCase(),
       amount: parseFloat($('#trade-amount').value),

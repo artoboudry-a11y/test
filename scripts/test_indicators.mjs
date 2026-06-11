@@ -1,6 +1,6 @@
 // Tests unitaires des indicateurs — exécutés en local et en CI.
 import { sma, ema, rsi, macd, momentum, volumeRatio, computeScore, computeScoreFromMetrics,
-  signalFromScore, volatility, riskLevel, explainFromMetrics }
+  signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts }
   from '../indicators.js';
 
 let failures = 0;
@@ -104,6 +104,22 @@ check('mention de la foule sur volume fort', exBull.some(e => /foule/.test(e.tex
 const exBear = explainFromMetrics({ rsi: 24, macdHist: -1, mom7: -5, mom30: -12, volRatio: 0.5, price: 90, ema20: 95, ema50: 100 });
 check('explications baissières cohérentes', exBear.every(e => !e.plus));
 check('métriques absentes → pas de crash', Array.isArray(explainFromMetrics({})));
+
+console.log('— Alertes de prix —');
+const prices = { BTC: 105, ETH: 20 };
+const { triggered, waiting } = evaluateAlerts([
+  { id: 1, symbol: 'BTC', dir: 'above', price: 100 },
+  { id: 2, symbol: 'BTC', dir: 'below', price: 100 },
+  { id: 3, symbol: 'ETH', dir: 'below', price: 25 },
+  { id: 4, symbol: 'XXX', dir: 'above', price: 1 },
+], (s) => prices[s] ?? null);
+check('franchissement à la hausse déclenché', triggered.some(t => t.id === 1));
+check('seuil bas non atteint → en attente', waiting.some(t => t.id === 2));
+check('franchissement à la baisse déclenché', triggered.some(t => t.id === 3));
+check('actif sans cours → en attente, pas de crash', waiting.some(t => t.id === 4));
+check('cours constaté fourni', triggered.every(t => Number.isFinite(t.hitPrice)));
+check('égalité au seuil = déclenchement', evaluateAlerts(
+  [{ id: 5, symbol: 'BTC', dir: 'above', price: 105 }], (s) => prices[s]).triggered.length === 1);
 
 if (failures) { console.error(`\n${failures} test(s) en échec`); process.exit(1); }
 console.log('\nTous les tests passent ✅');

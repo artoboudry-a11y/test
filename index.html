@@ -118,6 +118,20 @@
           </label>
         </div>
         <p id="goal-projection" class="projection"></p>
+        <h3>🔔 Alertes de prix</h3>
+        <form id="alert-form" class="goal-row">
+          <input type="text" id="alert-symbol" placeholder="Actif (ex: BTC)" required>
+          <select id="alert-dir">
+            <option value="above">passe au-dessus de</option>
+            <option value="below">passe en dessous de</option>
+          </select>
+          <input type="number" id="alert-price" placeholder="Prix" step="any" min="0" required>
+          <button type="submit" class="btn">Créer</button>
+        </form>
+        <ul id="alert-list"></ul>
+        <p class="sub">Les alertes se déclenchent quand l'appli est ouverte (bannière, vibration,
+          et notification si tu l'autorises). Prix en $ pour les cryptos et actions US, en € pour l'Europe.</p>
+
         <h3>Journal de mes positions</h3>
         <form id="trade-form" class="goal-row">
           <input type="text" id="trade-asset" placeholder="Actif (ex: BTC)" required>

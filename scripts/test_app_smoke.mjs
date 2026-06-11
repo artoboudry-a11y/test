@@ -109,6 +109,13 @@ globalThis.localStorage = {
   getItem: (k) => store.get(k) ?? null,
   setItem: (k, v) => store.set(k, String(v)),
 };
+// En mode nominal, une alerte pré-chargée doit se déclencher dès le premier cours.
+if (!FAIL_BINANCE) {
+  store.set('tradepilot_v1', JSON.stringify({
+    capital: 10, goal: 10000, rate: 1, trades: [],
+    alerts: [{ id: 1, symbol: 'BTC', dir: 'above', price: 1 }],
+  }));
+}
 globalThis.setInterval = () => 0;
 
 let unhandled = null;
@@ -143,7 +150,10 @@ if (FAIL_BINANCE) {
   check('repli CoinGecko signalé à l’utilisateur', /CoinGecko/.test(byId.get('#banner').textContent));
   check('statut indique la source de repli', /CoinGecko/.test(byId.get('#status-line').textContent));
 } else {
-  check('pas de bannière d’erreur en mode nominal', byId.get('#banner')._classes.has('hidden'));
+  check('alerte pré-chargée déclenchée (bannière info)', /Alerte : BTC a dépassé 1/.test(byId.get('#banner').textContent));
+  const saved = JSON.parse(store.get('tradepilot_v1'));
+  check('alerte marquée déclenchée et persistée', saved.alerts[0].hit && Number.isFinite(saved.alerts[0].hit.price));
+  check('liste des alertes rendue avec statut', byId.get('#alert-list').children.length === 1);
 }
 const radar = byId.get('#radar-list');
 check('radar rempli (6 opportunités)', radar.children.length === 6, `(=${radar.children.length})`);

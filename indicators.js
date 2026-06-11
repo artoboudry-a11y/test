@@ -246,6 +246,21 @@ export function explainFromMetrics({ rsi: r, macdHist, mom7, mom30, volRatio, pr
   return out;
 }
 
+// Évalue des alertes de prix. `getPrice(symbol)` retourne le cours actuel
+// ou null. Retourne les alertes déclenchées (avec le cours constaté).
+export function evaluateAlerts(alerts, getPrice) {
+  const triggered = [];
+  const waiting = [];
+  for (const al of alerts) {
+    const p = getPrice(al.symbol);
+    const hit = Number.isFinite(p) &&
+      ((al.dir === 'above' && p >= al.price) || (al.dir === 'below' && p <= al.price));
+    if (hit) triggered.push({ ...al, hitPrice: p });
+    else waiting.push(al);
+  }
+  return { triggered, waiting };
+}
+
 export function signalFromScore(score) {
   if (score >= 70) return { code: 'STRONG_BUY', label: 'ACHAT FORT' };
   if (score >= 55) return { code: 'BUY', label: 'ACHAT' };
