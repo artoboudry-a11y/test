@@ -286,6 +286,61 @@ export function valuePositions(trades, getPrice) {
   };
 }
 
+// Filtre une liste d'actifs par texte libre (nom ou symbole), insensible
+// à la casse et aux accents. Requête vide → liste inchangée (copie).
+export function filterAssets(assets, query) {
+  const norm = (s) => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const q = norm(query).trim();
+  if (!q) return assets.slice();
+  return assets.filter(a => norm(a.symbol).includes(q) || norm(a.name).includes(q));
+}
+
+// Remonte les favoris en tête de liste sans changer l'ordre relatif
+// (tri stable : les favoris restent triés entre eux, idem pour les autres).
+export function pinFavorites(assets, favorites) {
+  if (!favorites || !favorites.length) return assets;
+  const fav = new Set(favorites);
+  return [...assets.filter(a => fav.has(a.symbol)), ...assets.filter(a => !fav.has(a.symbol))];
+}
+
+// Nettoie une sauvegarde importée (fichier JSON fourni par l'utilisateur) :
+// ne conserve que les champs connus avec des types valides, ignore le reste.
+// Retourne null si rien d'exploitable (fichier étranger ou corrompu).
+export function sanitizeImportedStore(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const out = {};
+  for (const k of ['capital', 'goal', 'rate']) {
+    if (Number.isFinite(raw[k]) && raw[k] > 0) out[k] = raw[k];
+  }
+  if (Array.isArray(raw.trades)) {
+    out.trades = raw.trades
+      .filter(t => t && typeof t.asset === 'string' && t.asset.trim() && Number.isFinite(t.amount) && t.amount > 0)
+      .map(t => ({
+        asset: t.asset.trim().toUpperCase(),
+        amount: t.amount,
+        buyPrice: Number.isFinite(t.buyPrice) && t.buyPrice > 0 ? t.buyPrice : undefined,
+        date: typeof t.date === 'string' ? t.date : '',
+      }));
+  }
+  if (Array.isArray(raw.alerts)) {
+    out.alerts = raw.alerts
+      .filter(a => a && typeof a.symbol === 'string' && a.symbol.trim() && Number.isFinite(a.price) && a.price > 0)
+      .map((a, i) => ({
+        id: Number.isFinite(a.id) ? a.id : Date.now() + i,
+        symbol: a.symbol.trim().toUpperCase(),
+        dir: a.dir === 'below' ? 'below' : 'above',
+        price: a.price,
+        ...(a.hit && typeof a.hit === 'object' ? { hit: a.hit } : {}),
+      }));
+  }
+  if (Array.isArray(raw.favorites)) {
+    out.favorites = [...new Set(raw.favorites
+      .filter(f => typeof f === 'string' && f.trim())
+      .map(f => f.trim().toUpperCase()))];
+  }
+  return Object.keys(out).length ? out : null;
+}
+
 export function signalFromScore(score) {
   if (score >= 70) return { code: 'STRONG_BUY', label: 'ACHAT FORT' };
   if (score >= 55) return { code: 'BUY', label: 'ACHAT' };

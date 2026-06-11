@@ -1,6 +1,7 @@
 // Tests unitaires des indicateurs — exécutés en local et en CI.
 import { sma, ema, rsi, macd, momentum, volumeRatio, computeScore, computeScoreFromMetrics,
-  signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions }
+  signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions,
+  filterAssets, pinFavorites, sanitizeImportedStore }
   from '../indicators.js';
 
 let failures = 0;
@@ -136,6 +137,56 @@ check('position sans cours non valorisée', pv.rows[3].value === null);
 check('totaux sur les positions valorisées uniquement', approx(pv.totals.invested, 15) && approx(pv.totals.value, 14.5));
 check('P/L total cohérent', approx(pv.totals.plAbs, -0.5));
 check('portefeuille vide → pas de crash', valuePositions([], () => null).totals.plPct === null);
+
+console.log('— Recherche d’actifs —');
+const univers = [
+  { symbol: 'BTC', name: 'Bitcoin' },
+  { symbol: 'ETH', name: 'Ethereum' },
+  { symbol: 'MC.FR', name: 'LVMH Moët Hennessy' },
+  { symbol: 'AIR.FR', name: 'Airbus' },
+];
+check('recherche par symbole', filterAssets(univers, 'btc').length === 1 && filterAssets(univers, 'btc')[0].symbol === 'BTC');
+check('recherche par nom partiel', filterAssets(univers, 'ether')[0]?.symbol === 'ETH');
+check('insensible aux accents', filterAssets(univers, 'moet').length === 1);
+check('insensible à la casse', filterAssets(univers, 'AIRBUS').length === 1);
+check('requête vide → tout', filterAssets(univers, '').length === 4);
+check('requête vide → copie (pas la même référence)', filterAssets(univers, '') !== univers);
+check('aucun résultat → liste vide', filterAssets(univers, 'zzz').length === 0);
+
+console.log('— Favoris épinglés —');
+const scored = [{ symbol: 'A' }, { symbol: 'B' }, { symbol: 'C' }, { symbol: 'D' }];
+const pinned = pinFavorites(scored, ['C', 'A']);
+check('favoris remontés en tête', pinned[0].symbol === 'A' && pinned[1].symbol === 'C');
+check('ordre relatif préservé (tri stable)', pinned[2].symbol === 'B' && pinned[3].symbol === 'D');
+check('sans favoris → liste inchangée', pinFavorites(scored, []) === scored);
+check('favori inconnu → sans effet', pinFavorites(scored, ['ZZZ']).length === 4);
+
+console.log('— Sauvegarde importée (nettoyage) —');
+const imported = sanitizeImportedStore({
+  capital: 25, goal: 10000, rate: 1.5,
+  trades: [
+    { asset: 'btc', amount: 10, buyPrice: 100, date: '01/06/2026' },
+    { asset: '', amount: 10 },               // actif vide → rejeté
+    { asset: 'ETH', amount: -5 },             // montant invalide → rejeté
+  ],
+  alerts: [
+    { id: 1, symbol: 'btc', dir: 'below', price: 90 },
+    { symbol: 'ETH', dir: 'sideways', price: 50 }, // direction inconnue → normalisée
+    { symbol: 'XXX', price: 0 },                   // prix invalide → rejeté
+  ],
+  favorites: ['btc', 'BTC', 'eth', 42],
+  malicious: 'champ inconnu',
+});
+check('champs numériques repris', imported.capital === 25 && imported.rate === 1.5);
+check('position valide normalisée en majuscules', imported.trades.length === 1 && imported.trades[0].asset === 'BTC');
+check('alertes invalides écartées', imported.alerts.length === 2);
+check('direction inconnue → above par défaut', imported.alerts[1].dir === 'above');
+check('id généré si absent', Number.isFinite(imported.alerts[1].id));
+check('favoris dédupliqués et normalisés', imported.favorites.length === 2 && imported.favorites.includes('BTC') && imported.favorites.includes('ETH'));
+check('champ inconnu ignoré', !('malicious' in imported));
+check('fichier étranger → null', sanitizeImportedStore({ foo: 'bar' }) === null);
+check('tableau → null', sanitizeImportedStore([1, 2]) === null);
+check('null → null, pas de crash', sanitizeImportedStore(null) === null);
 
 if (failures) { console.error(`\n${failures} test(s) en échec`); process.exit(1); }
 console.log('\nTous les tests passent ✅');

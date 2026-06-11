@@ -17,8 +17,13 @@ tout tourne dans le navigateur + un robot GitHub Actions gratuit.
   le surachat extrême).
 - **Foule** : actifs les plus recherchés au monde (CoinGecko Trending), nombre de
   transactions réelles sur 24 h, indice Peur & Avidité.
+- **Recherche & favoris** : recherche instantanée par nom ou symbole (insensible
+  aux accents), étoile ⭐ pour épingler tes actifs en tête de liste, filtre
+  « Favoris » dans chaque onglet.
 - **Objectif 10 € → 10 000 €** : suivi du capital, journal des positions,
   calculateur de croissance composée honnête.
+- **Sauvegarde** : export/import JSON de toutes tes données locales (capital,
+  positions, alertes, favoris) — rien ne quitte ton appareil.
 
 ## Installation sur téléphone / ordinateur
 

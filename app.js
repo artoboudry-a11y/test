@@ -1,4 +1,5 @@
-import { computeScore, signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions } from './indicators.js';
+import { computeScore, signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions,
+  filterAssets, pinFavorites, sanitizeImportedStore } from './indicators.js';
 
 // ---------- Configuration ----------
 const CRYPTOS = [
@@ -65,7 +66,7 @@ function drawSpark(canvas, values, w = 110, h = 34) {
   ctx.stroke();
 }
 
-function assetCard(a) {
+function assetCard(a, isFav = false) {
   const card = document.createElement('div');
   card.className = 'card asset';
   card.dataset.sym = a.symbol;
@@ -73,6 +74,7 @@ function assetCard(a) {
   card.innerHTML = `
     <div class="top">
       <span class="name">${a.name}</span><span class="sym">${a.symbol}</span>
+      <button class="fav ${isFav ? 'on' : ''}" title="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}">${isFav ? '★' : '☆'}</button>
     </div>
     <span class="badge ${a.signal.code}">${a.signal.label} · ${a.score}</span>
     <div class="top">
@@ -93,14 +95,27 @@ function assetCard(a) {
   card.addEventListener('click', () => card.classList.toggle('open'));
   const btn = card.querySelector('.chart-open');
   if (btn) btn.addEventListener('click', (e) => { e.stopPropagation(); openChart(a); });
+  const fav = card.querySelector('.fav');
+  if (fav) fav.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(a.symbol); });
   if (a.spark && a.spark.length > 2) drawSpark(card.querySelector('canvas'), a.spark);
   else card.querySelector('canvas').remove();
   return card;
 }
 
 function renderList(container, assets) {
+  const favs = new Set(fullStore().favorites);
   container.innerHTML = '';
-  for (const a of assets) container.appendChild(assetCard(a));
+  for (const a of assets) container.appendChild(assetCard(a, favs.has(a.symbol)));
+}
+
+function toggleFavorite(symbol) {
+  const s = fullStore();
+  const i = s.favorites.indexOf(symbol);
+  if (i >= 0) s.favorites.splice(i, 1);
+  else s.favorites.push(symbol);
+  saveStore(s);
+  applyView('crypto');
+  applyView('stocks');
 }
 
 // ---------- Crypto : Binance (temps réel) avec repli CoinGecko ----------
@@ -249,29 +264,38 @@ async function refreshStocks() {
 
 // ---------- Vues : tri & filtres ----------
 const viewState = {
-  crypto: { sort: 'score', buyOnly: false },
-  stocks: { sort: 'score', buyOnly: false },
+  crypto: { sort: 'score', buyOnly: false, favOnly: false, query: '' },
+  stocks: { sort: 'score', buyOnly: false, favOnly: false, query: '' },
 };
 function applyView(kind) {
   const assets = (kind === 'crypto' ? state.cryptoAssets : state.stockAssets) || [];
   const vs = viewState[kind];
-  let list = assets.slice();
+  const favorites = fullStore().favorites;
+  let list = filterAssets(assets, vs.query);
   if (vs.buyOnly) list = list.filter(a => a.score >= 55);
+  if (vs.favOnly) list = list.filter(a => favorites.includes(a.symbol));
   const sorters = {
     score: (a, b) => b.score - a.score,
     chg: (a, b) => (b.changePct ?? -1e9) - (a.changePct ?? -1e9),
     name: (a, b) => a.name.localeCompare(b.name, 'fr'),
   };
   list.sort(sorters[vs.sort] || sorters.score);
+  list = pinFavorites(list, favorites);
   const el = $(kind === 'crypto' ? '#crypto-list' : '#stocks-list');
   if (!list.length) {
-    el.innerHTML = '<div class="loader">Aucun actif ne correspond à ce filtre pour le moment.</div>';
+    el.innerHTML = assets.length
+      ? '<div class="loader">Aucun actif ne correspond à cette recherche ou à ce filtre.</div>'
+      : '<div class="loader">Aucun actif ne correspond à ce filtre pour le moment.</div>';
     return;
   }
   renderList(el, list);
 }
 function bindToolbars() {
   for (const kind of ['crypto', 'stocks']) {
+    $(`#search-${kind}`).addEventListener('input', (e) => {
+      viewState[kind].query = e.target.value;
+      applyView(kind);
+    });
     $(`#sort-${kind}`).addEventListener('change', (e) => {
       viewState[kind].sort = e.target.value;
       applyView(kind);
@@ -279,6 +303,11 @@ function bindToolbars() {
     $(`#filter-${kind}`).addEventListener('click', (e) => {
       viewState[kind].buyOnly = !viewState[kind].buyOnly;
       e.target.classList.toggle('on', viewState[kind].buyOnly);
+      applyView(kind);
+    });
+    $(`#fav-${kind}`).addEventListener('click', (e) => {
+      viewState[kind].favOnly = !viewState[kind].favOnly;
+      e.target.classList.toggle('on', viewState[kind].favOnly);
       applyView(kind);
     });
   }
@@ -481,7 +510,39 @@ function loadStore() {
 }
 function saveStore(s) { localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
 function fullStore() {
-  return { capital: 10, goal: 10000, rate: 1, trades: [], alerts: [], ...loadStore() };
+  return { capital: 10, goal: 10000, rate: 1, trades: [], alerts: [], favorites: [], ...loadStore() };
+}
+
+// ---------- Sauvegarde / restauration des données locales ----------
+function bindBackup() {
+  $('#export-data').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(fullStore(), null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `tradepilot-sauvegarde-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  $('#import-file').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let clean = null;
+      try { clean = sanitizeImportedStore(JSON.parse(reader.result)); } catch { /* JSON invalide */ }
+      if (clean) {
+        saveStore({ ...fullStore(), ...clean });
+        renderPortfolio();
+        applyView('crypto');
+        applyView('stocks');
+        banner('✅ Sauvegarde restaurée : capital, positions, alertes et favoris rechargés.', 'info');
+      } else {
+        banner('Fichier illisible — importe un fichier exporté par TradePilot (JSON).');
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  });
 }
 
 // ---------- Alertes de prix ----------
@@ -652,6 +713,7 @@ refreshTrends();
 refreshFearGreed();
 renderPortfolio();
 bindPortfolio();
+bindBackup();
 bindToolbars();
 bindChart();
 setInterval(refreshCrypto, REFRESH_MS);
