@@ -78,6 +78,9 @@ check('tri par score décroissant', out.stocks.every((s, i, a) => !i || a[i - 1]
 check('scores bornés', out.stocks.every(s => s.score >= 0 && s.score <= 100));
 check('prix positifs', out.stocks.every(s => s.price > 0));
 check('signaux valides', out.stocks.every(s => ['STRONG_BUY', 'BUY', 'WATCH', 'AVOID'].includes(s.signal.code)));
+check('décomposition du score publiée (5 composantes)', out.stocks.every(s => Array.isArray(s.parts) && s.parts.length === 5));
+check('EMA 20/50 publiées (pour le plan d’action)', out.stocks.every(s => s.ema20 === null || Number.isFinite(s.ema20)) &&
+  out.stocks.some(s => Number.isFinite(s.ema20) && Number.isFinite(s.ema50)));
 check('devises correctes (€ pour FR/EU)', out.stocks.filter(s => s.market === 'FR' || s.market === 'EU').every(s => s.cur === '€'));
 check('source mentionne TradingView', /TradingView/.test(out.source));
 check('4 marchés scannés (avec retries pour germany)', scanCalls >= 4, `(=${scanCalls})`);

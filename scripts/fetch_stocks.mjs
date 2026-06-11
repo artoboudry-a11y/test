@@ -99,8 +99,10 @@ async function fromTradingView() {
         price: Math.round(close * 100) / 100,
         changePct: Number.isFinite(change) ? Math.round(change * 100) / 100 : null,
         lastDate: new Date().toISOString().slice(0, 10),
-        score: a.score, signal: signalFromScore(a.score),
+        score: a.score, signal: signalFromScore(a.score), parts: a.parts,
         rsi: a.rsi, mom7: a.mom7, mom30: a.mom30, volRatio: a.volRatio,
+        ema20: a.ema20 === null ? null : Math.round(a.ema20 * 100) / 100,
+        ema50: a.ema50 === null ? null : Math.round(a.ema50 * 100) / 100,
         macdHist: a.macdHist === null ? null : Math.round(a.macdHist * 10000) / 10000,
       });
       console.log(`✔ ${t.name}: ${close.toFixed(2)} (score ${a.score}) [TradingView]`);
@@ -151,8 +153,10 @@ async function fromYahoo(tickers) {
       price: Math.round(last * 100) / 100,
       changePct: Math.round(((last - prev) / prev) * 10000) / 100,
       lastDate: new Date().toISOString().slice(0, 10),
-      score: a.score, signal: signalFromScore(a.score),
+      score: a.score, signal: signalFromScore(a.score), parts: a.parts,
       rsi: a.rsi, mom7: a.mom7, mom30: a.mom30, volRatio: a.volRatio,
+      ema20: a.ema20 === null ? null : Math.round(a.ema20 * 100) / 100,
+      ema50: a.ema50 === null ? null : Math.round(a.ema50 * 100) / 100,
       macdHist: a.macdHist === null ? null : Math.round(a.macdHist * 10000) / 10000,
       spark: closes.slice(-40).map(v => Math.round(v * 100) / 100),
     });

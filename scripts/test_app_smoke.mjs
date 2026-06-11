@@ -144,6 +144,8 @@ check('cartes triées par score décroissant', (() => {
   return scores.every((s, i) => Number.isFinite(s) && (!i || scores[i - 1] >= s));
 })());
 check('badges de signal présents', crypto.children.every(c => /ACHAT|SURVEILLER|ÉVITER/.test(c.innerHTML)));
+check('décomposition de la note affichée', crypto.children.every(c => /score-parts/.test(c.innerHTML) && /Tendance/.test(c.innerHTML)));
+check('bouton plan d’action sur chaque carte', crypto.children.every(c => /plan-open/.test(c.innerHTML)));
 const stocks = byId.get('#stocks-list');
 check('liste actions remplie', stocks.children.length >= 20, `(=${stocks.children.length})`);
 check('méta actions renseignée', /Dernière analyse/.test(byId.get('#stocks-meta').textContent));
@@ -152,6 +154,8 @@ check('tendances remplies (10)', trends.children.length === 10, `(=${trends.chil
 check('indice Peur & Avidité affiché', /54/.test(byId.get('#fng').innerHTML));
 check('projection objectif calculée', /jours/.test(byId.get('#goal-projection').innerHTML));
 check('barre de progression initialisée', byId.get('#progress-fill').style.width !== undefined);
+check('mesure de progression réelle initialisée', /progression réelle|Croissance réelle/.test(byId.get('#real-progress').innerHTML));
+check('journal de capital : premier point enregistré', (JSON.parse(store.get('tradepilot_v1')).capitalLog || []).length === 1);
 if (FAIL_BINANCE) {
   check('repli CoinGecko signalé à l’utilisateur', /CoinGecko/.test(byId.get('#banner').textContent));
   check('statut indique la source de repli', /CoinGecko/.test(byId.get('#status-line').textContent));

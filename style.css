@@ -224,6 +224,23 @@ select {
 }
 .asset.open .metrics { display: flex; }
 .metrics b { color: var(--text); font-weight: 700; }
+
+/* Décomposition transparente de la note /100 */
+.score-parts {
+  flex-basis: 100%;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 5px 16px;
+  padding-top: 8px;
+}
+.score-parts span {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.68rem; color: var(--muted); white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.score-parts i {
+  flex: 1; height: 4px; border-radius: 3px; overflow: hidden;
+  background: rgba(255, 255, 255, 0.07);
+}
+.score-parts i b { display: block; height: 100%; border-radius: 3px; background: var(--grad); }
 canvas.spark { grid-row: 1 / span 2; grid-column: 2; justify-self: end; margin-top: 22px; opacity: 0.95; }
 
 /* ---------- Radar ---------- */
@@ -329,6 +346,25 @@ input:focus { outline: none; border-color: var(--accent); }
 }
 #chart-canvas { width: 100%; height: 260px; display: block; border-radius: 12px; }
 #chart-stats { margin-top: 10px; }
+.modal-box { max-height: 88vh; overflow-y: auto; }
+
+/* ---------- Plan d'action ---------- */
+.plan-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.plan-head .sub { flex-basis: 100%; }
+.plan-wait { font-size: 0.84rem; color: var(--muted); line-height: 1.6; margin-top: 12px; }
+.plan-wait b { color: var(--text); }
+.plan-steps { list-style: none; counter-reset: step; display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+.plan-steps li { display: flex; gap: 11px; font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+.plan-steps li::before {
+  counter-increment: step; content: counter(step);
+  flex: none; width: 23px; height: 23px; margin-top: 1px;
+  border-radius: 50%; background: var(--grad); color: #061224;
+  font-weight: 800; font-size: 0.72rem;
+  display: grid; place-items: center;
+}
+.plan-steps b { color: var(--text); }
+.plan-steps .chip { display: inline-block; margin-top: 7px; }
+.plan-steps .chip:disabled { color: var(--green); border-color: rgba(52, 211, 153, 0.45); cursor: default; }
 
 footer { padding: 22px 18px 30px; max-width: 880px; margin: 0 auto; }
 footer p { font-size: 0.68rem; color: var(--faint); line-height: 1.6; }

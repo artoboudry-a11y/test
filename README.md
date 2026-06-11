@@ -12,16 +12,24 @@ tout tourne dans le navigateur + un robot GitHub Actions gratuit.
 - **Actions & ETF (US + Europe)** : un robot GitHub Actions récupère les cours
   toutes les 30 min pendant les heures de marché, calcule les indicateurs et
   publie `data/stocks.json`.
-- **Score 0–100 et signal clair** par actif : `ACHAT FORT` / `ACHAT` /
-  `SURVEILLER` / `ÉVITER` (philosophie : suivre la tendance confirmée, éviter
-  le surachat extrême).
+- **Score 0–100 transparent et signal clair** par actif : `ACHAT FORT` /
+  `ACHAT` / `SURVEILLER` / `ÉVITER`. La note est entièrement décomposée sur
+  chaque carte : Tendance /30, Momentum /25, RSI /20, MACD /15, Volume /10
+  (philosophie : suivre la tendance confirmée, éviter le surachat extrême).
+- **Plan d'action pas-à-pas** par actif : faut-il entrer, dans quelle zone de
+  prix, avec quel stop de protection (calé sur la volatilité mesurée), quel
+  objectif de vente (2 € visés pour 1 € risqué, frais de courtage inclus),
+  quelle taille de position (1 % de risque max) et sur quel horizon. Alertes
+  d'entrée / stop / objectif créées en un clic depuis le plan.
 - **Foule** : actifs les plus recherchés au monde (CoinGecko Trending), nombre de
   transactions réelles sur 24 h, indice Peur & Avidité.
 - **Recherche & favoris** : recherche instantanée par nom ou symbole (insensible
   aux accents), étoile ⭐ pour épingler tes actifs en tête de liste, filtre
   « Favoris » dans chaque onglet.
 - **Objectif 10 € → 10 000 €** : suivi du capital, journal des positions,
-  calculateur de croissance composée honnête.
+  calculateur de croissance composée honnête, frais de courtage paramétrables,
+  et **mesure de ta croissance réelle %/jour** (journal quotidien du capital)
+  face à l'objectif visé.
 - **Sauvegarde** : export/import JSON de toutes tes données locales (capital,
   positions, alertes, favoris) — rien ne quitte ton appareil.
 
