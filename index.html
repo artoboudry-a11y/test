@@ -150,6 +150,23 @@
       des rendements certains.</p>
   </footer>
 
+  <div id="chart-modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div><b id="chart-title">—</b><span id="chart-sub" class="sub"></span></div>
+        <button id="chart-close" title="Fermer">✕</button>
+      </div>
+      <div id="chart-periods" class="toolbar">
+        <button class="chip period" data-p="24h">24 h</button>
+        <button class="chip period on" data-p="7j">7 j</button>
+        <button class="chip period" data-p="1M">1 mois</button>
+        <button class="chip period" data-p="1A">1 an</button>
+      </div>
+      <canvas id="chart-canvas"></canvas>
+      <p id="chart-stats" class="sub"></p>
+    </div>
+  </div>
+
   <script type="module" src="app.js"></script>
 </body>
 </html>

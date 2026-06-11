@@ -88,8 +88,11 @@ function assetCard(a) {
       <span>30 ${a.momUnit || 'j'} <b>${fmtPct(a.mom30)}</b></span>
       <span>Volume <b>${a.volRatio ? '×' + a.volRatio : '—'}</b></span>
       ${a.trades ? `<span>Foule <b>${a.trades.toLocaleString('fr-FR')} trades/24 h</b></span>` : ''}
+      <button class="chip chart-open">📈 Graphique</button>
     </div>`;
   card.addEventListener('click', () => card.classList.toggle('open'));
+  const btn = card.querySelector('.chart-open');
+  if (btn) btn.addEventListener('click', (e) => { e.stopPropagation(); openChart(a); });
   if (a.spark && a.spark.length > 2) drawSpark(card.querySelector('canvas'), a.spark);
   else card.querySelector('canvas').remove();
   return card;
@@ -311,6 +314,94 @@ function renderRadar() {
   }
 }
 
+// ---------- Graphique interactif ----------
+const PERIODS = { '24h': ['15m', 96], '7j': ['1h', 168], '1M': ['4h', 180], '1A': ['1d', 365] };
+const chart = { asset: null, period: '7j' };
+
+function drawChart(values) {
+  const canvas = $('#chart-canvas');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth || 600, h = 260;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+  if (!values || values.length < 2) return;
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = max - min || 1;
+  const pad = 18;
+  const X = (i) => pad + (i / (values.length - 1)) * (w - pad * 2);
+  const Y = (v) => h - pad - ((v - min) / range) * (h - pad * 2.4);
+  const up = values[values.length - 1] >= values[0];
+  const col = up ? '#34d399' : '#fb7185';
+  // Lignes de repère min / max
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.fillStyle = 'rgba(147,160,196,0.9)';
+  ctx.font = '10px Inter, sans-serif';
+  for (const v of [min, max]) {
+    ctx.beginPath(); ctx.moveTo(pad, Y(v)); ctx.lineTo(w - pad, Y(v)); ctx.stroke();
+    ctx.fillText(fmtPrice(v, ''), pad + 2, Y(v) - 4);
+  }
+  // Aplat dégradé sous la courbe
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, up ? 'rgba(52,211,153,0.28)' : 'rgba(251,113,133,0.25)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.beginPath();
+  values.forEach((v, i) => i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)));
+  ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke();
+  ctx.lineTo(X(values.length - 1), h); ctx.lineTo(X(0), h); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+}
+
+async function loadChart() {
+  const a = chart.asset;
+  if (!a) return;
+  $('#chart-title').textContent = `${a.name} (${a.symbol})`;
+  $('#chart-sub').textContent = `Cours actuel : ${fmtPrice(a.price, a.currency)}`;
+  $('#chart-stats').textContent = 'Chargement…';
+  let values = null, label = chart.period;
+  if (a.momUnit === 'h') { // crypto : historique Binance à la demande
+    try {
+      const [interval, limit] = PERIODS[chart.period];
+      const kl = await getJSON(`${BINANCE}/api/v3/klines?symbol=${a.symbol}USDT&interval=${interval}&limit=${limit}`);
+      values = kl.map(k => parseFloat(k[4]));
+    } catch { values = a.spark; label = 'dernières heures'; }
+  } else {
+    values = a.spark; label = a.spark ? `${a.spark.length} dernières séances` : '';
+    $('#chart-periods').style.display = 'none';
+  }
+  if (!values || values.length < 2) {
+    $('#chart-stats').textContent = 'Graphique indisponible pour cet actif (historique non fourni par la source).';
+    drawChart(null);
+    return;
+  }
+  drawChart(values);
+  const chg = ((values[values.length - 1] - values[0]) / values[0]) * 100;
+  $('#chart-stats').innerHTML =
+    `Période ${label} : <b class="${chg >= 0 ? 'up' : 'down'}">${fmtPct(chg)}</b> · ` +
+    `plus bas ${fmtPrice(Math.min(...values), a.currency)} · plus haut ${fmtPrice(Math.max(...values), a.currency)}`;
+}
+
+function openChart(a) {
+  chart.asset = a;
+  chart.period = '7j';
+  $('#chart-periods').style.display = a.momUnit === 'h' ? '' : 'none';
+  document.querySelectorAll('.period').forEach(b => b.classList.toggle('on', b.dataset.p === '7j'));
+  $('#chart-modal').classList.remove('hidden');
+  loadChart();
+}
+function bindChart() {
+  $('#chart-close').addEventListener('click', () => $('#chart-modal').classList.add('hidden'));
+  $('#chart-modal').addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'chart-modal') $('#chart-modal').classList.add('hidden');
+  });
+  document.querySelectorAll('.period').forEach(b => b.addEventListener('click', () => {
+    chart.period = b.dataset.p;
+    document.querySelectorAll('.period').forEach(x => x.classList.toggle('on', x === b));
+    loadChart();
+  }));
+}
+
 // ---------- Tendances de la foule ----------
 async function refreshTrends() {
   try {
@@ -496,6 +587,7 @@ refreshFearGreed();
 renderPortfolio();
 bindPortfolio();
 bindToolbars();
+bindChart();
 setInterval(refreshCrypto, REFRESH_MS);
 setInterval(refreshStocks, REFRESH_MS * 3);
 setInterval(refreshTrends, REFRESH_MS * 2);
