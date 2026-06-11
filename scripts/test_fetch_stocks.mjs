@@ -52,6 +52,14 @@ globalThis.fetch = async (url, opts = {}) => {
   throw new Error('URL inattendue : ' + u);
 };
 
+// Archive pré-existante (8 jours) pour tester la mesure de performance.
+import { writeFileSync, mkdirSync } from 'node:fs';
+mkdirSync('data', { recursive: true });
+const oldDay = new Date(Date.now() - 8 * 86400e3).toISOString().slice(0, 10);
+writeFileSync('data/history.json', JSON.stringify({
+  days: { [oldDay]: [{ s: 'AAPL', sc: 80, sig: 'STRONG_BUY', p: 1 }, { s: 'TSLA', sc: 20, sig: 'AVOID', p: 1e9 }] },
+}));
+
 await import('./fetch_stocks.mjs');
 
 const out = JSON.parse(readFileSync('data/stocks.json', 'utf8'));
@@ -74,6 +82,15 @@ check('devises correctes (€ pour FR/EU)', out.stocks.filter(s => s.market === 
 check('source mentionne TradingView', /TradingView/.test(out.source));
 check('4 marchés scannés (avec retries pour germany)', scanCalls >= 4, `(=${scanCalls})`);
 check('repli Yahoo sollicité', yahooCalls >= 2, `(=${yahooCalls})`);
+
+console.log('\n— Historique des signaux —');
+const hist = JSON.parse(readFileSync('data/history.json', 'utf8'));
+check('snapshot du jour archivé', Array.isArray(hist.days[new Date().toISOString().slice(0, 10)]));
+check('ancien snapshot conservé', Array.isArray(hist.days[oldDay]));
+check('performance 7j calculée', !!hist.performance['7j']);
+check('ACHAT FORT gagnant mesuré', hist.performance['7j'].STRONG_BUY.avg > 0 && hist.performance['7j'].STRONG_BUY.winRate === 100);
+check('ÉVITER perdant mesuré', hist.performance['7j'].AVOID.avg < 0);
+check('date de référence fournie', hist.performance['7j'].since === oldDay);
 
 if (failures) process.exit(1);
 console.log('\nPipeline actions validé ✅');

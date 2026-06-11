@@ -43,7 +43,9 @@ jobs:
           FAIL_BINANCE=1 node scripts/test_app_smoke.mjs
 
       - name: Nettoyage des données simulées écrites par les tests
-        run: git checkout -- data/stocks.json
+        run: |
+          git checkout -- data/ 2>/dev/null || true
+          git clean -fq data/ || true
 
       - name: Récupération des données boursières réelles
         run: node scripts/fetch_stocks.mjs
@@ -52,7 +54,7 @@ jobs:
         run: |
           git config user.name "tradepilot-bot"
           git config user.email "actions@github.com"
-          git add data/stocks.json
+          git add data/stocks.json data/history.json
           if git diff --cached --quiet; then
             echo "Données inchangées, rien à publier."
           else

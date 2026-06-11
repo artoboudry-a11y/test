@@ -4,7 +4,7 @@
 // Exécuté par GitHub Actions à intervalle régulier.
 // Politique d'échec : on n'écrase jamais le fichier existant et on sort en
 // succès, pour ne pas bloquer le déploiement de l'appli.
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
 import { computeScore, computeScoreFromMetrics, signalFromScore } from '../indicators.js';
 
 const TICKERS = [
@@ -195,3 +195,40 @@ writeFileSync('data/stocks.json', JSON.stringify({
 }, null, 1));
 
 console.log(`\n${results.length} actions analysées, ${errors.length} indisponibles → data/stocks.json`);
+
+// --- Historique des signaux : archive quotidienne + performance mesurée ---
+const HIST = 'data/history.json';
+let hist = { days: {} };
+if (existsSync(HIST)) {
+  try { hist = JSON.parse(readFileSync(HIST, 'utf8')); } catch { hist = { days: {} }; }
+}
+if (!hist.days) hist.days = {};
+const today = new Date().toISOString().slice(0, 10);
+hist.days[today] = results.map(r => ({ s: r.symbol, sc: r.score, sig: r.signal.code, p: r.price }));
+let keys = Object.keys(hist.days).sort();
+while (keys.length > 90) delete hist.days[keys.shift()]; // 90 jours conservés
+
+const priceNow = new Map(results.map(r => [r.symbol, r.price]));
+const perf = {};
+for (const [label, days] of Object.entries({ '1j': 1, '7j': 7, '30j': 30 })) {
+  const target = new Date(Date.now() - days * 86400e3).toISOString().slice(0, 10);
+  const key = keys.filter(k => k <= target).pop();
+  if (!key) continue;
+  const groups = {};
+  for (const e of hist.days[key]) {
+    const now = priceNow.get(e.s);
+    if (!Number.isFinite(now) || !e.p) continue;
+    (groups[e.sig] ??= []).push((now / e.p - 1) * 100);
+  }
+  if (!Object.keys(groups).length) continue;
+  perf[label] = Object.fromEntries(Object.entries(groups).map(([sig, arr]) => [sig, {
+    avg: Math.round(arr.reduce((a, b) => a + b, 0) / arr.length * 100) / 100,
+    n: arr.length,
+    winRate: Math.round(arr.filter(r => r > 0).length / arr.length * 100),
+  }]));
+  perf[label].since = key;
+}
+hist.performance = perf;
+hist.updatedAt = new Date().toISOString();
+writeFileSync(HIST, JSON.stringify(hist));
+console.log(`Historique des signaux : ${Object.keys(hist.days).length} jour(s) archivé(s), horizons mesurés : ${Object.keys(perf).join(', ') || 'aucun (archive trop récente)'}`);

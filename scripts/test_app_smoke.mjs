@@ -85,6 +85,11 @@ globalThis.fetch = async (url) => {
     })) });
   }
   if (u.includes('alternative.me')) return ok({ data: [{ value: '54', value_classification: 'Neutral' }] });
+  if (u.includes('history.json')) {
+    return ok({ updatedAt: 'x', days: {}, performance: {
+      '7j': { since: '2026-06-04', STRONG_BUY: { avg: 4.2, n: 8, winRate: 75 }, AVOID: { avg: -1.1, n: 5, winRate: 40 } },
+    } });
+  }
   if (u.includes('stocks.json')) return ok(JSON.parse(readFileSync('data/stocks.json', 'utf8')));
   if (u.includes('coins/markets')) {
     const ids = new URL(u).searchParams.get('ids').split(',');
@@ -166,6 +171,9 @@ check('mélange crypto + actions dans le radar', (() => {
   const html = radar.children.map(c => c.innerHTML).join('');
   return /CRYPTO/.test(html) || /ACTIONS|ETF/.test(html);
 })());
+const histCard = byId.get('#history-card');
+check('fiabilité des signaux affichée', /ACHAT FORT à 7j/.test(histCard.innerHTML) && /75 % gagnants/.test(histCard.innerHTML));
+check('signal perdant affiché honnêtement', /ÉVITER à 7j/.test(histCard.innerHTML) && /-1\.1 %/.test(histCard.innerHTML));
 check('aucune promesse non gérée', unhandled === null, unhandled ? `(${unhandled.message})` : '');
 check('appels réseau émis', fetchCalls.length >= (FAIL_BINANCE ? 5 : 25), `(=${fetchCalls.length})`);
 

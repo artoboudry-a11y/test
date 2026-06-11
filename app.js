@@ -404,6 +404,41 @@ function bindChart() {
   }));
 }
 
+// ---------- Fiabilité réelle des signaux (archive du robot) ----------
+const HISTORY_SOURCES = [
+  `${RAW}/main/data/history.json`,
+  'data/history.json',
+];
+async function refreshHistory() {
+  const el = $('#history-card');
+  try {
+    let h = null;
+    for (const src of HISTORY_SOURCES) {
+      try { h = await getJSON(src + '?t=' + Date.now()); break; } catch { /* source suivante */ }
+    }
+    if (!h || !h.performance || !Object.keys(h.performance).length) {
+      el.innerHTML = '<b>📜 Fiabilité réelle des signaux</b><p class="sub">Le robot archive ses signaux depuis aujourd\'hui : les premières mesures de performance apparaîtront ici d\'elles-mêmes dans quelques jours.</p>';
+      el.classList.remove('hidden');
+      return;
+    }
+    const sigName = { STRONG_BUY: 'ACHAT FORT', BUY: 'ACHAT', WATCH: 'SURVEILLER', AVOID: 'ÉVITER' };
+    let rows = '';
+    for (const [hz, groups] of Object.entries(h.performance)) {
+      for (const sig of ['STRONG_BUY', 'BUY', 'WATCH', 'AVOID']) {
+        const st = groups[sig];
+        if (!st) continue;
+        rows += `<li class="${st.avg >= 0 ? 'plus' : 'minus'}">${sigName[sig]} à ${hz} : ` +
+          `<b class="${st.avg >= 0 ? 'up' : 'down'}">${st.avg >= 0 ? '+' : ''}${st.avg} %</b> en moyenne · ` +
+          `${st.winRate} % gagnants <small style="color:var(--faint)">(${st.n} signaux du ${groups.since})</small></li>`;
+      }
+    }
+    el.innerHTML = '<b>📜 Fiabilité réelle des signaux (actions)</b>' +
+      `<ul class="reasons" style="margin-top:8px">${rows}</ul>` +
+      '<p class="sub" style="margin-top:8px">Le robot archive ses signaux chaque jour dans le dépôt public et mesure ce qu\'ils ont réellement donné — aucune triche possible.</p>';
+    el.classList.remove('hidden');
+  } catch { /* la carte reste masquée */ }
+}
+
 // ---------- Tendances de la foule ----------
 async function refreshTrends() {
   try {
@@ -612,6 +647,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
 
 refreshCrypto();
 refreshStocks();
+refreshHistory();
 refreshTrends();
 refreshFearGreed();
 renderPortfolio();
@@ -620,4 +656,5 @@ bindToolbars();
 bindChart();
 setInterval(refreshCrypto, REFRESH_MS);
 setInterval(refreshStocks, REFRESH_MS * 3);
+setInterval(refreshHistory, REFRESH_MS * 6);
 setInterval(refreshTrends, REFRESH_MS * 2);
