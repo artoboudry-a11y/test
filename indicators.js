@@ -261,6 +261,31 @@ export function evaluateAlerts(alerts, getPrice) {
   return { triggered, waiting };
 }
 
+// Valorise des positions { asset, amount (montant investi), buyPrice }.
+// La valeur actuelle = montant × (cours actuel / prix d'achat), ce qui évite
+// toute conversion de devise. Les positions sans prix d'achat restent non valorisées.
+export function valuePositions(trades, getPrice) {
+  const rows = trades.map(t => {
+    const current = getPrice(t.asset);
+    if (!Number.isFinite(current) || !Number.isFinite(t.buyPrice) || t.buyPrice <= 0 || !Number.isFinite(t.amount)) {
+      return { ...t, current: null, value: null, plPct: null };
+    }
+    const value = t.amount * (current / t.buyPrice);
+    return { ...t, current, value, plPct: (current / t.buyPrice - 1) * 100 };
+  });
+  const valued = rows.filter(r => r.value !== null);
+  const invested = valued.reduce((a, r) => a + r.amount, 0);
+  const value = valued.reduce((a, r) => a + r.value, 0);
+  return {
+    rows,
+    totals: {
+      invested, value, plAbs: value - invested,
+      plPct: invested > 0 ? (value / invested - 1) * 100 : null,
+      valuedCount: valued.length,
+    },
+  };
+}
+
 export function signalFromScore(score) {
   if (score >= 70) return { code: 'STRONG_BUY', label: 'ACHAT FORT' };
   if (score >= 55) return { code: 'BUY', label: 'ACHAT' };

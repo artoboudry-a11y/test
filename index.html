@@ -132,13 +132,16 @@
         <p class="sub">Les alertes se déclenchent quand l'appli est ouverte (bannière, vibration,
           et notification si tu l'autorises). Prix en $ pour les cryptos et actions US, en € pour l'Europe.</p>
 
-        <h3>Journal de mes positions</h3>
+        <h3>Mes positions — valorisées en direct</h3>
         <form id="trade-form" class="goal-row">
           <input type="text" id="trade-asset" placeholder="Actif (ex: BTC)" required>
           <input type="number" id="trade-amount" placeholder="Montant €" step="0.01" min="0.01" required>
+          <input type="number" id="trade-buy" placeholder="Prix d'achat" step="any" min="0">
           <button type="submit" class="btn">Ajouter</button>
         </form>
+        <p class="sub">Le prix d'achat se pré-remplit avec le cours actuel si tu le laisses vide.</p>
         <ul id="trade-list"></ul>
+        <p id="positions-total" class="projection"></p>
       </div>
     </section>
   </main>

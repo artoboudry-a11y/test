@@ -1,4 +1,4 @@
-import { computeScore, signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts } from './indicators.js';
+import { computeScore, signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions } from './indicators.js';
 
 // ---------- Configuration ----------
 const CRYPTOS = [
@@ -207,6 +207,7 @@ async function refreshCrypto() {
     renderRadar();
     if (state.dataSource === 'binance') { banner(null); openLiveStream(); }
     checkAlerts();
+    renderPositions();
   } catch (e) {
     console.error(e);
     $('#crypto-list').innerHTML = '<div class="loader">Impossible de joindre les marchés. Vérifie ta connexion — nouvelle tentative dans 1 min.</div>';
@@ -240,6 +241,7 @@ async function refreshStocks() {
     applyView('stocks');
     renderRadar();
     checkAlerts();
+    renderPositions();
   } catch (e) {
     $('#stocks-list').innerHTML = '<div class="loader">Données actions pas encore générées — le robot GitHub les publiera à sa prochaine exécution.</div>';
   }
@@ -512,14 +514,34 @@ function renderPortfolio() {
     li.querySelector('button').onclick = () => { s.alerts.splice(i, 1); saveStore(s); renderPortfolio(); };
     aul.appendChild(li);
   });
+  renderPositions();
+}
+
+function renderPositions() {
+  const s = fullStore();
+  const { rows, totals } = valuePositions(s.trades, currentPrice);
   const ul = $('#trade-list');
   ul.innerHTML = '';
-  s.trades.forEach((t, i) => {
+  rows.forEach((t, i) => {
     const li = document.createElement('li');
-    li.innerHTML = `<span>${t.asset} — ${t.amount.toLocaleString('fr-FR')} € <small style="color:var(--muted)">(${t.date})</small></span><button title="Supprimer">✕</button>`;
+    const valuation = t.value === null
+      ? '<small style="color:var(--muted)">valorisation indisponible (prix d\'achat ou cours manquant)</small>'
+      : `<small class="${t.plPct >= 0 ? 'up' : 'down'}">→ ${t.value.toFixed(2)} € (${fmtPct(t.plPct)})</small>`;
+    li.innerHTML = `<span>${t.asset} — ${t.amount.toLocaleString('fr-FR')} €` +
+      `${t.buyPrice ? ` @ ${t.buyPrice}` : ''} <small style="color:var(--muted)">(${t.date})</small><br>${valuation}</span>` +
+      `<button title="Supprimer">✕</button>`;
     li.querySelector('button').onclick = () => { s.trades.splice(i, 1); saveStore(s); renderPortfolio(); };
     ul.appendChild(li);
   });
+  const tot = $('#positions-total');
+  if (totals.valuedCount > 0) {
+    tot.innerHTML = `Valeur totale des positions : <b>${totals.value.toFixed(2)} €</b> pour ` +
+      `${totals.invested.toFixed(2)} € investis — <b class="${totals.plAbs >= 0 ? 'up' : 'down'}">` +
+      `${totals.plAbs >= 0 ? '+' : ''}${totals.plAbs.toFixed(2)} € (${fmtPct(totals.plPct)})</b>. ` +
+      `Actualisée en direct avec les cours.`;
+  } else {
+    tot.textContent = s.trades.length ? '' : 'Ajoute ta première position pour suivre ta plus-value en direct.';
+  }
 }
 
 function bindPortfolio() {
@@ -549,12 +571,20 @@ function bindPortfolio() {
     }
     checkAlerts();
   });
+  $('#trade-asset').addEventListener('change', () => {
+    const p = currentPrice($('#trade-asset').value.trim().toUpperCase());
+    if (p !== null && !$('#trade-buy').value) $('#trade-buy').value = p;
+  });
   $('#trade-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const s = fullStore();
+    const asset = $('#trade-asset').value.trim().toUpperCase();
+    let buyPrice = parseFloat($('#trade-buy').value);
+    if (!Number.isFinite(buyPrice) || buyPrice <= 0) buyPrice = currentPrice(asset);
     s.trades.push({
-      asset: $('#trade-asset').value.trim().toUpperCase(),
+      asset,
       amount: parseFloat($('#trade-amount').value),
+      buyPrice: Number.isFinite(buyPrice) && buyPrice > 0 ? buyPrice : undefined,
       date: new Date().toLocaleDateString('fr-FR'),
     });
     saveStore(s);

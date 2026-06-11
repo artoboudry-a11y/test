@@ -112,7 +112,8 @@ globalThis.localStorage = {
 // En mode nominal, une alerte pré-chargée doit se déclencher dès le premier cours.
 if (!FAIL_BINANCE) {
   store.set('tradepilot_v1', JSON.stringify({
-    capital: 10, goal: 10000, rate: 1, trades: [],
+    capital: 10, goal: 10000, rate: 1,
+    trades: [{ asset: 'BTC', amount: 10, buyPrice: 100, date: '11/06/2026' }],
     alerts: [{ id: 1, symbol: 'BTC', dir: 'above', price: 1 }],
   }));
 }
@@ -154,6 +155,8 @@ if (FAIL_BINANCE) {
   const saved = JSON.parse(store.get('tradepilot_v1'));
   check('alerte marquée déclenchée et persistée', saved.alerts[0].hit && Number.isFinite(saved.alerts[0].hit.price));
   check('liste des alertes rendue avec statut', byId.get('#alert-list').children.length === 1);
+  check('position valorisée en direct (+23 %)', /12[,.]3[45].*\+23[,.]4/.test(byId.get('#trade-list').children[0]?.innerHTML || ''));
+  check('total du portefeuille affiché avec plus-value', /\+2[,.]3[45] €/.test(byId.get('#positions-total').innerHTML));
 }
 const radar = byId.get('#radar-list');
 check('radar rempli (6 opportunités)', radar.children.length === 6, `(=${radar.children.length})`);

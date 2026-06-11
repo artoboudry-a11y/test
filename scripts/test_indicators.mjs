@@ -1,6 +1,6 @@
 // Tests unitaires des indicateurs — exécutés en local et en CI.
 import { sma, ema, rsi, macd, momentum, volumeRatio, computeScore, computeScoreFromMetrics,
-  signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts }
+  signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions }
   from '../indicators.js';
 
 let failures = 0;
@@ -120,6 +120,22 @@ check('actif sans cours → en attente, pas de crash', waiting.some(t => t.id ==
 check('cours constaté fourni', triggered.every(t => Number.isFinite(t.hitPrice)));
 check('égalité au seuil = déclenchement', evaluateAlerts(
   [{ id: 5, symbol: 'BTC', dir: 'above', price: 105 }], (s) => prices[s]).triggered.length === 1);
+
+console.log('— Valorisation du portefeuille —');
+const pv = valuePositions([
+  { asset: 'BTC', amount: 10, buyPrice: 100 },   // cours 105 → 10,50
+  { asset: 'ETH', amount: 5, buyPrice: 25 },     // cours 20 → 4,00
+  { asset: 'OLD', amount: 3 },                    // pas de prix d'achat
+  { asset: 'ZZZ', amount: 2, buyPrice: 4 },       // pas de cours
+], (s) => prices[s] ?? null);
+check('plus-value calculée', approx(pv.rows[0].value, 10.5));
+check('moins-value calculée', approx(pv.rows[1].value, 4));
+check('% de variation correct', approx(pv.rows[0].plPct, 5));
+check('position sans prix d’achat non valorisée', pv.rows[2].value === null);
+check('position sans cours non valorisée', pv.rows[3].value === null);
+check('totaux sur les positions valorisées uniquement', approx(pv.totals.invested, 15) && approx(pv.totals.value, 14.5));
+check('P/L total cohérent', approx(pv.totals.plAbs, -0.5));
+check('portefeuille vide → pas de crash', valuePositions([], () => null).totals.plPct === null);
 
 if (failures) { console.error(`\n${failures} test(s) en échec`); process.exit(1); }
 console.log('\nTous les tests passent ✅');

@@ -1,6 +1,6 @@
 // Service worker TradePilot : l'appli se charge instantanément et reste
 // utilisable hors-ligne (avec les dernières données connues).
-const VERSION = 'tradepilot-v4';
+const VERSION = 'tradepilot-v5';
 const SHELL = [
   './', 'index.html', 'style.css', 'app.js', 'indicators.js',
   'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png',
