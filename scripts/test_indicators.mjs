@@ -1,5 +1,6 @@
 // Tests unitaires des indicateurs — exécutés en local et en CI.
-import { sma, ema, rsi, macd, momentum, volumeRatio, computeScore, computeScoreFromMetrics, signalFromScore }
+import { sma, ema, rsi, macd, momentum, volumeRatio, computeScore, computeScoreFromMetrics,
+  signalFromScore, volatility, riskLevel, explainFromMetrics }
   from '../indicators.js';
 
 let failures = 0;
@@ -86,6 +87,23 @@ check('cohérence des deux scoreurs (haussier sain)', (() => {
   });
   return Math.abs(viaMetrics.score - bull.score) <= 12;
 })());
+
+console.log('— Volatilité, risque, explications —');
+const calm = Array.from({ length: 60 }, (_, i) => 100 + (i % 2) * 0.2);
+const wild = Array.from({ length: 60 }, (_, i) => 100 * (1 + (i % 2 ? 0.06 : -0.05)));
+check('volatilité faible détectée', volatility(calm) < 0.5);
+check('volatilité forte détectée', volatility(wild) > 4);
+check('volatilité données insuffisantes → null', volatility([1, 2, 3]) === null);
+check('risque faible', riskLevel({ vol: 0.5 }).code === 'LOW');
+check('risque élevé', riskLevel({ vol: 5 }).code === 'HIGH');
+check('risque estimé via momentum si pas de volatilité', riskLevel({ vol: null, mom30: 40 }).code === 'HIGH');
+const exBull = explainFromMetrics({ rsi: 58, macdHist: 0.5, mom7: 3, mom30: 9, volRatio: 1.6, price: 110, ema20: 105, ema50: 100 });
+check('explications haussières générées (≥5)', exBull.length >= 5, `(=${exBull.length})`);
+check('majorité de points positifs en config haussière', exBull.filter(e => e.plus).length >= 4);
+check('mention de la foule sur volume fort', exBull.some(e => /foule/.test(e.text)));
+const exBear = explainFromMetrics({ rsi: 24, macdHist: -1, mom7: -5, mom30: -12, volRatio: 0.5, price: 90, ema20: 95, ema50: 100 });
+check('explications baissières cohérentes', exBear.every(e => !e.plus));
+check('métriques absentes → pas de crash', Array.isArray(explainFromMetrics({})));
 
 if (failures) { console.error(`\n${failures} test(s) en échec`); process.exit(1); }
 console.log('\nTous les tests passent ✅');

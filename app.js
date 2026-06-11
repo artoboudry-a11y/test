@@ -1,4 +1,4 @@
-import { computeScore, signalFromScore } from './indicators.js';
+import { computeScore, signalFromScore, volatility, riskLevel, explainFromMetrics } from './indicators.js';
 
 // ---------- Configuration ----------
 const CRYPTOS = [
@@ -118,7 +118,8 @@ async function loadCryptoBinance() {
       trades: parseInt(t.count, 10) || null,
       score: an.score, signal: signalFromScore(an.score),
       rsi: an.rsi, macdHist: an.macdHist, mom7: an.mom7, mom30: an.mom30,
-      volRatio: an.volRatio, spark: closes.slice(-48), momUnit: 'h×7',
+      ema20: an.ema20, ema50: an.ema50,
+      volRatio: an.volRatio, spark: closes.slice(-48), momUnit: 'h',
     };
   }));
   const ok = results.filter(r => r.status === 'fulfilled').map(r => r.value);
@@ -139,7 +140,8 @@ async function loadCryptoGecko() {
       price: c.current_price, changePct: c.price_change_percentage_24h,
       trades: null, score: an.score, signal: signalFromScore(an.score),
       rsi: an.rsi, macdHist: an.macdHist, mom7: an.mom7, mom30: an.mom30,
-      volRatio: an.volRatio, spark: closes.slice(-48), momUnit: 'h×7',
+      ema20: an.ema20, ema50: an.ema50,
+      volRatio: an.volRatio, spark: closes.slice(-48), momUnit: 'h',
     };
   });
 }
@@ -194,7 +196,9 @@ async function refreshCrypto() {
     }
     assets.sort((a, b) => b.score - a.score);
     assets.forEach(a => state.assets.set(a.symbol, a));
-    renderList($('#crypto-list'), assets);
+    state.cryptoAssets = assets;
+    applyView('crypto');
+    renderRadar();
     if (state.dataSource === 'binance') { banner(null); openLiveStream(); }
   } catch (e) {
     console.error(e);
@@ -225,9 +229,80 @@ async function refreshStocks() {
       momUnit: 'j',
       trades: null,
     }));
-    renderList($('#stocks-list'), assets);
+    state.stockAssets = assets;
+    applyView('stocks');
+    renderRadar();
   } catch (e) {
     $('#stocks-list').innerHTML = '<div class="loader">Données actions pas encore générées — le robot GitHub les publiera à sa prochaine exécution.</div>';
+  }
+}
+
+// ---------- Vues : tri & filtres ----------
+const viewState = {
+  crypto: { sort: 'score', buyOnly: false },
+  stocks: { sort: 'score', buyOnly: false },
+};
+function applyView(kind) {
+  const assets = (kind === 'crypto' ? state.cryptoAssets : state.stockAssets) || [];
+  const vs = viewState[kind];
+  let list = assets.slice();
+  if (vs.buyOnly) list = list.filter(a => a.score >= 55);
+  const sorters = {
+    score: (a, b) => b.score - a.score,
+    chg: (a, b) => (b.changePct ?? -1e9) - (a.changePct ?? -1e9),
+    name: (a, b) => a.name.localeCompare(b.name, 'fr'),
+  };
+  list.sort(sorters[vs.sort] || sorters.score);
+  const el = $(kind === 'crypto' ? '#crypto-list' : '#stocks-list');
+  if (!list.length) {
+    el.innerHTML = '<div class="loader">Aucun actif ne correspond à ce filtre pour le moment.</div>';
+    return;
+  }
+  renderList(el, list);
+}
+function bindToolbars() {
+  for (const kind of ['crypto', 'stocks']) {
+    $(`#sort-${kind}`).addEventListener('change', (e) => {
+      viewState[kind].sort = e.target.value;
+      applyView(kind);
+    });
+    $(`#filter-${kind}`).addEventListener('click', (e) => {
+      viewState[kind].buyOnly = !viewState[kind].buyOnly;
+      e.target.classList.toggle('on', viewState[kind].buyOnly);
+      applyView(kind);
+    });
+  }
+}
+
+// ---------- Radar : meilleures opportunités tous marchés ----------
+function renderRadar() {
+  const crypto = (state.cryptoAssets || []).map(a => ({ ...a, where: 'CRYPTO' }));
+  const stocks = (state.stockAssets || []).map(a => ({ ...a, where: a.market === 'ETF' ? 'ETF' : 'ACTIONS' }));
+  const all = [...crypto, ...stocks];
+  if (!all.length) return;
+  all.sort((a, b) => b.score - a.score);
+  const list = $('#radar-list');
+  list.innerHTML = '';
+  for (const a of all.slice(0, 6)) {
+    const vol = a.spark && a.spark.length > 8 ? volatility(a.spark) : null;
+    const risk = riskLevel({ vol, mom30: a.mom30 });
+    const reasons = explainFromMetrics(a).slice(0, 4);
+    const chgCls = (a.changePct ?? 0) >= 0 ? 'up' : 'down';
+    const div = document.createElement('div');
+    div.className = 'card radar-card';
+    div.innerHTML = `
+      <div class="radar-head">
+        <span class="name">${a.name}</span>
+        <span class="where">${a.where}</span>
+        <span class="badge ${a.signal.code}">${a.signal.label} · ${a.score}</span>
+      </div>
+      <ul class="reasons">${reasons.map(r => `<li class="${r.plus ? 'plus' : 'minus'}">${r.text}</li>`).join('')}</ul>
+      <div class="radar-foot">
+        <span class="risk ${risk.code}">${risk.label}</span>
+        <span class="chg ${chgCls}">${fmtPct(a.changePct)}</span>
+        <span class="price">${fmtPrice(a.price, a.currency)}</span>
+      </div>`;
+    list.appendChild(div);
   }
 }
 
@@ -344,6 +419,7 @@ refreshTrends();
 refreshFearGreed();
 renderPortfolio();
 bindPortfolio();
+bindToolbars();
 setInterval(refreshCrypto, REFRESH_MS);
 setInterval(refreshStocks, REFRESH_MS * 3);
 setInterval(refreshTrends, REFRESH_MS * 2);

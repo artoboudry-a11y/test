@@ -184,6 +184,68 @@ export function computeScoreFromMetrics({ price, ema20, ema50, rsi: r, macd: m, 
   };
 }
 
+// Volatilité : écart-type des rendements (%) sur la fenêtre fournie.
+export function volatility(values, lookback = 30) {
+  const v = values.slice(-lookback - 1);
+  if (v.length < 8) return null;
+  const rets = [];
+  for (let i = 1; i < v.length; i++) {
+    if (v[i - 1]) rets.push((v[i] - v[i - 1]) / v[i - 1] * 100);
+  }
+  const mean = rets.reduce((a, b) => a + b, 0) / rets.length;
+  const variance = rets.reduce((a, b) => a + (b - mean) ** 2, 0) / rets.length;
+  return Math.sqrt(variance);
+}
+
+// Niveau de risque à partir de la volatilité par période (%) ou, à défaut,
+// de l'amplitude du momentum.
+export function riskLevel({ vol, mom30 }) {
+  let v = vol;
+  if (v === null || v === undefined) {
+    v = mom30 === null || mom30 === undefined ? 2 : Math.abs(mom30) / 8;
+  }
+  if (v < 1.2) return { code: 'LOW', label: 'Risque faible' };
+  if (v < 3) return { code: 'MED', label: 'Risque moyen' };
+  return { code: 'HIGH', label: 'Risque élevé' };
+}
+
+// Explications lisibles d'un signal, à partir des métriques disponibles.
+// Retourne une liste de { plus: bool, text } triée du plus important au moins.
+export function explainFromMetrics({ rsi: r, macdHist, mom7, mom30, volRatio, price, ema20, ema50, momUnit = 'j' }) {
+  const out = [];
+  const has = (x) => x !== null && x !== undefined && Number.isFinite(x);
+  if (has(price) && has(ema20) && has(ema50)) {
+    if (price > ema20 && ema20 > ema50) out.push({ plus: true, text: 'Tendance haussière confirmée : prix au-dessus de ses moyennes 20 et 50 périodes.' });
+    else if (price < ema20 && ema20 < ema50) out.push({ plus: false, text: 'Tendance baissière : prix sous ses moyennes 20 et 50 périodes.' });
+    else out.push({ plus: false, text: 'Tendance indécise : moyennes mobiles entremêlées.' });
+  }
+  if (has(macdHist)) {
+    out.push(macdHist > 0
+      ? { plus: true, text: 'MACD haussier : la dynamique accélère.' }
+      : { plus: false, text: 'MACD baissier : la dynamique faiblit.' });
+  }
+  if (has(r)) {
+    if (r >= 45 && r <= 65) out.push({ plus: true, text: `RSI sain à ${Math.round(r)} : ni surchauffe ni faiblesse.` });
+    else if (r > 75) out.push({ plus: false, text: `Surachat (RSI ${Math.round(r)}) : risque de repli à court terme.` });
+    else if (r > 65) out.push({ plus: false, text: `RSI élevé (${Math.round(r)}) : déjà bien monté, prudence.` });
+    else if (r < 30) out.push({ plus: false, text: `Survente (RSI ${Math.round(r)}) : chute brutale récente.` });
+    else out.push({ plus: false, text: `RSI mou (${Math.round(r)}) : peu d'élan acheteur.` });
+  }
+  if (has(mom7)) {
+    if (mom7 > 1.5) out.push({ plus: true, text: `Momentum court terme : +${mom7.toFixed(1)} % sur 7 ${momUnit}.` });
+    else if (mom7 < -1.5) out.push({ plus: false, text: `Repli court terme : ${mom7.toFixed(1)} % sur 7 ${momUnit}.` });
+  }
+  if (has(mom30)) {
+    if (mom30 > 4) out.push({ plus: true, text: `Fond de tendance positif : +${mom30.toFixed(1)} % sur 30 ${momUnit}.` });
+    else if (mom30 < -4) out.push({ plus: false, text: `Fond de tendance négatif : ${mom30.toFixed(1)} % sur 30 ${momUnit}.` });
+  }
+  if (has(volRatio)) {
+    if (volRatio >= 1.3) out.push({ plus: true, text: `Volume ×${volRatio.toFixed(1)} : la foule entre sur l'actif.` });
+    else if (volRatio <= 0.7) out.push({ plus: false, text: 'Volume en retrait : peu de conviction.' });
+  }
+  return out;
+}
+
 export function signalFromScore(score) {
   if (score >= 70) return { code: 'STRONG_BUY', label: 'ACHAT FORT' };
   if (score >= 55) return { code: 'BUY', label: 'ACHAT' };

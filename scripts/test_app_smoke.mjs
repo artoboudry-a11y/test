@@ -145,6 +145,14 @@ if (FAIL_BINANCE) {
 } else {
   check('pas de bannière d’erreur en mode nominal', byId.get('#banner')._classes.has('hidden'));
 }
+const radar = byId.get('#radar-list');
+check('radar rempli (6 opportunités)', radar.children.length === 6, `(=${radar.children.length})`);
+check('explications en clair présentes', radar.children.every(c => /(Tendance|RSI|MACD|Momentum|tendance)/.test(c.innerHTML)));
+check('niveau de risque affiché', radar.children.every(c => /risk (LOW|MED|HIGH)/.test(c.innerHTML)));
+check('mélange crypto + actions dans le radar', (() => {
+  const html = radar.children.map(c => c.innerHTML).join('');
+  return /CRYPTO/.test(html) || /ACTIONS|ETF/.test(html);
+})());
 check('aucune promesse non gérée', unhandled === null, unhandled ? `(${unhandled.message})` : '');
 check('appels réseau émis', fetchCalls.length >= (FAIL_BINANCE ? 5 : 25), `(=${fetchCalls.length})`);
 
