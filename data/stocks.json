@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-06-12T20:33:33.115Z",
+ "updatedAt": "2026-06-12T22:19:23.462Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -95,7 +95,7 @@
    "rsi": 64.9,
    "mom7": 2.05,
    "mom30": 6.1,
-   "volRatio": 0.99,
+   "volRatio": 1,
    "ema20": 307.65,
    "ema50": 305.4,
    "macdHist": 1.8398
@@ -485,6 +485,54 @@
    "macdHist": -5.2886
   },
   {
+   "symbol": "SPY",
+   "name": "S&P 500 (ETF SPY)",
+   "market": "ETF",
+   "cur": "$",
+   "price": 741.75,
+   "changePct": 0.54,
+   "lastDate": "2026-06-12",
+   "score": 68,
+   "signal": {
+    "code": "BUY",
+    "label": "ACHAT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 7,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 6,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 5,
+     "max": 10
+    }
+   ],
+   "rsi": 52.9,
+   "mom7": -1.4,
+   "mom30": 0.44,
+   "volRatio": 1.18,
+   "ema20": 740.82,
+   "ema50": 725.6,
+   "macdHist": -3.621
+  },
+  {
    "symbol": "V",
    "name": "Visa",
    "market": "US",
@@ -531,54 +579,6 @@
    "ema20": 322.34,
    "ema50": 320.64,
    "macdHist": -0.6267
-  },
-  {
-   "symbol": "SPY",
-   "name": "S&P 500 (ETF SPY)",
-   "market": "ETF",
-   "cur": "$",
-   "price": 741.75,
-   "changePct": 0.54,
-   "lastDate": "2026-06-12",
-   "score": 67,
-   "signal": {
-    "code": "BUY",
-    "label": "ACHAT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 7,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 6,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 5,
-     "max": 10
-    }
-   ],
-   "rsi": 52.9,
-   "mom7": -1.4,
-   "mom30": 0.44,
-   "volRatio": 1.18,
-   "ema20": 740.82,
-   "ema50": 725.6,
-   "macdHist": -3.621
   },
   {
    "symbol": "SAN",
