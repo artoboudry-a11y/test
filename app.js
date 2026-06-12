@@ -1,4 +1,5 @@
-import { computeScore, signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions } from './indicators.js';
+import { computeScore, signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions,
+  filterAssets, pinFavorites, sanitizeImportedStore, buildTradePlan, measureProgress } from './indicators.js';
 
 // ---------- Configuration ----------
 const CRYPTOS = [
@@ -65,7 +66,7 @@ function drawSpark(canvas, values, w = 110, h = 34) {
   ctx.stroke();
 }
 
-function assetCard(a) {
+function assetCard(a, isFav = false) {
   const card = document.createElement('div');
   card.className = 'card asset';
   card.dataset.sym = a.symbol;
@@ -73,6 +74,7 @@ function assetCard(a) {
   card.innerHTML = `
     <div class="top">
       <span class="name">${a.name}</span><span class="sym">${a.symbol}</span>
+      <button class="fav ${isFav ? 'on' : ''}" title="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}">${isFav ? '★' : '☆'}</button>
     </div>
     <span class="badge ${a.signal.code}">${a.signal.label} · ${a.score}</span>
     <div class="top">
@@ -88,19 +90,46 @@ function assetCard(a) {
       <span>30 ${a.momUnit || 'j'} <b>${fmtPct(a.mom30)}</b></span>
       <span>Volume <b>${a.volRatio ? '×' + a.volRatio : '—'}</b></span>
       ${a.trades ? `<span>Foule <b>${a.trades.toLocaleString('fr-FR')} trades/24 h</b></span>` : ''}
+      ${scorePartsHTML(a)}
       <button class="chip chart-open">📈 Graphique</button>
+      <button class="chip plan-open">🧭 Plan d'action</button>
     </div>`;
   card.addEventListener('click', () => card.classList.toggle('open'));
   const btn = card.querySelector('.chart-open');
   if (btn) btn.addEventListener('click', (e) => { e.stopPropagation(); openChart(a); });
+  const planBtn = card.querySelector('.plan-open');
+  if (planBtn) planBtn.addEventListener('click', (e) => { e.stopPropagation(); openPlan(a); });
+  const fav = card.querySelector('.fav');
+  if (fav) fav.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(a.symbol); });
   if (a.spark && a.spark.length > 2) drawSpark(card.querySelector('canvas'), a.spark);
   else card.querySelector('canvas').remove();
   return card;
 }
 
+// Décomposition transparente de la note /100 : chaque composante mesurée
+// (tendance, momentum, RSI, MACD, volume) avec ses points sur son maximum.
+function scorePartsHTML(a) {
+  if (!a.parts || !a.parts.length) return '';
+  return `<div class="score-parts" title="Comment la note ${a.score}/100 est calculée">` +
+    a.parts.map(p =>
+      `<span>${p.label} <i><b style="width:${Math.round((p.pts / p.max) * 100)}%"></b></i> ${p.pts}/${p.max}</span>`
+    ).join('') + '</div>';
+}
+
 function renderList(container, assets) {
+  const favs = new Set(fullStore().favorites);
   container.innerHTML = '';
-  for (const a of assets) container.appendChild(assetCard(a));
+  for (const a of assets) container.appendChild(assetCard(a, favs.has(a.symbol)));
+}
+
+function toggleFavorite(symbol) {
+  const s = fullStore();
+  const i = s.favorites.indexOf(symbol);
+  if (i >= 0) s.favorites.splice(i, 1);
+  else s.favorites.push(symbol);
+  saveStore(s);
+  applyView('crypto');
+  applyView('stocks');
 }
 
 // ---------- Crypto : Binance (temps réel) avec repli CoinGecko ----------
@@ -119,7 +148,7 @@ async function loadCryptoBinance() {
       price: parseFloat(t.lastPrice) || closes[closes.length - 1],
       changePct: parseFloat(t.priceChangePercent),
       trades: parseInt(t.count, 10) || null,
-      score: an.score, signal: signalFromScore(an.score),
+      score: an.score, signal: signalFromScore(an.score), parts: an.parts,
       rsi: an.rsi, macdHist: an.macdHist, mom7: an.mom7, mom30: an.mom30,
       ema20: an.ema20, ema50: an.ema50,
       volRatio: an.volRatio, spark: closes.slice(-48), momUnit: 'h',
@@ -141,7 +170,7 @@ async function loadCryptoGecko() {
     return {
       symbol: meta[0], name: meta[1], currency: '$',
       price: c.current_price, changePct: c.price_change_percentage_24h,
-      trades: null, score: an.score, signal: signalFromScore(an.score),
+      trades: null, score: an.score, signal: signalFromScore(an.score), parts: an.parts || null,
       rsi: an.rsi, macdHist: an.macdHist, mom7: an.mom7, mom30: an.mom30,
       ema20: an.ema20, ema50: an.ema50,
       volRatio: an.volRatio, spark: closes.slice(-48), momUnit: 'h',
@@ -249,29 +278,38 @@ async function refreshStocks() {
 
 // ---------- Vues : tri & filtres ----------
 const viewState = {
-  crypto: { sort: 'score', buyOnly: false },
-  stocks: { sort: 'score', buyOnly: false },
+  crypto: { sort: 'score', buyOnly: false, favOnly: false, query: '' },
+  stocks: { sort: 'score', buyOnly: false, favOnly: false, query: '' },
 };
 function applyView(kind) {
   const assets = (kind === 'crypto' ? state.cryptoAssets : state.stockAssets) || [];
   const vs = viewState[kind];
-  let list = assets.slice();
+  const favorites = fullStore().favorites;
+  let list = filterAssets(assets, vs.query);
   if (vs.buyOnly) list = list.filter(a => a.score >= 55);
+  if (vs.favOnly) list = list.filter(a => favorites.includes(a.symbol));
   const sorters = {
     score: (a, b) => b.score - a.score,
     chg: (a, b) => (b.changePct ?? -1e9) - (a.changePct ?? -1e9),
     name: (a, b) => a.name.localeCompare(b.name, 'fr'),
   };
   list.sort(sorters[vs.sort] || sorters.score);
+  list = pinFavorites(list, favorites);
   const el = $(kind === 'crypto' ? '#crypto-list' : '#stocks-list');
   if (!list.length) {
-    el.innerHTML = '<div class="loader">Aucun actif ne correspond à ce filtre pour le moment.</div>';
+    el.innerHTML = assets.length
+      ? '<div class="loader">Aucun actif ne correspond à cette recherche ou à ce filtre.</div>'
+      : '<div class="loader">Aucun actif ne correspond à ce filtre pour le moment.</div>';
     return;
   }
   renderList(el, list);
 }
 function bindToolbars() {
   for (const kind of ['crypto', 'stocks']) {
+    $(`#search-${kind}`).addEventListener('input', (e) => {
+      viewState[kind].query = e.target.value;
+      applyView(kind);
+    });
     $(`#sort-${kind}`).addEventListener('change', (e) => {
       viewState[kind].sort = e.target.value;
       applyView(kind);
@@ -279,6 +317,11 @@ function bindToolbars() {
     $(`#filter-${kind}`).addEventListener('click', (e) => {
       viewState[kind].buyOnly = !viewState[kind].buyOnly;
       e.target.classList.toggle('on', viewState[kind].buyOnly);
+      applyView(kind);
+    });
+    $(`#fav-${kind}`).addEventListener('click', (e) => {
+      viewState[kind].favOnly = !viewState[kind].favOnly;
+      e.target.classList.toggle('on', viewState[kind].favOnly);
       applyView(kind);
     });
   }
@@ -404,6 +447,95 @@ function bindChart() {
   }));
 }
 
+// ---------- Plan d'action : guide pas-à-pas par actif ----------
+const ACTION_LABEL = {
+  ENTER: { cls: 'STRONG_BUY', txt: 'Conditions réunies pour entrer' },
+  WAIT_PULLBACK: { cls: 'WATCH', txt: 'Attendre un repli pour entrer' },
+  WAIT_SIGNAL: { cls: 'WATCH', txt: 'Pas de signal — patienter' },
+  AVOID: { cls: 'AVOID', txt: 'Ne pas entrer maintenant' },
+};
+
+function alertBtn(label, dir, price) {
+  return `<button class="chip mk-alert" data-dir="${dir}" data-price="${price}">🔔 ${label}</button>`;
+}
+
+function planStepsHTML(a, plan, s) {
+  const cur = a.currency;
+  const isCrypto = a.momUnit === 'h';
+  const unit = isCrypto ? 'jours' : 'séances';
+  const steps = [];
+  steps.push(isCrypto
+    ? `<b>Où :</b> un courtier crypto sans dépôt minimum et aux frais &lt; 1 % par ordre. Avec un petit capital, les frais sont ton premier ennemi : ici, un aller-retour te coûte ${plan.breakevenPct} % (réglage dans l'onglet Objectif).`
+    : `<b>Où :</b> un courtier bourse qui propose les <b>fractions d'actions</b> et des frais fixes faibles (0–1 € l'ordre). Avec un petit capital, fuis les courtiers à 5 € l'ordre : ils mangent des semaines de gains.`);
+  steps.push(plan.action === 'WAIT_PULLBACK'
+    ? `<b>Quand :</b> pas au cours actuel (${fmtPrice(a.price, cur)}) — l'actif est monté trop vite. Attends un repli dans la zone <b>${fmtPrice(plan.entryLow, cur)} – ${fmtPrice(plan.entryHigh, cur)}</b> (autour de sa moyenne 20 périodes), comme un soldeur attend les soldes.<br>${alertBtn("M'alerter quand la zone est atteinte", 'below', plan.entryHigh)}`
+    : `<b>Quand :</b> maintenant, dans la zone <b>${fmtPrice(plan.entryLow, cur)} – ${fmtPrice(plan.entryHigh, cur)}</b>. Utilise un ordre limite plutôt qu'un ordre au marché pour maîtriser ton prix d'entrée.`);
+  steps.push(plan.positionEur !== null
+    ? `<b>Combien :</b> environ <b>${plan.positionEur.toLocaleString('fr-FR')} €</b> sur ton capital de ${s.capital.toLocaleString('fr-FR')} € — ainsi, si le stop est touché, tu ne perds que ≈ ${plan.riskEur.toLocaleString('fr-FR')} € (1 % du capital). Jamais plus de 25 % du capital sur une seule position.`
+    : `<b>Combien :</b> dimensionne pour ne risquer que 1 % de ton capital si le stop est touché (renseigne ton capital dans l'onglet Objectif pour un montant précis).`);
+  steps.push(`<b>Protection (obligatoire) :</b> stop à <b>${fmtPrice(plan.stop, cur)}</b> (−${plan.stopPct} %). Si le cours passe dessous, tu vends sans discuter — c'est la règle qui te garde en vie. Place un ordre stop chez ton courtier si possible.<br>${alertBtn("M'alerter si le stop est touché", 'below', plan.stop)}`);
+  steps.push(`<b>Objectif de vente :</b> <b>${fmtPrice(plan.target, cur)}</b> (+${plan.targetPct} %), soit 2 € visés pour 1 € risqué, frais d'aller-retour inclus. Quand il est atteint : vends au moins la moitié, remonte le stop au prix d'achat pour le reste.<br>${alertBtn("M'alerter à l'objectif", 'above', plan.target)}`);
+  steps.push(`<b>Durée estimée :</b> ${plan.horizonDays[0]} à ${plan.horizonDays[1]} ${unit} au rythme de volatilité actuel (≈ ${plan.dailyVol} %/jour) — si la tendance tient. Si le stop saute avant, le plan est terminé : on passe au suivant, sans rancune.`);
+  if (plan.goalContribPctPerDay !== null) {
+    steps.push(`<b>Et ton objectif de ${s.rate} %/jour ?</b> Si ce plan réussit, il rapporte ≈ <b>${plan.goalContribPctPerDay} %/jour</b> de ton capital sur la période. Atteindre ${s.rate} %/jour exige d'enchaîner les plans gagnants sans gros accident — même les professionnels n'y arrivent pas longtemps. Vise la régularité, pas le record.`);
+  }
+  return `<ol class="plan-steps">${steps.map(t => `<li><span>${t}</span></li>`).join('')}</ol>`;
+}
+
+function openPlan(a) {
+  const s = fullStore();
+  const plan = buildTradePlan(a, { feePct: s.feePct, capital: s.capital });
+  $('#plan-title').textContent = `${a.name} (${a.symbol})`;
+  const el = $('#plan-body');
+  if (!plan) {
+    el.innerHTML = '<p class="sub">Plan indisponible : données insuffisantes pour cet actif.</p>';
+  } else {
+    const head = `<div class="plan-head">
+      <span class="badge ${ACTION_LABEL[plan.action].cls}">${ACTION_LABEL[plan.action].txt}</span>
+      <span class="risk ${plan.risk.code}">${plan.risk.label}</span>
+      <span class="sub">note ${plan.score}/100 · volatilité ≈ ${plan.dailyVol} %/jour</span>
+    </div>`;
+    const reasons = explainFromMetrics(a).slice(0, 4);
+    const why = `<ul class="reasons">${reasons.map(r => `<li class="${r.plus ? 'plus' : 'minus'}">${r.text}</li>`).join('')}</ul>`;
+    const body = (plan.action === 'AVOID' || plan.action === 'WAIT_SIGNAL')
+      ? `<p class="plan-wait">${plan.action === 'AVOID'
+          ? `La note est de <b>${plan.score}/100</b> : tendance non confirmée, le risque de perte dépasse l'espérance de gain. Règle n° 1 pour gagner sur la durée : <b>ne pas perdre</b>. N'achète pas, même si le prix « a l'air bas » — il peut baisser encore.`
+          : `La note est de <b>${plan.score}/100</b> : pas assez de preuves pour engager de l'argent. Le bon geste rapporte ici : <b>attendre</b>.`}
+          Ajoute l'actif en favori (★) et reviens quand sa note dépasse 55 — le plan d'achat complet apparaîtra alors ici.</p>`
+      : planStepsHTML(a, plan, s);
+    el.innerHTML = head + why + body;
+    el.querySelectorAll('.mk-alert').forEach(b => b.addEventListener('click', () => {
+      addAlertQuick(a.symbol, b.dataset.dir, parseFloat(b.dataset.price));
+      b.textContent = '✓ Alerte créée (onglet Objectif)';
+      b.disabled = true;
+    }));
+  }
+  $('#plan-modal').classList.remove('hidden');
+}
+
+function addAlertQuick(symbol, dir, price) {
+  if (!Number.isFinite(price) || price <= 0) return;
+  const s = fullStore();
+  s.alerts.push({
+    id: Date.now(),
+    symbol,
+    dir: dir === 'below' ? 'below' : 'above',
+    price: Math.round(price * 10000) / 10000,
+  });
+  saveStore(s);
+  renderPortfolio();
+  if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+    Notification.requestPermission().catch(() => {});
+  }
+}
+
+function bindPlan() {
+  $('#plan-close').addEventListener('click', () => $('#plan-modal').classList.add('hidden'));
+  $('#plan-modal').addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'plan-modal') $('#plan-modal').classList.add('hidden');
+  });
+}
+
 // ---------- Fiabilité réelle des signaux (archive du robot) ----------
 const HISTORY_SOURCES = [
   `${RAW}/main/data/history.json`,
@@ -481,7 +613,48 @@ function loadStore() {
 }
 function saveStore(s) { localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
 function fullStore() {
-  return { capital: 10, goal: 10000, rate: 1, trades: [], alerts: [], ...loadStore() };
+  return { capital: 10, goal: 10000, rate: 1, feePct: 0.5, trades: [], alerts: [], favorites: [], capitalLog: [], ...loadStore() };
+}
+
+// Journal quotidien du capital : une entrée par jour (la dernière valeur du
+// jour écrase la précédente), pour mesurer la croissance réelle %/jour.
+function recordCapital(s) {
+  const today = new Date().toISOString().slice(0, 10);
+  s.capitalLog = (s.capitalLog || []).filter(e => e && e.date !== today);
+  s.capitalLog.push({ date: today, capital: s.capital });
+  while (s.capitalLog.length > 366) s.capitalLog.shift();
+}
+
+// ---------- Sauvegarde / restauration des données locales ----------
+function bindBackup() {
+  $('#export-data').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(fullStore(), null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `tradepilot-sauvegarde-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  $('#import-file').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let clean = null;
+      try { clean = sanitizeImportedStore(JSON.parse(reader.result)); } catch { /* JSON invalide */ }
+      if (clean) {
+        saveStore({ ...fullStore(), ...clean });
+        renderPortfolio();
+        applyView('crypto');
+        applyView('stocks');
+        banner('✅ Sauvegarde restaurée : capital, positions, alertes et favoris rechargés.', 'info');
+      } else {
+        banner('Fichier illisible — importe un fichier exporté par TradePilot (JSON).');
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  });
 }
 
 // ---------- Alertes de prix ----------
@@ -538,6 +711,13 @@ function renderPortfolio() {
     `À <b>${s.rate} % par jour</b> composés, il faudrait <b>${Number.isFinite(days) ? days.toLocaleString('fr-FR') + ' jours' : '∞'}</b> (≈ ${years} ans) pour atteindre l'objectif. ` +
     `Pour comparaison, les meilleurs fonds du monde font ~0,08 %/jour en moyenne. ` +
     `Sois patient, réinvestis régulièrement, et méfie-toi de tout ce qui promet plus vite.`;
+  $('#fee-pct').value = s.feePct;
+  const prog = measureProgress(s.capitalLog);
+  $('#real-progress').innerHTML = prog
+    ? `📏 Croissance réelle mesurée : <b class="${prog.dailyPct >= 0 ? 'up' : 'down'}">${prog.dailyPct >= 0 ? '+' : ''}${prog.dailyPct} %/jour</b> en moyenne ` +
+      `sur ${prog.days} jour(s) — ${prog.totalPct >= 0 ? '+' : ''}${prog.totalPct} % au total depuis le ${new Date(prog.from).toLocaleDateString('fr-FR')}. ` +
+      `Objectif visé : ${s.rate} %/jour. ${prog.dailyPct >= s.rate ? 'Tu es au-dessus de ton objectif — reste discipliné, ne force pas.' : 'En dessous de l\'objectif : c\'est normal, la régularité bat la précipitation.'}`
+    : `📏 Ta progression réelle sera mesurée jour après jour : mets ton capital à jour régulièrement, ta moyenne %/jour réelle s'affichera ici dès le deuxième jour.`;
   const aul = $('#alert-list');
   aul.innerHTML = '';
   s.alerts.forEach((a, i) => {
@@ -580,10 +760,12 @@ function renderPositions() {
 }
 
 function bindPortfolio() {
-  for (const [id, key] of [['#capital', 'capital'], ['#goal', 'goal'], ['#daily-rate', 'rate']]) {
+  for (const [id, key] of [['#capital', 'capital'], ['#goal', 'goal'], ['#daily-rate', 'rate'], ['#fee-pct', 'feePct']]) {
     $(id).addEventListener('change', (e) => {
       const s = fullStore();
-      s[key] = parseFloat(e.target.value) || s[key];
+      const v = parseFloat(e.target.value);
+      if (Number.isFinite(v) && (key === 'feePct' ? v >= 0 : v > 0)) s[key] = v;
+      if (key === 'capital') recordCapital(s);
       saveStore(s); renderPortfolio();
     });
   }
@@ -645,6 +827,11 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
+{ // Premier point du journal de capital (mesure de la progression réelle).
+  const s = fullStore();
+  recordCapital(s);
+  saveStore(s);
+}
 refreshCrypto();
 refreshStocks();
 refreshHistory();
@@ -652,8 +839,10 @@ refreshTrends();
 refreshFearGreed();
 renderPortfolio();
 bindPortfolio();
+bindBackup();
 bindToolbars();
 bindChart();
+bindPlan();
 setInterval(refreshCrypto, REFRESH_MS);
 setInterval(refreshStocks, REFRESH_MS * 3);
 setInterval(refreshHistory, REFRESH_MS * 6);

@@ -59,12 +59,14 @@
           choisis un courtier sans minimum et aux frais &lt; 1 %.</p>
       </div>
       <div class="toolbar">
+        <input type="search" id="search-crypto" class="search" placeholder="🔎 Rechercher (nom ou symbole)" aria-label="Rechercher une crypto">
         <select id="sort-crypto" aria-label="Trier les cryptos">
           <option value="score">Tri : score</option>
           <option value="chg">Tri : variation 24 h</option>
           <option value="name">Tri : nom</option>
         </select>
         <button class="chip" id="filter-crypto">Signaux d'achat uniquement</button>
+        <button class="chip" id="fav-crypto" title="N'afficher que tes favoris">★ Favoris</button>
       </div>
       <div id="crypto-list" class="cards">
         <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
@@ -77,12 +79,14 @@
         <p class="sub" id="stocks-meta">Données mises à jour automatiquement par le robot TradePilot.</p>
       </div>
       <div class="toolbar">
+        <input type="search" id="search-stocks" class="search" placeholder="🔎 Rechercher (nom ou symbole)" aria-label="Rechercher une action">
         <select id="sort-stocks" aria-label="Trier les actions">
           <option value="score">Tri : score</option>
           <option value="chg">Tri : variation du jour</option>
           <option value="name">Tri : nom</option>
         </select>
         <button class="chip" id="filter-stocks">Signaux d'achat uniquement</button>
+        <button class="chip" id="fav-stocks" title="N'afficher que tes favoris">★ Favoris</button>
       </div>
       <div id="stocks-list" class="cards">
         <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
@@ -117,8 +121,12 @@
           <label>Croissance visée par jour (%)
             <input type="number" id="daily-rate" min="0.1" max="50" step="0.1" value="1">
           </label>
+          <label>Frais de courtage par ordre (%)
+            <input type="number" id="fee-pct" min="0" max="20" step="0.05" value="0.5">
+          </label>
         </div>
         <p id="goal-projection" class="projection"></p>
+        <p id="real-progress" class="projection"></p>
         <h3>🔔 Alertes de prix</h3>
         <form id="alert-form" class="goal-row">
           <input type="text" id="alert-symbol" placeholder="Actif (ex: BTC)" required>
@@ -143,6 +151,16 @@
         <p class="sub">Le prix d'achat se pré-remplit avec le cours actuel si tu le laisses vide.</p>
         <ul id="trade-list"></ul>
         <p id="positions-total" class="projection"></p>
+
+        <h3>💾 Sauvegarde de mes données</h3>
+        <p class="sub">Tes données (capital, positions, alertes, favoris) restent sur ton appareil et
+          peuvent disparaître si tu nettoies le navigateur. Exporte-les régulièrement, et réimporte-les
+          sur un nouveau téléphone pour tout retrouver.</p>
+        <div class="goal-row">
+          <button type="button" class="btn" id="export-data">Exporter (JSON)</button>
+          <label class="btn ghost" for="import-file">Importer une sauvegarde</label>
+          <input type="file" id="import-file" accept="application/json,.json" hidden>
+        </div>
       </div>
     </section>
   </main>
@@ -153,6 +171,19 @@
       totale. N'investis que ce que tu peux te permettre de perdre, et méfie-toi de quiconque promet
       des rendements certains.</p>
   </footer>
+
+  <div id="plan-modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div><b id="plan-title">—</b><span class="sub">Plan d'action — de la discipline, pas des prédictions</span></div>
+        <button id="plan-close" title="Fermer">✕</button>
+      </div>
+      <div id="plan-body"></div>
+      <p class="sub" style="margin-top:12px">⚠️ Ce plan applique des règles mécaniques (tendance confirmée,
+        stop calé sur la volatilité, 2 € visés pour 1 € risqué, frais inclus). Aucune méthode ne garantit
+        un gain : la seule règle inviolable est le stop de protection.</p>
+    </div>
+  </div>
 
   <div id="chart-modal" class="modal hidden">
     <div class="modal-box">

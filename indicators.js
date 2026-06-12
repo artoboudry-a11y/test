@@ -178,9 +178,18 @@ export function computeScoreFromMetrics({ price, ema20, ema50, rsi: r, macd: m, 
     score,
     rsi: Number.isFinite(r) ? Math.round(r * 10) / 10 : null,
     macdHist,
+    ema20: Number.isFinite(ema20) ? ema20 : null,
+    ema50: Number.isFinite(ema50) ? ema50 : null,
     mom7: Number.isFinite(perfW) ? Math.round(perfW * 100) / 100 : null,
     mom30: Number.isFinite(perf1M) ? Math.round(perf1M * 100) / 100 : null,
     volRatio: vr === null ? null : Math.round(vr * 100) / 100,
+    parts: [
+      { label: 'Tendance', pts: trend, max: 30 },
+      { label: 'Momentum', pts: Math.round(momPts), max: 25 },
+      { label: 'RSI', pts: rsiPts, max: 20 },
+      { label: 'MACD', pts: macdPts, max: 15 },
+      { label: 'Volume', pts: Math.round(volPts), max: 10 },
+    ],
   };
 }
 
@@ -284,6 +293,162 @@ export function valuePositions(trades, getPrice) {
       valuedCount: valued.length,
     },
   };
+}
+
+// Plan d'action concret pour un actif : faut-il entrer, à quel prix, où placer
+// le stop de protection, quel objectif de vente viser, sur quel horizon et avec
+// quelle taille de position. Tout est dérivé mécaniquement des indicateurs et
+// de la volatilité mesurée — aucune prédiction, des règles de discipline.
+// Options : feePct = frais de courtage par ordre (%), capital = capital (€).
+export function buildTradePlan(a, { feePct = 0, capital = null } = {}) {
+  const price = a.price;
+  if (!Number.isFinite(price) || price <= 0 || !Number.isFinite(a.score)) return null;
+  const fee = Number.isFinite(feePct) && feePct >= 0 ? feePct : 0;
+  const breakevenPct = Math.round(2 * fee * 100) / 100; // aller-retour à amortir
+
+  // Volatilité quotidienne estimée : spark horaire (crypto) → ×√24,
+  // spark quotidien (actions) → tel quel, sinon estimation via momentum 30.
+  const volPeriod = a.spark && a.spark.length > 8 ? volatility(a.spark) : null;
+  let dailyVol;
+  if (volPeriod !== null) dailyVol = a.momUnit === 'h' ? volPeriod * Math.sqrt(24) : volPeriod;
+  else dailyVol = a.mom30 !== null && a.mom30 !== undefined ? Math.max(0.8, Math.abs(a.mom30) / 8) : 2;
+  dailyVol = Math.round(dailyVol * 100) / 100;
+  const risk = riskLevel({ vol: volPeriod, mom30: a.mom30 });
+
+  // Décision d'entrée : signal d'achat requis ; si le cours est très étiré
+  // au-dessus de l'EMA20 ou en surachat, on attend un repli vers l'EMA20.
+  const stretchPct = Number.isFinite(a.ema20) ? ((price - a.ema20) / a.ema20) * 100 : null;
+  let action;
+  if (a.score < 40) action = 'AVOID';
+  else if (a.score < 55) action = 'WAIT_SIGNAL';
+  else if ((a.rsi !== null && a.rsi !== undefined && a.rsi > 72) || (stretchPct !== null && stretchPct > 4)) action = 'WAIT_PULLBACK';
+  else action = 'ENTER';
+
+  const base = { action, score: a.score, dailyVol, risk, feePct: fee, breakevenPct };
+  if (action === 'AVOID' || action === 'WAIT_SIGNAL') return base;
+
+  // Zone d'entrée : au cours actuel (ENTER) ou autour de l'EMA20 (repli).
+  const r4 = (x) => Math.round(x * 10000) / 10000;
+  let entryLow, entryHigh;
+  if (action === 'WAIT_PULLBACK') {
+    entryLow = a.ema20 * 0.995;
+    entryHigh = a.ema20 * 1.01;
+  } else {
+    entryLow = Number.isFinite(a.ema20) && a.ema20 < price ? a.ema20 : price * (1 - dailyVol / 100);
+    entryHigh = price;
+  }
+  const entryMid = (entryLow + entryHigh) / 2;
+
+  // Stop : ~1,8× la volatilité quotidienne sous l'entrée (borné 2–12 %),
+  // jamais plus serré que les frais aller-retour + 1 %.
+  const stopPct = Math.round(Math.max(2, Math.min(12, 1.8 * dailyVol), breakevenPct + 1) * 100) / 100;
+  // Objectif de vente : 2× le risque pris, frais d'aller-retour inclus.
+  const targetPct = Math.round((2 * stopPct + breakevenPct) * 100) / 100;
+  const stop = r4(entryMid * (1 - stopPct / 100));
+  const target = r4(entryMid * (1 + targetPct / 100));
+
+  // Horizon : temps typique pour parcourir l'objectif au rythme de la
+  // volatilité quotidienne (fourchette honnête, pas une promesse).
+  const dailyProgress = Math.max(dailyVol * 0.5, 0.15);
+  const mid = targetPct / dailyProgress;
+  const horizonDays = [Math.max(1, Math.ceil(mid * 0.6)), Math.max(2, Math.ceil(mid * 1.6))];
+
+  // Taille de position : on ne risque que 1 % du capital sur le stop,
+  // et jamais plus de 25 % du capital sur une seule position.
+  let positionEur = null, riskEur = null, goalContribPctPerDay = null;
+  if (Number.isFinite(capital) && capital > 0) {
+    riskEur = Math.round(capital * 0.01 * 100) / 100;
+    positionEur = Math.round(Math.min(capital * 0.25, riskEur / (stopPct / 100)) * 100) / 100;
+    const netGain = positionEur * 2 * stopPct / 100; // objectif − frais = 2× risque
+    goalContribPctPerDay = Math.round(netGain / mid / capital * 100 * 1000) / 1000;
+  }
+
+  return { ...base, entryLow: r4(entryLow), entryHigh: r4(entryHigh), stop, stopPct,
+    target, targetPct, rr: 2, horizonDays, positionEur, riskEur, goalContribPctPerDay };
+}
+
+// Mesure la progression réelle du capital à partir du journal quotidien
+// [{ date: 'YYYY-MM-DD', capital }]. Retourne le taux de croissance moyen par
+// jour (géométrique), la variation totale et la période couverte, ou null si
+// moins de deux jours distincts sont disponibles.
+export function measureProgress(log) {
+  if (!Array.isArray(log)) return null;
+  const entries = log
+    .filter(e => e && typeof e.date === 'string' && Number.isFinite(e.capital) && e.capital > 0)
+    .sort((x, y) => x.date.localeCompare(y.date));
+  if (entries.length < 2) return null;
+  const first = entries[0], last = entries[entries.length - 1];
+  const days = Math.round((new Date(last.date) - new Date(first.date)) / 86400e3);
+  if (!Number.isFinite(days) || days < 1) return null;
+  const ratio = last.capital / first.capital;
+  return {
+    days,
+    totalPct: Math.round((ratio - 1) * 10000) / 100,
+    dailyPct: Math.round((Math.pow(ratio, 1 / days) - 1) * 100000) / 1000,
+    from: first.date, to: last.date,
+  };
+}
+
+// Filtre une liste d'actifs par texte libre (nom ou symbole), insensible
+// à la casse et aux accents. Requête vide → liste inchangée (copie).
+export function filterAssets(assets, query) {
+  const norm = (s) => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const q = norm(query).trim();
+  if (!q) return assets.slice();
+  return assets.filter(a => norm(a.symbol).includes(q) || norm(a.name).includes(q));
+}
+
+// Remonte les favoris en tête de liste sans changer l'ordre relatif
+// (tri stable : les favoris restent triés entre eux, idem pour les autres).
+export function pinFavorites(assets, favorites) {
+  if (!favorites || !favorites.length) return assets;
+  const fav = new Set(favorites);
+  return [...assets.filter(a => fav.has(a.symbol)), ...assets.filter(a => !fav.has(a.symbol))];
+}
+
+// Nettoie une sauvegarde importée (fichier JSON fourni par l'utilisateur) :
+// ne conserve que les champs connus avec des types valides, ignore le reste.
+// Retourne null si rien d'exploitable (fichier étranger ou corrompu).
+export function sanitizeImportedStore(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const out = {};
+  for (const k of ['capital', 'goal', 'rate']) {
+    if (Number.isFinite(raw[k]) && raw[k] > 0) out[k] = raw[k];
+  }
+  if (Number.isFinite(raw.feePct) && raw.feePct >= 0 && raw.feePct <= 20) out.feePct = raw.feePct;
+  if (Array.isArray(raw.capitalLog)) {
+    out.capitalLog = raw.capitalLog
+      .filter(e => e && typeof e.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.date)
+        && Number.isFinite(e.capital) && e.capital > 0)
+      .map(e => ({ date: e.date, capital: e.capital }));
+  }
+  if (Array.isArray(raw.trades)) {
+    out.trades = raw.trades
+      .filter(t => t && typeof t.asset === 'string' && t.asset.trim() && Number.isFinite(t.amount) && t.amount > 0)
+      .map(t => ({
+        asset: t.asset.trim().toUpperCase(),
+        amount: t.amount,
+        buyPrice: Number.isFinite(t.buyPrice) && t.buyPrice > 0 ? t.buyPrice : undefined,
+        date: typeof t.date === 'string' ? t.date : '',
+      }));
+  }
+  if (Array.isArray(raw.alerts)) {
+    out.alerts = raw.alerts
+      .filter(a => a && typeof a.symbol === 'string' && a.symbol.trim() && Number.isFinite(a.price) && a.price > 0)
+      .map((a, i) => ({
+        id: Number.isFinite(a.id) ? a.id : Date.now() + i,
+        symbol: a.symbol.trim().toUpperCase(),
+        dir: a.dir === 'below' ? 'below' : 'above',
+        price: a.price,
+        ...(a.hit && typeof a.hit === 'object' ? { hit: a.hit } : {}),
+      }));
+  }
+  if (Array.isArray(raw.favorites)) {
+    out.favorites = [...new Set(raw.favorites
+      .filter(f => typeof f === 'string' && f.trim())
+      .map(f => f.trim().toUpperCase()))];
+  }
+  return Object.keys(out).length ? out : null;
 }
 
 export function signalFromScore(score) {

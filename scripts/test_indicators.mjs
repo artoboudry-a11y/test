@@ -1,6 +1,7 @@
 // Tests unitaires des indicateurs — exécutés en local et en CI.
 import { sma, ema, rsi, macd, momentum, volumeRatio, computeScore, computeScoreFromMetrics,
-  signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions }
+  signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions,
+  filterAssets, pinFavorites, sanitizeImportedStore, buildTradePlan, measureProgress }
   from '../indicators.js';
 
 let failures = 0;
@@ -75,6 +76,10 @@ const bearM = computeScoreFromMetrics({
   perfW: -6, perf1M: -15, volume: 5e5, avgVol10: 6e5, avgVol30: 1e6,
 });
 check('métriques baissières → score < 40', bearM.score < 40, `(=${bearM.score})`);
+check('décomposition du score fournie (5 composantes)', Array.isArray(bullM.parts) && bullM.parts.length === 5);
+check('somme des composantes ≈ score', Math.abs(bullM.parts.reduce((a, p) => a + p.pts, 0) - bullM.score) <= 3);
+check('chaque composante bornée par son maximum', bullM.parts.every(p => p.pts >= 0 && p.pts <= p.max));
+check('EMA retransmises pour le plan d\'action', bullM.ema20 === 105 && bullM.ema50 === 100);
 const partial = computeScoreFromMetrics({ price: 100, rsi: 50 });
 check('métriques partielles → pas de crash', Number.isFinite(partial.score));
 check('cohérence des deux scoreurs (haussier sain)', (() => {
@@ -136,6 +141,114 @@ check('position sans cours non valorisée', pv.rows[3].value === null);
 check('totaux sur les positions valorisées uniquement', approx(pv.totals.invested, 15) && approx(pv.totals.value, 14.5));
 check('P/L total cohérent', approx(pv.totals.plAbs, -0.5));
 check('portefeuille vide → pas de crash', valuePositions([], () => null).totals.plPct === null);
+
+console.log('— Recherche d’actifs —');
+const univers = [
+  { symbol: 'BTC', name: 'Bitcoin' },
+  { symbol: 'ETH', name: 'Ethereum' },
+  { symbol: 'MC.FR', name: 'LVMH Moët Hennessy' },
+  { symbol: 'AIR.FR', name: 'Airbus' },
+];
+check('recherche par symbole', filterAssets(univers, 'btc').length === 1 && filterAssets(univers, 'btc')[0].symbol === 'BTC');
+check('recherche par nom partiel', filterAssets(univers, 'ether')[0]?.symbol === 'ETH');
+check('insensible aux accents', filterAssets(univers, 'moet').length === 1);
+check('insensible à la casse', filterAssets(univers, 'AIRBUS').length === 1);
+check('requête vide → tout', filterAssets(univers, '').length === 4);
+check('requête vide → copie (pas la même référence)', filterAssets(univers, '') !== univers);
+check('aucun résultat → liste vide', filterAssets(univers, 'zzz').length === 0);
+
+console.log('— Favoris épinglés —');
+const scored = [{ symbol: 'A' }, { symbol: 'B' }, { symbol: 'C' }, { symbol: 'D' }];
+const pinned = pinFavorites(scored, ['C', 'A']);
+check('favoris remontés en tête', pinned[0].symbol === 'A' && pinned[1].symbol === 'C');
+check('ordre relatif préservé (tri stable)', pinned[2].symbol === 'B' && pinned[3].symbol === 'D');
+check('sans favoris → liste inchangée', pinFavorites(scored, []) === scored);
+check('favori inconnu → sans effet', pinFavorites(scored, ['ZZZ']).length === 4);
+
+console.log('— Sauvegarde importée (nettoyage) —');
+const imported = sanitizeImportedStore({
+  capital: 25, goal: 10000, rate: 1.5,
+  trades: [
+    { asset: 'btc', amount: 10, buyPrice: 100, date: '01/06/2026' },
+    { asset: '', amount: 10 },               // actif vide → rejeté
+    { asset: 'ETH', amount: -5 },             // montant invalide → rejeté
+  ],
+  alerts: [
+    { id: 1, symbol: 'btc', dir: 'below', price: 90 },
+    { symbol: 'ETH', dir: 'sideways', price: 50 }, // direction inconnue → normalisée
+    { symbol: 'XXX', price: 0 },                   // prix invalide → rejeté
+  ],
+  favorites: ['btc', 'BTC', 'eth', 42],
+  malicious: 'champ inconnu',
+});
+check('champs numériques repris', imported.capital === 25 && imported.rate === 1.5);
+check('position valide normalisée en majuscules', imported.trades.length === 1 && imported.trades[0].asset === 'BTC');
+check('alertes invalides écartées', imported.alerts.length === 2);
+check('direction inconnue → above par défaut', imported.alerts[1].dir === 'above');
+check('id généré si absent', Number.isFinite(imported.alerts[1].id));
+check('favoris dédupliqués et normalisés', imported.favorites.length === 2 && imported.favorites.includes('BTC') && imported.favorites.includes('ETH'));
+check('champ inconnu ignoré', !('malicious' in imported));
+check('fichier étranger → null', sanitizeImportedStore({ foo: 'bar' }) === null);
+check('tableau → null', sanitizeImportedStore([1, 2]) === null);
+check('null → null, pas de crash', sanitizeImportedStore(null) === null);
+
+console.log('— Plan d’action —');
+const calmSpark = Array.from({ length: 48 }, (_, i) => 100 * (1 + 0.004 * Math.sin(i)));
+const bullAsset = { price: 110, ema20: 108, ema50: 100, rsi: 58, score: 75, mom7: 2, mom30: 8, spark: calmSpark, momUnit: 'h' };
+const plan = buildTradePlan(bullAsset, { feePct: 0.5, capital: 100 });
+check('signal fort et sain → ENTRER', plan.action === 'ENTER');
+check('zone d’entrée cohérente (EMA20 → cours)', plan.entryLow === 108 && plan.entryHigh === 110);
+check('stop sous la zone d’entrée', plan.stop < plan.entryLow);
+check('objectif au-dessus du cours', plan.target > bullAsset.price);
+check('2 € visés pour 1 € risqué, frais inclus', approx(plan.targetPct, 2 * plan.stopPct + plan.breakevenPct, 0.01));
+check('frais aller-retour comptés', approx(plan.breakevenPct, 1));
+check('stop jamais plus serré que frais + 1 %', plan.stopPct >= plan.breakevenPct + 1);
+check('horizon fourni (fourchette croissante)', plan.horizonDays[0] >= 1 && plan.horizonDays[1] > plan.horizonDays[0]);
+check('risque limité à 1 % du capital', approx(plan.riskEur, 1));
+check('position plafonnée à 25 % du capital', plan.positionEur <= 25);
+check('contribution à l’objectif quotidien estimée', Number.isFinite(plan.goalContribPctPerDay) && plan.goalContribPctPerDay > 0);
+
+const hot = buildTradePlan({ ...bullAsset, rsi: 78 }, { feePct: 0.5, capital: 100 });
+check('surachat (RSI 78) → attendre un repli', hot.action === 'WAIT_PULLBACK');
+check('zone de repli autour de l’EMA20, sous le cours', hot.entryHigh < bullAsset.price && hot.entryLow < hot.entryHigh);
+const stretched = buildTradePlan({ ...bullAsset, price: 113, ema20: 108 }, {});
+check('cours trop étiré (>4 % au-dessus EMA20) → attendre', stretched.action === 'WAIT_PULLBACK');
+const weak = buildTradePlan({ ...bullAsset, score: 45 }, {});
+check('score moyen → patienter, pas de niveaux', weak.action === 'WAIT_SIGNAL' && weak.stop === undefined);
+const avoid = buildTradePlan({ ...bullAsset, score: 20 }, {});
+check('score faible → éviter', avoid.action === 'AVOID');
+const noFee = buildTradePlan(bullAsset, { feePct: 0, capital: 100 });
+check('sans frais → objectif plus proche', noFee.targetPct < plan.targetPct);
+check('prix invalide → null', buildTradePlan({ price: null, score: 80 }) === null);
+const sparkless = buildTradePlan({ price: 50, ema20: 49, ema50: 45, rsi: 55, score: 70, mom30: 12, momUnit: 'j' }, {});
+check('sans historique → volatilité estimée via momentum, plan complet', sparkless.action === 'ENTER' && Number.isFinite(sparkless.stop));
+
+console.log('— Progression réelle du capital —');
+const prog = measureProgress([
+  { date: '2026-06-01', capital: 10 },
+  { date: '2026-06-11', capital: 11 },
+]);
+check('période couverte correcte', prog.days === 10);
+check('variation totale +10 %', approx(prog.totalPct, 10));
+check('croissance moyenne géométrique ≈ 0,96 %/jour', prog.dailyPct > 0.9 && prog.dailyPct < 1.0, `(=${prog.dailyPct})`);
+check('entrées non triées → triées', measureProgress([
+  { date: '2026-06-11', capital: 11 }, { date: '2026-06-01', capital: 10 },
+]).totalPct > 0);
+check('entrées invalides filtrées', measureProgress([
+  { date: '2026-06-01', capital: 10 }, { capital: 99 }, { date: '2026-06-05', capital: 0 }, { date: '2026-06-11', capital: 11 },
+]).days === 10);
+check('un seul jour → null', measureProgress([{ date: '2026-06-01', capital: 10 }]) === null);
+check('journal absent → null, pas de crash', measureProgress(undefined) === null);
+
+console.log('— Sauvegarde : frais et journal de capital —');
+const imported2 = sanitizeImportedStore({
+  feePct: 0.35,
+  capitalLog: [{ date: '2026-06-01', capital: 10 }, { date: 'hier', capital: 5 }, { date: '2026-06-02', capital: -3 }],
+});
+check('frais de courtage repris', imported2.feePct === 0.35);
+check('frais nuls acceptés', sanitizeImportedStore({ feePct: 0 }).feePct === 0);
+check('frais aberrants (>20 %) rejetés', sanitizeImportedStore({ feePct: 50 }) === null);
+check('journal nettoyé (dates et montants valides uniquement)', imported2.capitalLog.length === 1 && imported2.capitalLog[0].date === '2026-06-01');
 
 if (failures) { console.error(`\n${failures} test(s) en échec`); process.exit(1); }
 console.log('\nTous les tests passent ✅');
