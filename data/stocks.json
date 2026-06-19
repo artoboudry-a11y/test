@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-06-19T20:12:41.784Z",
+ "updatedAt": "2026-06-19T21:42:03.299Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -437,54 +437,6 @@
    "macdHist": 0.558
   },
   {
-   "symbol": "SPY",
-   "name": "S&P 500 (ETF SPY)",
-   "market": "ETF",
-   "cur": "$",
-   "price": 746.74,
-   "changePct": 0.78,
-   "lastDate": "2026-06-19",
-   "score": 76,
-   "signal": {
-    "code": "STRONG_BUY",
-    "label": "ACHAT FORT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 14,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 6,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 6,
-     "max": 10
-    }
-   ],
-   "rsi": 54.1,
-   "mom7": 2.47,
-   "mom30": 1.63,
-   "volRatio": 1.31,
-   "ema20": 743.12,
-   "ema50": 728.92,
-   "macdHist": -1.5941
-  },
-  {
    "symbol": "AVGO",
    "name": "Broadcom",
    "market": "US",
@@ -531,6 +483,54 @@
    "ema20": 405.53,
    "ema50": 400,
    "macdHist": -3.1736
+  },
+  {
+   "symbol": "SPY",
+   "name": "S&P 500 (ETF SPY)",
+   "market": "ETF",
+   "cur": "$",
+   "price": 746.74,
+   "changePct": 0.78,
+   "lastDate": "2026-06-19",
+   "score": 73,
+   "signal": {
+    "code": "STRONG_BUY",
+    "label": "ACHAT FORT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 11,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 6,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 6,
+     "max": 10
+    }
+   ],
+   "rsi": 54.1,
+   "mom7": 0.81,
+   "mom30": 1.5,
+   "volRatio": 1.31,
+   "ema20": 743.12,
+   "ema50": 728.92,
+   "macdHist": -1.5941
   },
   {
    "symbol": "OR",
