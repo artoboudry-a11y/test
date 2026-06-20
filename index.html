@@ -141,7 +141,10 @@
         <p class="sub">Les alertes se déclenchent quand l'appli est ouverte (bannière, vibration,
           et notification si tu l'autorises). Prix en $ pour les cryptos et actions US, en € pour l'Europe.</p>
 
-        <h3>Mes positions — valorisées en direct</h3>
+        <h3>Mes positions — suivies jour après jour</h3>
+        <p class="sub">Clique sur <b>💰 Investir</b> depuis n'importe quel actif : tu indiques ce que tu as
+          acheté, et chaque position est suivie ici avec une <b>consigne stable</b> (garder / vendre)
+          calée sur le plan figé au moment de l'achat. Tu peux aussi ajouter une position à la main :</p>
         <form id="trade-form" class="goal-row">
           <input type="text" id="trade-asset" placeholder="Actif (ex: BTC)" required>
           <input type="number" id="trade-amount" placeholder="Montant €" step="0.01" min="0.01" required>
@@ -151,6 +154,7 @@
         <p class="sub">Le prix d'achat se pré-remplit avec le cours actuel si tu le laisses vide.</p>
         <ul id="trade-list"></ul>
         <p id="positions-total" class="projection"></p>
+        <div id="closed-positions"></div>
 
         <h3>💾 Sauvegarde de mes données</h3>
         <p class="sub">Tes données (capital, positions, alertes, favoris) restent sur ton appareil et
@@ -182,6 +186,18 @@
       <p class="sub" style="margin-top:12px">⚠️ Ce plan applique des règles mécaniques (tendance confirmée,
         stop calé sur la volatilité, 2 € visés pour 1 € risqué, frais inclus). Aucune méthode ne garantit
         un gain : la seule règle inviolable est le stop de protection.</p>
+    </div>
+  </div>
+
+  <div id="invest-modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div><b id="invest-title">—</b><span class="sub">Enregistre ton achat réel pour le suivre jour après jour</span></div>
+        <button id="invest-close" title="Fermer">✕</button>
+      </div>
+      <div id="invest-body"></div>
+      <p class="sub" style="margin-top:12px">⚠️ TradePilot enregistre ce que tu déclares avoir acheté chez ton
+        courtier ; il ne passe aucun ordre. Le stop et l'objectif figés sont une discipline, pas une garantie.</p>
     </div>
   </div>
 

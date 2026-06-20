@@ -295,6 +295,37 @@ export function valuePositions(trades, getPrice) {
   };
 }
 
+// Consigne STABLE d'une position ouverte, dérivée du plan FIGÉ au moment de
+// l'achat (prix d'achat, stop, objectif) — elle ne dépend pas du signal du jour.
+// Tant que le cours reste entre le stop et l'objectif, la consigne ne change
+// pas : c'est ce qui permet un vrai suivi sur plusieurs jours sans zapper.
+// Codes :
+//   STOP       cours ≤ stop → sortir pour protéger le capital
+//   TARGET     cours ≥ objectif → vendre au moins la moitié, remonter le stop
+//   HOLD_UP    en gain, sous l'objectif → garder, laisser courir
+//   HOLD_DOWN  sous le prix d'achat mais au-dessus du stop → garder, patienter
+//   UNKNOWN    cours ou prix d'achat manquant
+export function positionStatus(pos, current) {
+  const buyPrice = pos && Number.isFinite(pos.buyPrice) && pos.buyPrice > 0 ? pos.buyPrice : null;
+  if (!Number.isFinite(current) || buyPrice === null) {
+    return { code: 'UNKNOWN', plPct: null, progressPct: null, stop: null, target: null, buyPrice };
+  }
+  const plan = (pos && pos.plan) || {};
+  const stop = Number.isFinite(plan.stop) && plan.stop > 0 ? plan.stop : null;
+  const target = Number.isFinite(plan.target) && plan.target > 0 ? plan.target : null;
+  const plPct = Math.round((current / buyPrice - 1) * 100 * 100) / 100;
+  let progressPct = null;
+  if (stop !== null && target !== null && target > stop) {
+    progressPct = Math.round(Math.max(0, Math.min(100, (current - stop) / (target - stop) * 100)) * 10) / 10;
+  }
+  let code;
+  if (stop !== null && current <= stop) code = 'STOP';
+  else if (target !== null && current >= target) code = 'TARGET';
+  else if (current >= buyPrice) code = 'HOLD_UP';
+  else code = 'HOLD_DOWN';
+  return { code, plPct, progressPct, stop, target, buyPrice };
+}
+
 // Plan d'action concret pour un actif : faut-il entrer, à quel prix, où placer
 // le stop de protection, quel objectif de vente viser, sur quel horizon et avec
 // quelle taille de position. Tout est dérivé mécaniquement des indicateurs et
@@ -423,14 +454,39 @@ export function sanitizeImportedStore(raw) {
       .map(e => ({ date: e.date, capital: e.capital }));
   }
   if (Array.isArray(raw.trades)) {
+    const numOrU = (x, min = -Infinity) => (Number.isFinite(x) && x > min ? x : undefined);
     out.trades = raw.trades
       .filter(t => t && typeof t.asset === 'string' && t.asset.trim() && Number.isFinite(t.amount) && t.amount > 0)
-      .map(t => ({
-        asset: t.asset.trim().toUpperCase(),
-        amount: t.amount,
-        buyPrice: Number.isFinite(t.buyPrice) && t.buyPrice > 0 ? t.buyPrice : undefined,
-        date: typeof t.date === 'string' ? t.date : '',
-      }));
+      .map((t, i) => {
+        const plan = t.plan && typeof t.plan === 'object' ? {
+          stop: numOrU(t.plan.stop, 0), target: numOrU(t.plan.target, 0),
+          stopPct: numOrU(t.plan.stopPct, 0), targetPct: numOrU(t.plan.targetPct, 0),
+          entryLow: numOrU(t.plan.entryLow, 0), entryHigh: numOrU(t.plan.entryHigh, 0),
+          dailyVol: numOrU(t.plan.dailyVol, 0),
+        } : undefined;
+        const log = Array.isArray(t.log) ? t.log
+          .filter(e => e && typeof e.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.date)
+            && Number.isFinite(e.price) && Number.isFinite(e.value))
+          .map(e => ({ date: e.date, price: e.price, value: e.value })) : undefined;
+        const closed = t.closed && typeof t.closed === 'object' && Number.isFinite(t.closed.price) ? {
+          price: t.closed.price,
+          plPct: numOrU(t.closed.plPct),
+          date: typeof t.closed.date === 'string' ? t.closed.date : '',
+          dateISO: typeof t.closed.dateISO === 'string' ? t.closed.dateISO : '',
+        } : null;
+        return {
+          id: numOrU(t.id, 0) || Date.now() + i,
+          asset: t.asset.trim().toUpperCase(),
+          name: typeof t.name === 'string' && t.name.trim() ? t.name.trim() : undefined,
+          currency: typeof t.currency === 'string' ? t.currency : undefined,
+          amount: t.amount,
+          units: numOrU(t.units, 0),
+          buyPrice: numOrU(t.buyPrice, 0),
+          date: typeof t.date === 'string' ? t.date : '',
+          dateISO: typeof t.dateISO === 'string' ? t.dateISO : '',
+          plan, log, closed,
+        };
+      });
   }
   if (Array.isArray(raw.alerts)) {
     out.alerts = raw.alerts

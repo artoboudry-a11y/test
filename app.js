@@ -1,5 +1,5 @@
 import { computeScore, signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions,
-  filterAssets, pinFavorites, sanitizeImportedStore, buildTradePlan, measureProgress } from './indicators.js';
+  filterAssets, pinFavorites, sanitizeImportedStore, buildTradePlan, measureProgress, positionStatus } from './indicators.js';
 
 // ---------- Configuration ----------
 const CRYPTOS = [
@@ -93,12 +93,15 @@ function assetCard(a, isFav = false) {
       ${scorePartsHTML(a)}
       <button class="chip chart-open">📈 Graphique</button>
       <button class="chip plan-open">🧭 Plan d'action</button>
+      <button class="chip invest-open">💰 Investir</button>
     </div>`;
   card.addEventListener('click', () => card.classList.toggle('open'));
   const btn = card.querySelector('.chart-open');
   if (btn) btn.addEventListener('click', (e) => { e.stopPropagation(); openChart(a); });
   const planBtn = card.querySelector('.plan-open');
   if (planBtn) planBtn.addEventListener('click', (e) => { e.stopPropagation(); openPlan(a); });
+  const investBtn = card.querySelector('.invest-open');
+  if (investBtn) investBtn.addEventListener('click', (e) => { e.stopPropagation(); openInvest(a); });
   const fav = card.querySelector('.fav');
   if (fav) fav.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(a.symbol); });
   if (a.spark && a.spark.length > 2) drawSpark(card.querySelector('canvas'), a.spark);
@@ -503,12 +506,15 @@ function openPlan(a) {
           : `La note est de <b>${plan.score}/100</b> : pas assez de preuves pour engager de l'argent. Le bon geste rapporte ici : <b>attendre</b>.`}
           Ajoute l'actif en favori (★) et reviens quand sa note dépasse 55 — le plan d'achat complet apparaîtra alors ici.</p>`
       : planStepsHTML(a, plan, s);
-    el.innerHTML = head + why + body;
+    el.innerHTML = head + why + body +
+      `<button class="btn" id="plan-invest" style="margin-top:14px">💰 J'ai acheté — suivre cette position</button>`;
     el.querySelectorAll('.mk-alert').forEach(b => b.addEventListener('click', () => {
       addAlertQuick(a.symbol, b.dataset.dir, parseFloat(b.dataset.price));
       b.textContent = '✓ Alerte créée (onglet Objectif)';
       b.disabled = true;
     }));
+    const inv = $('#plan-invest');
+    if (inv) inv.addEventListener('click', () => { $('#plan-modal').classList.add('hidden'); openInvest(a); });
   }
   $('#plan-modal').classList.remove('hidden');
 }
@@ -533,6 +539,166 @@ function bindPlan() {
   $('#plan-close').addEventListener('click', () => $('#plan-modal').classList.add('hidden'));
   $('#plan-modal').addEventListener('click', (e) => {
     if (e.target && e.target.id === 'plan-modal') $('#plan-modal').classList.add('hidden');
+  });
+}
+
+// ---------- Investir : suivi d'une position réelle, jour après jour ----------
+// Retrouve l'objet actif complet (avec ses indicateurs) pour calculer un plan.
+function findAsset(symbol) {
+  const c = state.assets.get(symbol);
+  if (c) return c;
+  return (state.stockAssets || []).find(a => a.symbol === symbol) || null;
+}
+// Nom + devise d'affichage pour un symbole (repli sur le symbole lui-même).
+function assetMeta(symbol) {
+  const a = findAsset(symbol);
+  return a ? { name: a.name, currency: a.currency } : { name: symbol, currency: '€' };
+}
+
+// Plan FIGÉ calé sur le prix d'achat réel : stop et objectif en pourcentage du
+// plan du jour, mais appliqués au prix auquel tu as vraiment acheté. Une fois
+// créés, ces niveaux ne bougent plus — c'est ce qui rend le suivi stable.
+function frozenPlanFor(a, buyPrice, s) {
+  const plan = buildTradePlan(a, { feePct: s.feePct, capital: s.capital });
+  if (!plan || !Number.isFinite(buyPrice) || buyPrice <= 0) return null;
+  let stopPct = plan.stopPct, targetPct = plan.targetPct;
+  if (!Number.isFinite(stopPct)) {
+    stopPct = Math.round(Math.max(2, Math.min(12, 1.8 * plan.dailyVol)) * 100) / 100;
+    targetPct = Math.round((2 * stopPct + (plan.breakevenPct || 0)) * 100) / 100;
+  }
+  const r4 = (x) => Math.round(x * 10000) / 10000;
+  return {
+    stop: r4(buyPrice * (1 - stopPct / 100)),
+    target: r4(buyPrice * (1 + targetPct / 100)),
+    stopPct, targetPct,
+    entryLow: plan.entryLow ?? undefined, entryHigh: plan.entryHigh ?? undefined,
+    dailyVol: plan.dailyVol,
+  };
+}
+
+// Enregistre (au plus une fois par jour) le cours et la valeur de la position,
+// pour bâtir un historique de suivi sur plusieurs jours.
+function upsertPositionLog(pos, current) {
+  if (!Number.isFinite(current) || !Number.isFinite(pos.buyPrice) || pos.buyPrice <= 0
+    || !Number.isFinite(pos.amount)) return false;
+  const today = new Date().toISOString().slice(0, 10);
+  const value = pos.amount * (current / pos.buyPrice);
+  pos.log = Array.isArray(pos.log) ? pos.log : [];
+  const last = pos.log[pos.log.length - 1];
+  if (last && last.date === today) {
+    if (last.price === current && last.value === value) return false;
+    last.price = current; last.value = value;
+  } else {
+    pos.log.push({ date: today, price: current, value });
+  }
+  while (pos.log.length > 400) pos.log.shift();
+  return true;
+}
+
+// Crée et enregistre une position réelle. Accepte un montant en € OU une
+// quantité ; l'autre est déduit du prix d'achat.
+function addPosition({ symbol, amount, units, buyPrice }) {
+  const s = fullStore();
+  const a = findAsset(symbol);
+  const meta = assetMeta(symbol);
+  let price = Number.isFinite(buyPrice) && buyPrice > 0 ? buyPrice : currentPrice(symbol);
+  if (!Number.isFinite(price) || price <= 0) price = undefined;
+  if (!Number.isFinite(amount) && Number.isFinite(units) && price) amount = units * price;
+  if (!Number.isFinite(units) && Number.isFinite(amount) && price) units = amount / price;
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+  const now = new Date();
+  const pos = {
+    id: Date.now() + Math.floor(Math.random() * 1000),
+    asset: symbol, name: meta.name, currency: meta.currency,
+    amount: Math.round(amount * 100) / 100,
+    units: Number.isFinite(units) ? units : undefined,
+    buyPrice: price,
+    date: now.toLocaleDateString('fr-FR'),
+    dateISO: now.toISOString().slice(0, 10),
+    plan: (a && price) ? frozenPlanFor(a, price, s) : undefined,
+    log: [], closed: null,
+  };
+  if (price) upsertPositionLog(pos, price);
+  s.trades.push(pos);
+  saveStore(s);
+  renderPortfolio();
+  return pos;
+}
+
+let investCtx = null;
+function openInvest(a) {
+  const s = fullStore();
+  const cur = a.currency;
+  const price = a.price;
+  investCtx = { a };
+  const fp = frozenPlanFor(a, price, s);
+  $('#invest-title').textContent = `Investir — ${a.name} (${a.symbol})`;
+  const planLine = fp
+    ? `<p class="invest-plan">🛡️ Plan figé à l'achat : stop <b>${fmtPrice(fp.stop, cur)}</b> (−${fp.stopPct} %) · objectif <b>${fmtPrice(fp.target, cur)}</b> (+${fp.targetPct} %). Ces niveaux ne bougeront plus : c'est ta boussole pour les jours qui viennent.</p>`
+    : '<p class="sub">Plan indisponible pour cet actif : la position sera suivie sans stop figé.</p>';
+  $('#invest-body').innerHTML = `
+    <p class="sub">Cours actuel : <b>${fmtPrice(price, cur)}</b>. Indique ce que tu as <b>réellement</b> acheté de ton côté — TradePilot suivra cette position jour après jour avec une consigne stable.</p>
+    ${planLine}
+    <form id="invest-form">
+      <div class="invest-toggle">
+        <label><input type="radio" name="invest-mode" value="amount" checked> Montant (€)</label>
+        <label><input type="radio" name="invest-mode" value="units"> Quantité</label>
+      </div>
+      <div class="goal-row">
+        <label class="invest-field" id="invest-qty-label">Montant investi (€)
+          <input type="number" id="invest-qty" step="any" min="0" placeholder="ex : 50" required>
+        </label>
+        <label class="invest-field">Prix d'achat (${cur})
+          <input type="number" id="invest-price" step="any" min="0" value="${price}">
+        </label>
+      </div>
+      <p id="invest-preview" class="sub"></p>
+      <button type="submit" class="btn">✅ Valider mon achat</button>
+    </form>`;
+  const qtyLabel = $('#invest-qty-label');
+  const qtyInput = $('#invest-qty');
+  const priceInput = $('#invest-price');
+  const preview = $('#invest-preview');
+  const mode = () => document.querySelector('input[name="invest-mode"]:checked').value;
+  const refresh = () => {
+    const m = mode();
+    qtyLabel.childNodes[0].nodeValue = m === 'amount' ? 'Montant investi (€) ' : `Quantité (${a.symbol}) `;
+    qtyInput.placeholder = m === 'amount' ? 'ex : 50' : 'ex : 0.25';
+    const v = parseFloat(qtyInput.value);
+    const p = parseFloat(priceInput.value) || price;
+    if (Number.isFinite(v) && v > 0 && p > 0) {
+      preview.innerHTML = m === 'amount'
+        ? `≈ <b>${(v / p).toLocaleString('fr-FR', { maximumFractionDigits: 6 })} ${a.symbol}</b> au prix de ${fmtPrice(p, cur)}.`
+        : `≈ <b>${(v * p).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} €</b> investis au prix de ${fmtPrice(p, cur)}.`;
+    } else preview.textContent = '';
+  };
+  $('#invest-form').querySelectorAll('input').forEach(el => el.addEventListener('input', refresh));
+  $('#invest-form').querySelectorAll('input[name="invest-mode"]').forEach(el => el.addEventListener('change', refresh));
+  $('#invest-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const m = mode();
+    const v = parseFloat(qtyInput.value);
+    const p = parseFloat(priceInput.value);
+    if (!Number.isFinite(v) || v <= 0) return;
+    const created = addPosition({
+      symbol: a.symbol,
+      amount: m === 'amount' ? v : undefined,
+      units: m === 'units' ? v : undefined,
+      buyPrice: Number.isFinite(p) && p > 0 ? p : price,
+    });
+    $('#invest-modal').classList.add('hidden');
+    if (created) {
+      banner(`✅ Position ${a.symbol} enregistrée. Retrouve son suivi dans l'onglet Objectif → « Mes positions ».`, 'info');
+    }
+  });
+  refresh();
+  $('#invest-modal').classList.remove('hidden');
+}
+
+function bindInvest() {
+  $('#invest-close').addEventListener('click', () => $('#invest-modal').classList.add('hidden'));
+  $('#invest-modal').addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'invest-modal') $('#invest-modal').classList.add('hidden');
   });
 }
 
@@ -732,31 +898,165 @@ function renderPortfolio() {
   renderPositions();
 }
 
+// Consigne stable affichée par position (mappée depuis positionStatus).
+const VERDICT = {
+  STOP: { cls: 'AVOID', icon: '🛑', label: 'Stop touché — vends',
+    advice: 'Le cours est passé sous ton stop de protection. Vends sans discuter : le plan est terminé, on protège le capital pour repartir ailleurs.' },
+  TARGET: { cls: 'STRONG_BUY', icon: '🎯', label: 'Objectif atteint',
+    advice: 'Bravo. Vends au moins la moitié pour sécuriser le gain, et remonte ton stop au prix d\'achat pour laisser courir le reste sans risque.' },
+  HOLD_UP: { cls: 'BUY', icon: '✅', label: 'Garde',
+    advice: 'Tu es en gain, entre ton prix d\'achat et l\'objectif. Le plan se déroule : ne touche à rien, laisse courir jusqu\'à l\'objectif ou le stop.' },
+  HOLD_DOWN: { cls: 'WATCH', icon: '⏳', label: 'Garde, patiente',
+    advice: 'Tu es sous ton prix d\'achat mais au-dessus du stop. Une position qui respire, c\'est normal : ne vends pas dans la panique, le stop fera son travail si nécessaire.' },
+  UNKNOWN: { cls: 'WATCH', icon: '❔', label: 'Suivi indisponible',
+    advice: 'Cours ou prix d\'achat manquant : la consigne se calculera dès que le cours sera connu.' },
+};
+
+function daysSince(dateISO) {
+  if (!dateISO) return null;
+  const start = Date.parse(dateISO + 'T00:00:00Z');
+  if (!Number.isFinite(start)) return null;
+  return Math.max(0, Math.floor((Date.now() - start) / 86400000));
+}
+
+function positionCard(pos) {
+  const cur = pos.currency || '€';
+  const current = currentPrice(pos.asset);
+  const st = positionStatus(pos, current);
+  const v = VERDICT[st.code] || VERDICT.UNKNOWN;
+  const value = (Number.isFinite(current) && Number.isFinite(pos.buyPrice) && pos.buyPrice > 0 && Number.isFinite(pos.amount))
+    ? pos.amount * (current / pos.buyPrice) : null;
+  const plAbs = value !== null ? value - pos.amount : null;
+  const li = document.createElement('li');
+  li.className = 'position-card';
+  const days = daysSince(pos.dateISO);
+  const heldTxt = days === null ? '' : days === 0 ? "aujourd'hui" : `depuis ${days} j`;
+  const qty = Number.isFinite(pos.units)
+    ? `${pos.units.toLocaleString('fr-FR', { maximumFractionDigits: 6 })} ${pos.asset}`
+    : `${pos.amount.toLocaleString('fr-FR')} €`;
+
+  // Barre stop → objectif avec le repère du cours actuel.
+  let bar = '';
+  if (st.progressPct !== null) {
+    const buyMark = (st.target > st.stop)
+      ? Math.max(0, Math.min(100, (pos.buyPrice - st.stop) / (st.target - st.stop) * 100)) : 50;
+    bar = `<div class="pos-progress" title="Position du cours entre le stop et l'objectif">
+        <div class="pos-progress-fill ${v.cls}" style="width:${st.progressPct}%"></div>
+        <span class="pos-mark buy" style="left:${buyMark}%" title="Ton prix d'achat"></span>
+      </div>
+      <div class="pos-progress-legend"><span>🛑 ${fmtPrice(st.stop, cur)}</span><span>🎯 ${fmtPrice(st.target, cur)}</span></div>`;
+  }
+
+  // Mini-historique de la valeur (suivi multi-jours).
+  const log = Array.isArray(pos.log) ? pos.log : [];
+  const history = log.length >= 2
+    ? '<canvas class="pos-spark"></canvas>'
+    : '<small class="sub">📅 Le suivi s\'enrichit chaque jour : reviens demain pour voir la courbe.</small>';
+
+  const valLine = value === null
+    ? '<small class="sub">Valorisation indisponible (cours ou prix d\'achat manquant).</small>'
+    : `<b class="${plAbs >= 0 ? 'up' : 'down'}">${value.toFixed(2)} €</b> ` +
+      `<span class="${plAbs >= 0 ? 'up' : 'down'}">(${plAbs >= 0 ? '+' : ''}${plAbs.toFixed(2)} € · ${fmtPct(st.plPct)})</span>`;
+
+  li.innerHTML = `
+    <div class="pos-top">
+      <div>
+        <b>${pos.name || pos.asset}</b> <span class="sym">${pos.asset}</span>
+        <small class="sub">${qty}${pos.buyPrice ? ` @ ${fmtPrice(pos.buyPrice, cur)}` : ''} · ${heldTxt}</small>
+      </div>
+      <button class="pos-del" title="Supprimer cette position">✕</button>
+    </div>
+    <div class="pos-valuation">${valLine}</div>
+    <div class="pos-verdict ${v.cls}">
+      <span class="badge ${v.cls}">${v.icon} ${v.label}</span>
+      <p>${v.advice}</p>
+    </div>
+    ${bar}
+    <div class="pos-history">${history}</div>
+    <div class="pos-actions">
+      <button class="chip pos-sell">💸 J'ai vendu</button>
+    </div>`;
+
+  li.querySelector('.pos-del').onclick = () => removePosition(pos.id);
+  li.querySelector('.pos-sell').onclick = () => sellPosition(pos.id);
+  if (log.length >= 2) {
+    drawSpark(li.querySelector('.pos-spark'), log.map(e => e.value), 240, 46);
+  }
+  return li;
+}
+
+function removePosition(id) {
+  const s = fullStore();
+  const i = s.trades.findIndex(t => t.id === id);
+  if (i >= 0) { s.trades.splice(i, 1); saveStore(s); renderPortfolio(); }
+}
+
+function sellPosition(id) {
+  const s = fullStore();
+  const pos = s.trades.find(t => t.id === id);
+  if (!pos) return;
+  const current = currentPrice(pos.asset);
+  const st = positionStatus(pos, current);
+  const now = new Date();
+  pos.closed = {
+    price: Number.isFinite(current) ? current : pos.buyPrice,
+    plPct: st.plPct,
+    date: now.toLocaleDateString('fr-FR'),
+    dateISO: now.toISOString().slice(0, 10),
+  };
+  saveStore(s);
+  renderPortfolio();
+}
+
 function renderPositions() {
   const s = fullStore();
-  const { rows, totals } = valuePositions(s.trades, currentPrice);
+  let changed = false;
+  s.trades.forEach((p, i) => { if (!p.id) { p.id = Date.now() + i; changed = true; } });
+  for (const pos of s.trades) {
+    if (pos.closed) continue;
+    const cur = currentPrice(pos.asset);
+    if (cur !== null && upsertPositionLog(pos, cur)) changed = true;
+  }
+  if (changed) saveStore(s);
+
+  const open = s.trades.filter(p => !p.closed);
   const ul = $('#trade-list');
   ul.innerHTML = '';
-  rows.forEach((t, i) => {
-    const li = document.createElement('li');
-    const valuation = t.value === null
-      ? '<small style="color:var(--muted)">valorisation indisponible (prix d\'achat ou cours manquant)</small>'
-      : `<small class="${t.plPct >= 0 ? 'up' : 'down'}">→ ${t.value.toFixed(2)} € (${fmtPct(t.plPct)})</small>`;
-    li.innerHTML = `<span>${t.asset} — ${t.amount.toLocaleString('fr-FR')} €` +
-      `${t.buyPrice ? ` @ ${t.buyPrice}` : ''} <small style="color:var(--muted)">(${t.date})</small><br>${valuation}</span>` +
-      `<button title="Supprimer">✕</button>`;
-    li.querySelector('button').onclick = () => { s.trades.splice(i, 1); saveStore(s); renderPortfolio(); };
-    ul.appendChild(li);
-  });
+  open.forEach(pos => ul.appendChild(positionCard(pos)));
+
+  const { totals } = valuePositions(open, currentPrice);
   const tot = $('#positions-total');
   if (totals.valuedCount > 0) {
-    tot.innerHTML = `Valeur totale des positions : <b>${totals.value.toFixed(2)} €</b> pour ` +
+    tot.innerHTML = `Valeur totale des positions ouvertes : <b>${totals.value.toFixed(2)} €</b> pour ` +
       `${totals.invested.toFixed(2)} € investis — <b class="${totals.plAbs >= 0 ? 'up' : 'down'}">` +
       `${totals.plAbs >= 0 ? '+' : ''}${totals.plAbs.toFixed(2)} € (${fmtPct(totals.plPct)})</b>. ` +
       `Actualisée en direct avec les cours.`;
   } else {
-    tot.textContent = s.trades.length ? '' : 'Ajoute ta première position pour suivre ta plus-value en direct.';
+    tot.textContent = open.length ? '' : 'Clique sur 💰 Investir depuis un actif (ou ajoute une position ci-dessous) pour lancer le suivi jour après jour.';
   }
+  renderClosedPositions(s);
+}
+
+function renderClosedPositions(s) {
+  const box = $('#closed-positions');
+  if (!box) return;
+  const closed = s.trades.filter(p => p.closed);
+  if (!closed.length) { box.innerHTML = ''; return; }
+  const rows = closed.map(p => {
+    const pl = p.closed.plPct;
+    const cls = Number.isFinite(pl) ? (pl >= 0 ? 'up' : 'down') : 'sub';
+    const plTxt = Number.isFinite(pl) ? `${pl >= 0 ? '+' : ''}${fmtPct(pl)}` : '—';
+    const i = s.trades.indexOf(p);
+    return `<li><span>${p.name || p.asset} <small class="sub">${p.asset} · acheté ${p.date}, vendu ${p.closed.date}</small></span>` +
+      `<span class="${cls}">${plTxt}</span>` +
+      `<button class="pos-del" data-i="${i}" title="Retirer de l'historique">✕</button></li>`;
+  }).join('');
+  box.innerHTML = `<h3>📒 Positions clôturées</h3><ul id="closed-list">${rows}</ul>`;
+  box.querySelectorAll('.pos-del').forEach(b => b.onclick = () => {
+    const st = fullStore();
+    st.trades.splice(parseInt(b.dataset.i, 10), 1);
+    saveStore(st); renderPortfolio();
+  });
 }
 
 function bindPortfolio() {
@@ -794,19 +1094,13 @@ function bindPortfolio() {
   });
   $('#trade-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    const s = fullStore();
-    const asset = $('#trade-asset').value.trim().toUpperCase();
-    let buyPrice = parseFloat($('#trade-buy').value);
-    if (!Number.isFinite(buyPrice) || buyPrice <= 0) buyPrice = currentPrice(asset);
-    s.trades.push({
-      asset,
+    const buyPrice = parseFloat($('#trade-buy').value);
+    addPosition({
+      symbol: $('#trade-asset').value.trim().toUpperCase(),
       amount: parseFloat($('#trade-amount').value),
       buyPrice: Number.isFinite(buyPrice) && buyPrice > 0 ? buyPrice : undefined,
-      date: new Date().toLocaleDateString('fr-FR'),
     });
-    saveStore(s);
     e.target.reset();
-    renderPortfolio();
   });
 }
 
@@ -843,6 +1137,7 @@ bindBackup();
 bindToolbars();
 bindChart();
 bindPlan();
+bindInvest();
 setInterval(refreshCrypto, REFRESH_MS);
 setInterval(refreshStocks, REFRESH_MS * 3);
 setInterval(refreshHistory, REFRESH_MS * 6);

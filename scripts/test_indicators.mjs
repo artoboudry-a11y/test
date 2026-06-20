@@ -1,7 +1,7 @@
 // Tests unitaires des indicateurs — exécutés en local et en CI.
 import { sma, ema, rsi, macd, momentum, volumeRatio, computeScore, computeScoreFromMetrics,
   signalFromScore, volatility, riskLevel, explainFromMetrics, evaluateAlerts, valuePositions,
-  filterAssets, pinFavorites, sanitizeImportedStore, buildTradePlan, measureProgress }
+  filterAssets, pinFavorites, sanitizeImportedStore, buildTradePlan, measureProgress, positionStatus }
   from '../indicators.js';
 
 let failures = 0;
@@ -141,6 +141,41 @@ check('position sans cours non valorisée', pv.rows[3].value === null);
 check('totaux sur les positions valorisées uniquement', approx(pv.totals.invested, 15) && approx(pv.totals.value, 14.5));
 check('P/L total cohérent', approx(pv.totals.plAbs, -0.5));
 check('portefeuille vide → pas de crash', valuePositions([], () => null).totals.plPct === null);
+
+console.log('— Consigne stable d’une position (positionStatus) —');
+const posPlan = { buyPrice: 100, plan: { stop: 90, target: 120 } };
+check('au-dessus de l’achat, sous l’objectif → garder (HOLD_UP)', positionStatus(posPlan, 110).code === 'HOLD_UP');
+check('sous l’achat, au-dessus du stop → patienter (HOLD_DOWN)', positionStatus(posPlan, 95).code === 'HOLD_DOWN');
+check('cours ≤ stop → STOP', positionStatus(posPlan, 90).code === 'STOP');
+check('cours ≥ objectif → TARGET', positionStatus(posPlan, 125).code === 'TARGET');
+check('% de plus-value correct', approx(positionStatus(posPlan, 110).plPct, 10));
+const stProg = positionStatus(posPlan, 105);
+check('progression stop→objectif (105 sur 90–120 = 50 %)', approx(stProg.progressPct, 50, 0.01));
+check('progression bornée à 100 max', positionStatus(posPlan, 200).progressPct === 100);
+check('consigne stable : même prix → même code à 2 jours d’intervalle',
+  positionStatus(posPlan, 110).code === positionStatus(posPlan, 110).code);
+check('cours manquant → UNKNOWN, pas de crash', positionStatus(posPlan, null).code === 'UNKNOWN');
+check('prix d’achat manquant → UNKNOWN', positionStatus({ buyPrice: 0, plan: {} }, 100).code === 'UNKNOWN');
+check('sans plan figé : gain → HOLD_UP, sans progression', (() => {
+  const r = positionStatus({ buyPrice: 100 }, 110);
+  return r.code === 'HOLD_UP' && r.progressPct === null;
+})());
+
+console.log('— Import : positions enrichies —');
+const impPos = sanitizeImportedStore({
+  trades: [{
+    asset: 'btc', name: 'Bitcoin', currency: '$', amount: 50, units: 0.5, buyPrice: 100,
+    id: 42, date: '01/06/2026', dateISO: '2026-06-01',
+    plan: { stop: 90, target: 120, stopPct: 10, targetPct: 20 },
+    log: [{ date: '2026-06-01', price: 100, value: 50 }, { date: 'bad', price: 1, value: 1 }],
+    closed: { price: 115, plPct: 15, date: '05/06/2026', dateISO: '2026-06-05' },
+  }],
+});
+check('position importée conserve le plan figé', impPos.trades[0].plan.stop === 90 && impPos.trades[0].plan.target === 120);
+check('position importée conserve la quantité', impPos.trades[0].units === 0.5);
+check('historique importé nettoyé (entrée invalide retirée)', impPos.trades[0].log.length === 1);
+check('clôture importée conservée', impPos.trades[0].closed.price === 115);
+check('symbole importé normalisé en majuscules', impPos.trades[0].asset === 'BTC');
 
 console.log('— Recherche d’actifs —');
 const univers = [
