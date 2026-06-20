@@ -858,7 +858,20 @@ function checkAlerts() {
 let lastAlertTick = 0;
 function maybeCheckAlerts() {
   const now = Date.now();
-  if (now - lastAlertTick > 5000) { lastAlertTick = now; checkAlerts(); }
+  if (now - lastAlertTick > 5000) { lastAlertTick = now; checkAlerts(); renderPositions(); }
+}
+
+// Notifie une fois quand une position suivie touche son stop ou son objectif.
+function notifyPosition(pos, st) {
+  const cur = pos.currency || '€';
+  const msg = st.code === 'TARGET'
+    ? `🎯 ${pos.asset} a atteint ton objectif (${fmtPrice(st.target, cur)}) ! Pense à vendre au moins la moitié et à remonter ton stop.`
+    : `🛑 ${pos.asset} a touché ton stop (${fmtPrice(st.stop, cur)}). La règle dit : vends pour protéger ton capital.`;
+  banner(msg, 'info');
+  try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch { /* non supporté */ }
+  if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+    try { new Notification('TradePilot — position', { body: msg, icon: 'icons/icon-192.png' }); } catch { /* sans notifications */ }
+  }
 }
 
 function renderPortfolio() {
@@ -998,14 +1011,26 @@ function sellPosition(id) {
   const current = currentPrice(pos.asset);
   const st = positionStatus(pos, current);
   const now = new Date();
+  // Résultat réalisé : valeur de sortie − montant investi. On le reporte sur
+  // le capital de l'onglet Objectif pour que ta progression reflète tes ventes.
+  const value = (Number.isFinite(current) && Number.isFinite(pos.buyPrice) && pos.buyPrice > 0 && Number.isFinite(pos.amount))
+    ? pos.amount * (current / pos.buyPrice) : null;
+  const pl = value !== null ? Math.round((value - pos.amount) * 100) / 100 : 0;
   pos.closed = {
     price: Number.isFinite(current) ? current : pos.buyPrice,
-    plPct: st.plPct,
+    plPct: st.plPct, pl,
     date: now.toLocaleDateString('fr-FR'),
     dateISO: now.toISOString().slice(0, 10),
   };
+  if (pl !== 0) {
+    s.capital = Math.max(0, Math.round((s.capital + pl) * 100) / 100);
+    recordCapital(s);
+  }
   saveStore(s);
   renderPortfolio();
+  banner(pl >= 0
+    ? `💸 Vente de ${pos.asset} : +${pl.toFixed(2)} € ajoutés à ton capital (${s.capital.toLocaleString('fr-FR')} €).`
+    : `💸 Vente de ${pos.asset} : ${pl.toFixed(2)} € retirés de ton capital (${s.capital.toLocaleString('fr-FR')} €).`, 'info');
 }
 
 function renderPositions() {
@@ -1016,6 +1041,13 @@ function renderPositions() {
     if (pos.closed) continue;
     const cur = currentPrice(pos.asset);
     if (cur !== null && upsertPositionLog(pos, cur)) changed = true;
+    const st = positionStatus(pos, cur);
+    if ((st.code === 'STOP' || st.code === 'TARGET') && pos.notified !== st.code) {
+      pos.notified = st.code; changed = true;
+      notifyPosition(pos, st);
+    } else if ((st.code === 'HOLD_UP' || st.code === 'HOLD_DOWN') && pos.notified) {
+      pos.notified = undefined; changed = true; // revenu dans la zone : on pourra re-notifier
+    }
   }
   if (changed) saveStore(s);
 
@@ -1043,12 +1075,14 @@ function renderClosedPositions(s) {
   const closed = s.trades.filter(p => p.closed);
   if (!closed.length) { box.innerHTML = ''; return; }
   const rows = closed.map(p => {
-    const pl = p.closed.plPct;
-    const cls = Number.isFinite(pl) ? (pl >= 0 ? 'up' : 'down') : 'sub';
-    const plTxt = Number.isFinite(pl) ? `${pl >= 0 ? '+' : ''}${fmtPct(pl)}` : '—';
+    const plPct = p.closed.plPct;
+    const plEur = p.closed.pl;
+    const cls = Number.isFinite(plPct) ? (plPct >= 0 ? 'up' : 'down') : 'sub';
+    const eurTxt = Number.isFinite(plEur) ? `${plEur >= 0 ? '+' : ''}${plEur.toFixed(2)} € · ` : '';
+    const pctTxt = Number.isFinite(plPct) ? fmtPct(plPct) : '—';
     const i = s.trades.indexOf(p);
     return `<li><span>${p.name || p.asset} <small class="sub">${p.asset} · acheté ${p.date}, vendu ${p.closed.date}</small></span>` +
-      `<span class="${cls}">${plTxt}</span>` +
+      `<span class="${cls}">${eurTxt}${pctTxt}</span>` +
       `<button class="pos-del" data-i="${i}" title="Retirer de l'historique">✕</button></li>`;
   }).join('');
   box.innerHTML = `<h3>📒 Positions clôturées</h3><ul id="closed-list">${rows}</ul>`;

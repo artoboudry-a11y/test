@@ -471,6 +471,7 @@ export function sanitizeImportedStore(raw) {
         const closed = t.closed && typeof t.closed === 'object' && Number.isFinite(t.closed.price) ? {
           price: t.closed.price,
           plPct: numOrU(t.closed.plPct),
+          pl: Number.isFinite(t.closed.pl) ? t.closed.pl : undefined,
           date: typeof t.closed.date === 'string' ? t.closed.date : '',
           dateISO: typeof t.closed.dateISO === 'string' ? t.closed.dateISO : '',
         } : null;

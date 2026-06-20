@@ -168,13 +168,13 @@ const impPos = sanitizeImportedStore({
     id: 42, date: '01/06/2026', dateISO: '2026-06-01',
     plan: { stop: 90, target: 120, stopPct: 10, targetPct: 20 },
     log: [{ date: '2026-06-01', price: 100, value: 50 }, { date: 'bad', price: 1, value: 1 }],
-    closed: { price: 115, plPct: 15, date: '05/06/2026', dateISO: '2026-06-05' },
+    closed: { price: 115, plPct: 15, pl: 7.5, date: '05/06/2026', dateISO: '2026-06-05' },
   }],
 });
 check('position importée conserve le plan figé', impPos.trades[0].plan.stop === 90 && impPos.trades[0].plan.target === 120);
 check('position importée conserve la quantité', impPos.trades[0].units === 0.5);
 check('historique importé nettoyé (entrée invalide retirée)', impPos.trades[0].log.length === 1);
-check('clôture importée conservée', impPos.trades[0].closed.price === 115);
+check('clôture importée conservée (prix + résultat €)', impPos.trades[0].closed.price === 115 && impPos.trades[0].closed.pl === 7.5);
 check('symbole importé normalisé en majuscules', impPos.trades[0].asset === 'BTC');
 
 console.log('— Recherche d’actifs —');
