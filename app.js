@@ -55,7 +55,7 @@ function drawSpark(canvas, values, w = 110, h = 34) {
   const min = Math.min(...values), max = Math.max(...values);
   const range = max - min || 1;
   const up = values[values.length - 1] >= values[0];
-  ctx.strokeStyle = up ? '#2bd576' : '#ff5a6a';
+  ctx.strokeStyle = up ? '#15a05a' : '#e0445a';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   values.forEach((v, i) => {
@@ -381,10 +381,10 @@ function drawChart(values) {
   const X = (i) => pad + (i / (values.length - 1)) * (w - pad * 2);
   const Y = (v) => h - pad - ((v - min) / range) * (h - pad * 2.4);
   const up = values[values.length - 1] >= values[0];
-  const col = up ? '#34d399' : '#fb7185';
+  const col = up ? '#15a05a' : '#e0445a';
   // Lignes de repère min / max
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-  ctx.fillStyle = 'rgba(147,160,196,0.9)';
+  ctx.strokeStyle = 'rgba(15,23,42,0.10)';
+  ctx.fillStyle = 'rgba(100,116,139,0.95)';
   ctx.font = '10px Inter, sans-serif';
   for (const v of [min, max]) {
     ctx.beginPath(); ctx.moveTo(pad, Y(v)); ctx.lineTo(w - pad, Y(v)); ctx.stroke();
@@ -392,8 +392,8 @@ function drawChart(values) {
   }
   // Aplat dégradé sous la courbe
   const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, up ? 'rgba(52,211,153,0.28)' : 'rgba(251,113,133,0.25)');
-  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  grad.addColorStop(0, up ? 'rgba(21,160,90,0.22)' : 'rgba(224,68,90,0.20)');
+  grad.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.beginPath();
   values.forEach((v, i) => i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)));
   ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke();
