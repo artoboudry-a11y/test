@@ -1,9 +1,57 @@
 {
- "updatedAt": "2026-07-02T20:17:38.828Z",
+ "updatedAt": "2026-07-02T21:41:43.500Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
  "stocks": [
+  {
+   "symbol": "LLY",
+   "name": "Eli Lilly",
+   "market": "US",
+   "cur": "$",
+   "price": 1213.91,
+   "changePct": 1.86,
+   "lastDate": "2026-07-02",
+   "score": 85,
+   "signal": {
+    "code": "STRONG_BUY",
+    "label": "ACHAT FORT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 24,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 12,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 15,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 4,
+     "max": 10
+    }
+   ],
+   "rsi": 67.4,
+   "mom7": 7.71,
+   "mom30": 13.73,
+   "volRatio": 1.11,
+   "ema20": 1144.59,
+   "ema50": 1083.02,
+   "macdHist": 4.4147
+  },
   {
    "symbol": "JPM",
    "name": "JPMorgan",
@@ -51,54 +99,6 @@
    "ema20": 324.78,
    "ema50": 315.72,
    "macdHist": 0.2251
-  },
-  {
-   "symbol": "LLY",
-   "name": "Eli Lilly",
-   "market": "US",
-   "cur": "$",
-   "price": 1210.5,
-   "changePct": 1.57,
-   "lastDate": "2026-07-02",
-   "score": 84,
-   "signal": {
-    "code": "STRONG_BUY",
-    "label": "ACHAT FORT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 24,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 12,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 15,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 4,
-     "max": 10
-    }
-   ],
-   "rsi": 67,
-   "mom7": 7.41,
-   "mom30": 13.41,
-   "volRatio": 1.09,
-   "ema20": 1144.27,
-   "ema50": 1082.88,
-   "macdHist": 4.197
   },
   {
    "symbol": "AAPL",
@@ -537,7 +537,7 @@
    "name": "S&P 500 (ETF SPY)",
    "market": "ETF",
    "cur": "$",
-   "price": 744.8,
+   "price": 744.78,
    "changePct": -0.13,
    "lastDate": "2026-07-02",
    "score": 68,
@@ -573,12 +573,12 @@
     }
    ],
    "rsi": 53.5,
-   "mom7": 0.8,
+   "mom7": 0.79,
    "mom30": -1.62,
-   "volRatio": 1.02,
+   "volRatio": 1.03,
    "ema20": 741.32,
    "ema50": 732.13,
-   "macdHist": -0.3157
+   "macdHist": -0.317
   },
   {
    "symbol": "AMZN",
@@ -729,7 +729,7 @@
    "name": "Meta",
    "market": "US",
    "cur": "$",
-   "price": 582.88,
+   "price": 582.9,
    "changePct": -4.9,
    "lastDate": "2026-07-02",
    "score": 58,
@@ -768,9 +768,9 @@
    "mom7": 4.92,
    "mom30": -3.37,
    "volRatio": 1.08,
-   "ema20": 579.67,
+   "ema20": 579.68,
    "ema50": 596.86,
-   "macdHist": 3.6795
+   "macdHist": 3.6805
   },
   {
    "symbol": "NFLX",
@@ -1202,7 +1202,7 @@
    "volRatio": 0.99,
    "ema20": 720.81,
    "ema50": 702.66,
-   "macdHist": -2.1698
+   "macdHist": -2.1701
   },
   {
    "symbol": "TSLA",
@@ -1257,10 +1257,10 @@
    "name": "ExxonMobil",
    "market": "US",
    "cur": "$",
-   "price": 136.96,
-   "changePct": 0.5,
+   "price": 137.09,
+   "changePct": 0.59,
    "lastDate": "2026-07-02",
-   "score": 20,
+   "score": 21,
    "signal": {
     "code": "AVOID",
     "label": "ÉVITER"
@@ -1292,13 +1292,13 @@
      "max": 10
     }
    ],
-   "rsi": 36.3,
-   "mom7": 0.97,
-   "mom30": -8.1,
-   "volRatio": 1.11,
-   "ema20": 141.11,
-   "ema50": 145.8,
-   "macdHist": -0.2477
+   "rsi": 36.7,
+   "mom7": 1.07,
+   "mom30": -8.01,
+   "volRatio": 1.12,
+   "ema20": 141.12,
+   "ema50": 145.81,
+   "macdHist": -0.2394
   },
   {
    "symbol": "NVDA",
