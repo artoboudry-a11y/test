@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-07-03T20:11:08.626Z",
+ "updatedAt": "2026-07-03T21:38:48.247Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -1013,6 +1013,54 @@
    "macdHist": 1.2863
   },
   {
+   "symbol": "QQQ",
+   "name": "Nasdaq 100 (ETF QQQ)",
+   "market": "ETF",
+   "cur": "$",
+   "price": 712.6,
+   "changePct": -1.73,
+   "lastDate": "2026-07-03",
+   "score": 56,
+   "signal": {
+    "code": "BUY",
+    "label": "ACHAT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 20,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 8,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 6,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 2,
+     "max": 10
+    }
+   ],
+   "rsi": 48.1,
+   "mom7": 0.77,
+   "mom30": -4.64,
+   "volRatio": 0.99,
+   "ema20": 720.81,
+   "ema50": 702.66,
+   "macdHist": -2.1701
+  },
+  {
    "symbol": "AMD",
    "name": "AMD",
    "market": "US",
@@ -1107,54 +1155,6 @@
    "ema20": 74.89,
    "ema50": 75.84,
    "macdHist": 0.1755
-  },
-  {
-   "symbol": "QQQ",
-   "name": "Nasdaq 100 (ETF QQQ)",
-   "market": "ETF",
-   "cur": "$",
-   "price": 712.6,
-   "changePct": -1.73,
-   "lastDate": "2026-07-03",
-   "score": 52,
-   "signal": {
-    "code": "WATCH",
-    "label": "SURVEILLER"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 20,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 4,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 6,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 2,
-     "max": 10
-    }
-   ],
-   "rsi": 48.1,
-   "mom7": -1.83,
-   "mom30": -4.01,
-   "volRatio": 0.99,
-   "ema20": 720.81,
-   "ema50": 702.66,
-   "macdHist": -2.1701
   },
   {
    "symbol": "TSLA",
