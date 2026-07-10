@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-07-10T20:17:13.971Z",
+ "updatedAt": "2026-07-10T21:32:55.426Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -47,7 +47,7 @@
    "rsi": 62.9,
    "mom7": 7.21,
    "mom30": 8.45,
-   "volRatio": 1.18,
+   "volRatio": 1.19,
    "ema20": 302.08,
    "ema50": 294.78,
    "macdHist": 2.7208
@@ -153,7 +153,7 @@
    "name": "S&P 500 (ETF SPY)",
    "market": "ETF",
    "cur": "$",
-   "price": 754.94,
+   "price": 754.95,
    "changePct": 0.43,
    "lastDate": "2026-07-10",
    "score": 78,
@@ -194,7 +194,7 @@
    "volRatio": 0.88,
    "ema20": 744.92,
    "ema50": 735.42,
-   "macdHist": 0.9444
+   "macdHist": 0.945
   },
   {
    "symbol": "META",
@@ -393,8 +393,8 @@
    "name": "Eli Lilly",
    "market": "US",
    "cur": "$",
-   "price": 1188.01,
-   "changePct": -2.38,
+   "price": 1188.58,
+   "changePct": -2.33,
    "lastDate": "2026-07-10",
    "score": 68,
    "signal": {
@@ -428,13 +428,13 @@
      "max": 10
     }
    ],
-   "rsi": 57,
-   "mom7": -0.42,
-   "mom30": 3.08,
-   "volRatio": 1,
-   "ema20": 1170.47,
-   "ema50": 1106.2,
-   "macdHist": -0.9134
+   "rsi": 57.1,
+   "mom7": -0.37,
+   "mom30": 3.13,
+   "volRatio": 1.01,
+   "ema20": 1170.53,
+   "ema50": 1106.23,
+   "macdHist": -0.877
   },
   {
    "symbol": "NVDA",
@@ -767,7 +767,7 @@
    "rsi": 50.9,
    "mom7": 1.55,
    "mom30": 0.71,
-   "volRatio": 1.19,
+   "volRatio": 1.2,
    "ema20": 243.38,
    "ema50": 245.5,
    "macdHist": 1.7526
@@ -1199,7 +1199,7 @@
    "rsi": 47,
    "mom7": 0.2,
    "mom30": -4.27,
-   "volRatio": 0.74,
+   "volRatio": 0.75,
    "ema20": 164.34,
    "ema50": 171.28,
    "macdHist": 1.5578
@@ -1305,8 +1305,8 @@
    "name": "ExxonMobil",
    "market": "US",
    "cur": "$",
-   "price": 138.83,
-   "changePct": 1,
+   "price": 138.88,
+   "changePct": 1.03,
    "lastDate": "2026-07-10",
    "score": 27,
    "signal": {
@@ -1340,13 +1340,13 @@
      "max": 10
     }
    ],
-   "rsi": 44.1,
-   "mom7": 1.22,
-   "mom30": -8.2,
-   "volRatio": 0.91,
+   "rsi": 44.3,
+   "mom7": 1.26,
+   "mom30": -8.17,
+   "volRatio": 0.92,
    "ema20": 140.33,
-   "ema50": 144.59,
-   "macdHist": 0.5725
+   "ema50": 144.6,
+   "macdHist": 0.5757
   },
   {
    "symbol": "NFLX",
@@ -1391,7 +1391,7 @@
    "rsi": 38,
    "mom7": -2.29,
    "mom30": -10.21,
-   "volRatio": 1,
+   "volRatio": 1.01,
    "ema20": 76.4,
    "ema50": 81.3,
    "macdHist": 0.5302
