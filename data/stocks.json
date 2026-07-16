@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-07-16T20:24:33.676Z",
+ "updatedAt": "2026-07-16T21:30:38.390Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -156,7 +156,7 @@
    "price": 333.26,
    "changePct": 1.76,
    "lastDate": "2026-07-16",
-   "score": 80,
+   "score": 81,
    "signal": {
     "code": "STRONG_BUY",
     "label": "ACHAT FORT"
@@ -297,7 +297,7 @@
    "name": "S&P 500 (ETF SPY)",
    "market": "ETF",
    "cur": "$",
-   "price": 750.77,
+   "price": 750.72,
    "changePct": -0.54,
    "lastDate": "2026-07-16",
    "score": 74,
@@ -333,12 +333,12 @@
     }
    ],
    "rsi": 54.4,
-   "mom7": 0.46,
-   "mom30": -0.5,
+   "mom7": 0.45,
+   "mom30": -0.51,
    "volRatio": 0.77,
-   "ema20": 747.17,
+   "ema20": 747.16,
    "ema50": 737.83,
-   "macdHist": 0.5495
+   "macdHist": 0.5463
   },
   {
    "symbol": "BNP",
@@ -1161,8 +1161,8 @@
    "name": "Nasdaq 100 (ETF QQQ)",
    "market": "ETF",
    "cur": "$",
-   "price": 705.89,
-   "changePct": -1.65,
+   "price": 705.94,
+   "changePct": -1.64,
    "lastDate": "2026-07-16",
    "score": 36,
    "signal": {
@@ -1197,12 +1197,12 @@
     }
    ],
    "rsi": 45.6,
-   "mom7": -1.73,
-   "mom30": -4.9,
-   "volRatio": 0.74,
+   "mom7": -1.72,
+   "mom30": -4.89,
+   "volRatio": 0.75,
    "ema20": 717.9,
    "ema50": 706.76,
-   "macdHist": -1.7994
+   "macdHist": -1.7962
   },
   {
    "symbol": "SAP",
@@ -1391,7 +1391,7 @@
    "rsi": 42,
    "mom7": 0.07,
    "mom30": -9.22,
-   "volRatio": 0.9,
+   "volRatio": 0.91,
    "ema20": 75.57,
    "ema50": 80.2,
    "macdHist": 0.4227
