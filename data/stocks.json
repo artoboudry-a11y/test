@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-03T20:41:36.011Z",
+ "updatedAt": "2026-08-03T21:59:40.907Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -424,7 +424,7 @@
     },
     {
      "label": "Volume",
-     "pts": 2,
+     "pts": 3,
      "max": 10
     }
    ],
@@ -1164,7 +1164,7 @@
    "price": 125.65,
    "changePct": 2.1,
    "lastDate": "2026-08-03",
-   "score": 27,
+   "score": 28,
    "signal": {
     "code": "AVOID",
     "label": "ÉVITER"
@@ -1192,14 +1192,14 @@
     },
     {
      "label": "Volume",
-     "pts": 0,
+     "pts": 1,
      "max": 10
     }
    ],
    "rsi": 47.7,
    "mom7": -0.4,
    "mom30": -2.59,
-   "volRatio": 0.83,
+   "volRatio": 0.85,
    "ema20": 126.8,
    "ema50": 130.12,
    "macdHist": -0.4741
