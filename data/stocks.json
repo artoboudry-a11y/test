@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-04T22:05:29.911Z",
+ "updatedAt": "2026-08-05T08:21:59.350Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -11,7 +11,7 @@
    "cur": "$",
    "price": 190.99,
    "changePct": 2.71,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 92,
    "signal": {
     "code": "STRONG_BUY",
@@ -57,10 +57,10 @@
    "name": "SAP",
    "market": "EU",
    "cur": "€",
-   "price": 167.38,
-   "changePct": 1.66,
-   "lastDate": "2026-08-04",
-   "score": 89,
+   "price": 168.42,
+   "changePct": 0.62,
+   "lastDate": "2026-08-05",
+   "score": 88,
    "signal": {
     "code": "STRONG_BUY",
     "label": "ACHAT FORT"
@@ -88,17 +88,17 @@
     },
     {
      "label": "Volume",
-     "pts": 7,
+     "pts": 6,
      "max": 10
     }
    ],
-   "rsi": 69.1,
-   "mom7": 9.97,
-   "mom30": 18.29,
-   "volRatio": 1.35,
-   "ema20": 149.12,
-   "ema50": 146.46,
-   "macdHist": 3.2554
+   "rsi": 69.7,
+   "mom7": 5.37,
+   "mom30": 19.68,
+   "volRatio": 1.29,
+   "ema20": 150.96,
+   "ema50": 147.32,
+   "macdHist": 3.2165
   },
   {
    "symbol": "AMZN",
@@ -107,7 +107,7 @@
    "cur": "$",
    "price": 277.42,
    "changePct": -2.32,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 85,
    "signal": {
     "code": "STRONG_BUY",
@@ -149,109 +149,13 @@
    "macdHist": 4.5846
   },
   {
-   "symbol": "TTE",
-   "name": "TotalEnergies",
-   "market": "FR",
-   "cur": "€",
-   "price": 74.25,
-   "changePct": -2.85,
-   "lastDate": "2026-08-04",
-   "score": 83,
-   "signal": {
-    "code": "STRONG_BUY",
-    "label": "ACHAT FORT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 15,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 15,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 3,
-     "max": 10
-    }
-   ],
-   "rsi": 54.1,
-   "mom7": 0.34,
-   "mom30": 10.57,
-   "volRatio": 1.04,
-   "ema20": 73.53,
-   "ema50": 73.06,
-   "macdHist": 0.3925
-  },
-  {
-   "symbol": "AIR",
-   "name": "Airbus",
-   "market": "FR",
-   "cur": "€",
-   "price": 214.1,
-   "changePct": 2.93,
-   "lastDate": "2026-08-04",
-   "score": 83,
-   "signal": {
-    "code": "STRONG_BUY",
-    "label": "ACHAT FORT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 13,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 15,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 5,
-     "max": 10
-    }
-   ],
-   "rsi": 64.6,
-   "mom7": 1.66,
-   "mom30": 2.93,
-   "volRatio": 1.18,
-   "ema20": 203.07,
-   "ema50": 194.92,
-   "macdHist": 0.353
-  },
-  {
    "symbol": "XOM",
    "name": "ExxonMobil",
    "market": "US",
    "cur": "$",
    "price": 153.96,
    "changePct": -0.71,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 82,
    "signal": {
     "code": "STRONG_BUY",
@@ -293,14 +197,110 @@
    "macdHist": 0.4093
   },
   {
+   "symbol": "TTE",
+   "name": "TotalEnergies",
+   "market": "FR",
+   "cur": "€",
+   "price": 74.51,
+   "changePct": 0.35,
+   "lastDate": "2026-08-05",
+   "score": 81,
+   "signal": {
+    "code": "STRONG_BUY",
+    "label": "ACHAT FORT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 14,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 15,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 2,
+     "max": 10
+    }
+   ],
+   "rsi": 55,
+   "mom7": -0.39,
+   "mom30": 10.99,
+   "volRatio": 0.94,
+   "ema20": 73.62,
+   "ema50": 73.11,
+   "macdHist": 0.2478
+  },
+  {
+   "symbol": "AIR",
+   "name": "Airbus",
+   "market": "FR",
+   "cur": "€",
+   "price": 214.65,
+   "changePct": 0.26,
+   "lastDate": "2026-08-05",
+   "score": 81,
+   "signal": {
+    "code": "STRONG_BUY",
+    "label": "ACHAT FORT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 14,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 15,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 3,
+     "max": 10
+    }
+   ],
+   "rsi": 65,
+   "mom7": 1.51,
+   "mom30": 4.2,
+   "volRatio": 1.02,
+   "ema20": 204.18,
+   "ema50": 195.7,
+   "macdHist": 0.5698
+  },
+  {
    "symbol": "SU",
    "name": "Schneider Electric",
    "market": "FR",
    "cur": "€",
-   "price": 299.25,
-   "changePct": 3.15,
-   "lastDate": "2026-08-04",
-   "score": 82,
+   "price": 298.55,
+   "changePct": -0.23,
+   "lastDate": "2026-08-05",
+   "score": 81,
    "signal": {
     "code": "STRONG_BUY",
     "label": "ACHAT FORT"
@@ -332,23 +332,23 @@
      "max": 10
     }
    ],
-   "rsi": 67.6,
-   "mom7": 13.22,
-   "mom30": 8.68,
-   "volRatio": 1.14,
-   "ema20": 275.54,
-   "ema50": 272.75,
-   "macdHist": 3.6726
+   "rsi": 67,
+   "mom7": 15.27,
+   "mom30": 7.33,
+   "volRatio": 1.1,
+   "ema20": 277.73,
+   "ema50": 273.76,
+   "macdHist": 4.0161
   },
   {
    "symbol": "OR",
    "name": "L'Oréal",
    "market": "FR",
    "cur": "€",
-   "price": 387.5,
-   "changePct": -0.58,
-   "lastDate": "2026-08-04",
-   "score": 80,
+   "price": 390.65,
+   "changePct": 0.81,
+   "lastDate": "2026-08-05",
+   "score": 79,
    "signal": {
     "code": "STRONG_BUY",
     "label": "ACHAT FORT"
@@ -361,7 +361,7 @@
     },
     {
      "label": "Momentum",
-     "pts": 12,
+     "pts": 11,
      "max": 25
     },
     {
@@ -380,61 +380,13 @@
      "max": 10
     }
    ],
-   "rsi": 55,
-   "mom7": 1.68,
-   "mom30": 0.95,
-   "volRatio": 1.06,
-   "ema20": 382.93,
-   "ema50": 379.71,
-   "macdHist": 1.1206
-  },
-  {
-   "symbol": "BNP",
-   "name": "BNP Paribas",
-   "market": "FR",
-   "cur": "€",
-   "price": 111.88,
-   "changePct": 0.09,
-   "lastDate": "2026-08-04",
-   "score": 79,
-   "signal": {
-    "code": "STRONG_BUY",
-    "label": "ACHAT FORT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 18,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 12,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 15,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 4,
-     "max": 10
-    }
-   ],
-   "rsi": 70.9,
-   "mom7": 2.98,
-   "mom30": 8.73,
-   "volRatio": 1.12,
-   "ema20": 106.09,
-   "ema50": 101.52,
-   "macdHist": 0.5434
+   "rsi": 57.5,
+   "mom7": 0.53,
+   "mom30": 2.12,
+   "volRatio": 1.03,
+   "ema20": 383.67,
+   "ema50": 380.14,
+   "macdHist": 1.1964
   },
   {
    "symbol": "AVGO",
@@ -443,7 +395,7 @@
    "cur": "$",
    "price": 418.16,
    "changePct": 6.61,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 78,
    "signal": {
     "code": "STRONG_BUY",
@@ -491,7 +443,7 @@
    "cur": "$",
    "price": 771.33,
    "changePct": 1.8,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 78,
    "signal": {
     "code": "STRONG_BUY",
@@ -533,13 +485,61 @@
    "macdHist": 2.0054
   },
   {
+   "symbol": "BNP",
+   "name": "BNP Paribas",
+   "market": "FR",
+   "cur": "€",
+   "price": 112.16,
+   "changePct": 0.25,
+   "lastDate": "2026-08-05",
+   "score": 78,
+   "signal": {
+    "code": "STRONG_BUY",
+    "label": "ACHAT FORT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 19,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 12,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 15,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 2,
+     "max": 10
+    }
+   ],
+   "rsi": 71.4,
+   "mom7": 3.43,
+   "mom30": 8.81,
+   "volRatio": 1,
+   "ema20": 106.66,
+   "ema50": 101.93,
+   "macdHist": 0.5359
+  },
+  {
    "symbol": "MSFT",
    "name": "Microsoft",
    "market": "US",
    "cur": "$",
    "price": 492.81,
    "changePct": 1.06,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 76,
    "signal": {
     "code": "STRONG_BUY",
@@ -587,7 +587,7 @@
    "cur": "$",
    "price": 162.66,
    "changePct": 29.45,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 74,
    "signal": {
     "code": "STRONG_BUY",
@@ -635,7 +635,7 @@
    "cur": "$",
    "price": 369.59,
    "changePct": 1.07,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 71,
    "signal": {
     "code": "STRONG_BUY",
@@ -683,7 +683,7 @@
    "cur": "$",
    "price": 211.94,
    "changePct": 2.56,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 70,
    "signal": {
     "code": "STRONG_BUY",
@@ -731,7 +731,7 @@
    "cur": "$",
    "price": 377.65,
    "changePct": 1.11,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 70,
    "signal": {
     "code": "STRONG_BUY",
@@ -779,7 +779,7 @@
    "cur": "$",
    "price": 518.58,
    "changePct": 7,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 68,
    "signal": {
     "code": "BUY",
@@ -827,7 +827,7 @@
    "cur": "$",
    "price": 357.52,
    "changePct": 1.38,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 68,
    "signal": {
     "code": "BUY",
@@ -875,7 +875,7 @@
    "cur": "$",
    "price": 723.85,
    "changePct": 3.4,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 68,
    "signal": {
     "code": "BUY",
@@ -911,58 +911,10 @@
    "rsi": 58,
    "mom7": 7.04,
    "mom30": -0.24,
-   "volRatio": 1.12,
+   "volRatio": 1.13,
    "ema20": 699.44,
    "ema50": 700.81,
    "macdHist": 1.967
-  },
-  {
-   "symbol": "MC",
-   "name": "LVMH",
-   "market": "FR",
-   "cur": "€",
-   "price": 485,
-   "changePct": -0.39,
-   "lastDate": "2026-08-04",
-   "score": 66,
-   "signal": {
-    "code": "BUY",
-    "label": "ACHAT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 18,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 13,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 9,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 6,
-     "max": 10
-    }
-   ],
-   "rsi": 52.3,
-   "mom7": 3.32,
-   "mom30": -2.11,
-   "volRatio": 1.27,
-   "ema20": 479.81,
-   "ema50": 483.14,
-   "macdHist": 0.905
   },
   {
    "symbol": "UBER",
@@ -971,7 +923,7 @@
    "cur": "$",
    "price": 71.99,
    "changePct": 0.53,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 56,
    "signal": {
     "code": "BUY",
@@ -1019,7 +971,7 @@
    "cur": "$",
    "price": 73.57,
    "changePct": 0.33,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 51,
    "signal": {
     "code": "WATCH",
@@ -1065,10 +1017,10 @@
    "name": "Air Liquide",
    "market": "FR",
    "cur": "€",
-   "price": 172.06,
-   "changePct": 1.02,
-   "lastDate": "2026-08-04",
-   "score": 49,
+   "price": 173.6,
+   "changePct": 0.9,
+   "lastDate": "2026-08-05",
+   "score": 50,
    "signal": {
     "code": "WATCH",
     "label": "SURVEILLER"
@@ -1081,7 +1033,7 @@
     },
     {
      "label": "Momentum",
-     "pts": 6,
+     "pts": 8,
      "max": 25
     },
     {
@@ -1096,27 +1048,27 @@
     },
     {
      "label": "Volume",
-     "pts": 3,
+     "pts": 2,
      "max": 10
     }
    ],
-   "rsi": 46.6,
-   "mom7": -0.55,
-   "mom30": -4.18,
-   "volRatio": 1.03,
+   "rsi": 50.6,
+   "mom7": 0.49,
+   "mom30": -4.09,
+   "volRatio": 0.99,
    "ema20": 173.63,
-   "ema50": 171.45,
-   "macdHist": -0.9627
+   "ema50": 171.54,
+   "macdHist": -0.74
   },
   {
    "symbol": "ASML",
    "name": "ASML",
    "market": "EU",
    "cur": "€",
-   "price": 1472.6,
-   "changePct": 3.73,
-   "lastDate": "2026-08-04",
-   "score": 49,
+   "price": 1480.4,
+   "changePct": 0.53,
+   "lastDate": "2026-08-05",
+   "score": 48,
    "signal": {
     "code": "WATCH",
     "label": "SURVEILLER"
@@ -1148,13 +1100,61 @@
      "max": 10
     }
    ],
-   "rsi": 46.8,
-   "mom7": 6.17,
-   "mom30": -7.29,
-   "volRatio": 1.09,
-   "ema20": 1496.8,
-   "ema50": 1491.82,
-   "macdHist": -12.2481
+   "rsi": 47.6,
+   "mom7": 8.84,
+   "mom30": -8.05,
+   "volRatio": 1.02,
+   "ema20": 1495.23,
+   "ema50": 1491.38,
+   "macdHist": -7.3013
+  },
+  {
+   "symbol": "MC",
+   "name": "LVMH",
+   "market": "FR",
+   "cur": "€",
+   "price": 477.1,
+   "changePct": -1.63,
+   "lastDate": "2026-08-05",
+   "score": 41,
+   "signal": {
+    "code": "WATCH",
+    "label": "SURVEILLER"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 0,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 7,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 9,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 5,
+     "max": 10
+    }
+   ],
+   "rsi": 47.9,
+   "mom7": 0.02,
+   "mom30": -3.74,
+   "volRatio": 1.21,
+   "ema20": 479.55,
+   "ema50": 482.9,
+   "macdHist": 0.8495
   },
   {
    "symbol": "AAPL",
@@ -1163,7 +1163,7 @@
    "cur": "$",
    "price": 309.38,
    "changePct": 1.96,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 37,
    "signal": {
     "code": "AVOID",
@@ -1211,7 +1211,7 @@
    "cur": "$",
    "price": 587.94,
    "changePct": -0.39,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 27,
    "signal": {
     "code": "AVOID",
@@ -1259,7 +1259,7 @@
    "cur": "$",
    "price": 327.35,
    "changePct": 1.64,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 27,
    "signal": {
     "code": "AVOID",
@@ -1307,7 +1307,7 @@
    "cur": "$",
    "price": 1115.68,
    "changePct": -0.51,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 24,
    "signal": {
     "code": "AVOID",
@@ -1353,10 +1353,10 @@
    "name": "Sanofi",
    "market": "FR",
    "cur": "€",
-   "price": 74.39,
-   "changePct": -0.15,
-   "lastDate": "2026-08-04",
-   "score": 18,
+   "price": 74.21,
+   "changePct": -0.24,
+   "lastDate": "2026-08-05",
+   "score": 17,
    "signal": {
     "code": "AVOID",
     "label": "ÉVITER"
@@ -1388,13 +1388,13 @@
      "max": 10
     }
    ],
-   "rsi": 44.7,
-   "mom7": -4.64,
-   "mom30": -1.42,
-   "volRatio": 1.16,
-   "ema20": 75.95,
-   "ema50": 76.06,
-   "macdHist": -0.3604
+   "rsi": 44.2,
+   "mom7": -7.18,
+   "mom30": -2.61,
+   "volRatio": 1.12,
+   "ema20": 75.79,
+   "ema50": 75.99,
+   "macdHist": -0.3845
   },
   {
    "symbol": "COIN",
@@ -1403,7 +1403,7 @@
    "cur": "$",
    "price": 150.73,
    "changePct": 2.89,
-   "lastDate": "2026-08-04",
+   "lastDate": "2026-08-05",
    "score": 13,
    "signal": {
     "code": "AVOID",
