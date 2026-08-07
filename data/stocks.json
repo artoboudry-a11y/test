@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-07T21:07:11.324Z",
+ "updatedAt": "2026-08-07T22:03:45.008Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -527,7 +527,7 @@
    "rsi": 66,
    "mom7": 3.84,
    "mom30": 4.05,
-   "volRatio": 1.08,
+   "volRatio": 1.09,
    "ema20": 753.18,
    "ema50": 744.37,
    "macdHist": 3.3364
@@ -767,7 +767,7 @@
    "rsi": 53.7,
    "mom7": 3.24,
    "mom30": -2.9,
-   "volRatio": 1.08,
+   "volRatio": 1.09,
    "ema20": 1170.28,
    "ema50": 1141.83,
    "macdHist": -2.6515
@@ -815,10 +815,58 @@
    "rsi": 63,
    "mom7": 1.19,
    "mom30": 6.24,
-   "volRatio": 0.73,
+   "volRatio": 0.74,
    "ema20": 349.27,
    "ema50": 336.62,
    "macdHist": -0.1179
+  },
+  {
+   "symbol": "XOM",
+   "name": "ExxonMobil",
+   "market": "US",
+   "cur": "$",
+   "price": 153.04,
+   "changePct": -1.16,
+   "lastDate": "2026-08-07",
+   "score": 70,
+   "signal": {
+    "code": "STRONG_BUY",
+    "label": "ACHAT FORT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 12,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 6,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 2,
+     "max": 10
+    }
+   ],
+   "rsi": 55.2,
+   "mom7": -0.46,
+   "mom30": 6.7,
+   "volRatio": 0.96,
+   "ema20": 151.65,
+   "ema50": 149.07,
+   "macdHist": -0.2201
   },
   {
    "symbol": "GOOGL",
@@ -867,54 +915,6 @@
    "ema20": 352.36,
    "ema50": 353.9,
    "macdHist": 2.9861
-  },
-  {
-   "symbol": "XOM",
-   "name": "ExxonMobil",
-   "market": "US",
-   "cur": "$",
-   "price": 153.04,
-   "changePct": -1.16,
-   "lastDate": "2026-08-07",
-   "score": 69,
-   "signal": {
-    "code": "BUY",
-    "label": "ACHAT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 12,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 6,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 2,
-     "max": 10
-    }
-   ],
-   "rsi": 55.2,
-   "mom7": -0.46,
-   "mom30": 6.7,
-   "volRatio": 0.95,
-   "ema20": 151.65,
-   "ema50": 149.07,
-   "macdHist": -0.2201
   },
   {
    "symbol": "UBER",
