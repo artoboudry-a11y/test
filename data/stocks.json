@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-10T20:33:05.671Z",
+ "updatedAt": "2026-08-10T21:33:21.081Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -287,10 +287,58 @@
    "rsi": 56.2,
    "mom7": 4.73,
    "mom30": 0.02,
-   "volRatio": 1.12,
+   "volRatio": 1.13,
    "ema20": 705.96,
    "ema50": 703.51,
    "macdHist": 4.5542
+  },
+  {
+   "symbol": "CRM",
+   "name": "Salesforce",
+   "market": "US",
+   "cur": "$",
+   "price": 197.51,
+   "changePct": 2.47,
+   "lastDate": "2026-08-10",
+   "score": 84,
+   "signal": {
+    "code": "STRONG_BUY",
+    "label": "ACHAT FORT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 24,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 12,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 15,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 2,
+     "max": 10
+    }
+   ],
+   "rsi": 65.2,
+   "mom7": 4.51,
+   "mom30": 19.27,
+   "volRatio": 0.99,
+   "ema20": 180.99,
+   "ema50": 176.22,
+   "macdHist": 2.1283
   },
   {
    "symbol": "XOM",
@@ -339,54 +387,6 @@
    "ema20": 152.43,
    "ema50": 149.49,
    "macdHist": 0.0839
-  },
-  {
-   "symbol": "CRM",
-   "name": "Salesforce",
-   "market": "US",
-   "cur": "$",
-   "price": 197.51,
-   "changePct": 2.47,
-   "lastDate": "2026-08-10",
-   "score": 83,
-   "signal": {
-    "code": "STRONG_BUY",
-    "label": "ACHAT FORT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 24,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 12,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 15,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 2,
-     "max": 10
-    }
-   ],
-   "rsi": 65.2,
-   "mom7": 4.51,
-   "mom30": 19.27,
-   "volRatio": 0.99,
-   "ema20": 180.99,
-   "ema50": 176.22,
-   "macdHist": 2.1283
   },
   {
    "symbol": "SU",
