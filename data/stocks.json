@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-11T17:51:20.707Z",
+ "updatedAt": "2026-08-11T18:50:08.351Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -9,8 +9,8 @@
    "name": "ExxonMobil",
    "market": "US",
    "cur": "$",
-   "price": 159.48,
-   "changePct": -0.19,
+   "price": 159.75,
+   "changePct": -0.03,
    "lastDate": "2026-08-11",
    "score": 92,
    "signal": {
@@ -44,21 +44,21 @@
      "max": 10
     }
    ],
-   "rsi": 64.4,
-   "mom7": 5.18,
-   "mom30": 15.65,
-   "volRatio": 0.94,
-   "ema20": 153.1,
-   "ema50": 149.88,
-   "macdHist": 0.2242
+   "rsi": 65,
+   "mom7": 5.36,
+   "mom30": 15.84,
+   "volRatio": 0.95,
+   "ema20": 153.12,
+   "ema50": 149.89,
+   "macdHist": 0.2415
   },
   {
    "symbol": "CRM",
    "name": "Salesforce",
    "market": "US",
    "cur": "$",
-   "price": 197.1,
-   "changePct": -0.21,
+   "price": 196.56,
+   "changePct": -0.48,
    "lastDate": "2026-08-11",
    "score": 91,
    "signal": {
@@ -92,21 +92,21 @@
      "max": 10
     }
    ],
-   "rsi": 64.8,
-   "mom7": 7.65,
-   "mom30": 19.02,
+   "rsi": 64.2,
+   "mom7": 7.36,
+   "mom30": 18.7,
    "volRatio": 0.91,
-   "ema20": 182.53,
-   "ema50": 177.04,
-   "macdHist": 2.0173
+   "ema20": 182.47,
+   "ema50": 177.02,
+   "macdHist": 1.9828
   },
   {
    "symbol": "UBER",
    "name": "Uber",
    "market": "US",
    "cur": "$",
-   "price": 78.16,
-   "changePct": 0.17,
+   "price": 78.33,
+   "changePct": 0.38,
    "lastDate": "2026-08-11",
    "score": 89,
    "signal": {
@@ -140,21 +140,21 @@
      "max": 10
     }
    ],
-   "rsi": 63.3,
-   "mom7": 9.61,
-   "mom30": 4.24,
+   "rsi": 63.6,
+   "mom7": 9.84,
+   "mom30": 4.47,
    "volRatio": 1.19,
-   "ema20": 72.53,
-   "ema50": 72.46,
-   "macdHist": 0.9234
+   "ema20": 72.55,
+   "ema50": 72.47,
+   "macdHist": 0.9343
   },
   {
    "symbol": "PLTR",
    "name": "Palantir",
    "market": "US",
    "cur": "$",
-   "price": 176.1,
-   "changePct": 0.5,
+   "price": 174.98,
+   "changePct": -0.15,
    "lastDate": "2026-08-11",
    "score": 88,
    "signal": {
@@ -188,21 +188,21 @@
      "max": 10
     }
    ],
-   "rsi": 74.2,
-   "mom7": 21.33,
-   "mom30": 33.27,
+   "rsi": 73.7,
+   "mom7": 20.55,
+   "mom30": 32.42,
    "volRatio": 1.34,
-   "ema20": 145.34,
-   "ema50": 138.03,
-   "macdHist": 5.5288
+   "ema20": 145.23,
+   "ema50": 137.98,
+   "macdHist": 5.457
   },
   {
    "symbol": "LLY",
    "name": "Eli Lilly",
    "market": "US",
    "cur": "$",
-   "price": 1220.47,
-   "changePct": -0.93,
+   "price": 1223.25,
+   "changePct": -0.71,
    "lastDate": "2026-08-11",
    "score": 87,
    "signal": {
@@ -217,7 +217,7 @@
     },
     {
      "label": "Momentum",
-     "pts": 17,
+     "pts": 18,
      "max": 25
     },
     {
@@ -236,21 +236,21 @@
      "max": 10
     }
    ],
-   "rsi": 58.4,
-   "mom7": 9.23,
-   "mom30": 0.84,
-   "volRatio": 1.18,
-   "ema20": 1180.37,
-   "ema50": 1148.31,
-   "macdHist": 3.4099
+   "rsi": 58.9,
+   "mom7": 9.47,
+   "mom30": 1.07,
+   "volRatio": 1.19,
+   "ema20": 1180.64,
+   "ema50": 1148.42,
+   "macdHist": 3.5873
   },
   {
    "symbol": "NVDA",
    "name": "NVIDIA",
    "market": "US",
    "cur": "$",
-   "price": 217.32,
-   "changePct": -0.11,
+   "price": 216.74,
+   "changePct": -0.37,
    "lastDate": "2026-08-11",
    "score": 84,
    "signal": {
@@ -284,61 +284,13 @@
      "max": 10
     }
    ],
-   "rsi": 57.8,
-   "mom7": 2.85,
-   "mom30": 7.58,
-   "volRatio": 0.96,
-   "ema20": 209.62,
-   "ema50": 206.7,
-   "macdHist": 2.0099
-  },
-  {
-   "symbol": "AVGO",
-   "name": "Broadcom",
-   "market": "US",
-   "cur": "$",
-   "price": 418.2,
-   "changePct": -0.99,
-   "lastDate": "2026-08-11",
-   "score": 83,
-   "signal": {
-    "code": "STRONG_BUY",
-    "label": "ACHAT FORT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 18,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 15,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 1,
-     "max": 10
-    }
-   ],
-   "rsi": 59.4,
-   "mom7": 3.78,
-   "mom30": 4.94,
-   "volRatio": 0.88,
-   "ema20": 401.5,
-   "ema50": 395.22,
-   "macdHist": 4.3361
+   "rsi": 57.3,
+   "mom7": 2.57,
+   "mom30": 7.3,
+   "volRatio": 0.97,
+   "ema20": 209.56,
+   "ema50": 206.68,
+   "macdHist": 1.9732
   },
   {
    "symbol": "SU",
@@ -393,8 +345,8 @@
    "name": "Amazon",
    "market": "US",
    "cur": "$",
-   "price": 272.17,
-   "changePct": -2.13,
+   "price": 271.89,
+   "changePct": -2.23,
    "lastDate": "2026-08-11",
    "score": 82,
    "signal": {
@@ -428,13 +380,61 @@
      "max": 10
     }
    ],
-   "rsi": 60.9,
-   "mom7": -1.41,
-   "mom30": 9.06,
+   "rsi": 60.7,
+   "mom7": -1.51,
+   "mom30": 8.95,
    "volRatio": 1.28,
-   "ema20": 259.17,
-   "ema50": 251.98,
-   "macdHist": 3.1647
+   "ema20": 259.14,
+   "ema50": 251.97,
+   "macdHist": 3.1468
+  },
+  {
+   "symbol": "AVGO",
+   "name": "Broadcom",
+   "market": "US",
+   "cur": "$",
+   "price": 414.41,
+   "changePct": -1.89,
+   "lastDate": "2026-08-11",
+   "score": 82,
+   "signal": {
+    "code": "STRONG_BUY",
+    "label": "ACHAT FORT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 16,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 15,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 1,
+     "max": 10
+    }
+   ],
+   "rsi": 57.5,
+   "mom7": 2.84,
+   "mom30": 3.99,
+   "volRatio": 0.88,
+   "ema20": 401.14,
+   "ema50": 395.08,
+   "macdHist": 4.0943
   },
   {
    "symbol": "TTE",
@@ -485,54 +485,6 @@
    "macdHist": 0.1043
   },
   {
-   "symbol": "SPY",
-   "name": "S&P 500 (ETF SPY)",
-   "market": "ETF",
-   "cur": "$",
-   "price": 771.1,
-   "changePct": -0.25,
-   "lastDate": "2026-08-11",
-   "score": 81,
-   "signal": {
-    "code": "STRONG_BUY",
-    "label": "ACHAT FORT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 12,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 15,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 3,
-     "max": 10
-    }
-   ],
-   "rsi": 63.8,
-   "mom7": 1.38,
-   "mom30": 2.53,
-   "volRatio": 1.07,
-   "ema20": 756.6,
-   "ema50": 746.5,
-   "macdHist": 2.9448
-  },
-  {
    "symbol": "AIR",
    "name": "Airbus",
    "market": "FR",
@@ -581,12 +533,60 @@
    "macdHist": 0.2073
   },
   {
+   "symbol": "SPY",
+   "name": "S&P 500 (ETF SPY)",
+   "market": "ETF",
+   "cur": "$",
+   "price": 770,
+   "changePct": -0.39,
+   "lastDate": "2026-08-11",
+   "score": 80,
+   "signal": {
+    "code": "STRONG_BUY",
+    "label": "ACHAT FORT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 12,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 15,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 3,
+     "max": 10
+    }
+   ],
+   "rsi": 62.8,
+   "mom7": 1.23,
+   "mom30": 2.39,
+   "volRatio": 1.08,
+   "ema20": 756.49,
+   "ema50": 746.46,
+   "macdHist": 2.875
+  },
+  {
    "symbol": "QQQ",
    "name": "Nasdaq 100 (ETF QQQ)",
    "market": "ETF",
    "cur": "$",
-   "price": 718.03,
-   "changePct": -0.39,
+   "price": 716.72,
+   "changePct": -0.58,
    "lastDate": "2026-08-11",
    "score": 79,
    "signal": {
@@ -620,21 +620,21 @@
      "max": 10
     }
    ],
-   "rsi": 54.9,
-   "mom7": 1.39,
-   "mom30": -0.37,
+   "rsi": 54.3,
+   "mom7": 1.21,
+   "mom30": -0.55,
    "volRatio": 1.07,
-   "ema20": 707.11,
-   "ema50": 704.08,
-   "macdHist": 4.2334
+   "ema20": 706.98,
+   "ema50": 704.02,
+   "macdHist": 4.1501
   },
   {
    "symbol": "MSFT",
    "name": "Microsoft",
    "market": "US",
    "cur": "$",
-   "price": 503.22,
-   "changePct": -0.56,
+   "price": 502.26,
+   "changePct": -0.75,
    "lastDate": "2026-08-11",
    "score": 78,
    "signal": {
@@ -668,13 +668,13 @@
      "max": 10
     }
    ],
-   "rsi": 77.3,
-   "mom7": 4.64,
-   "mom30": 29.76,
+   "rsi": 76.8,
+   "mom7": 4.44,
+   "mom30": 29.52,
    "volRatio": 1.28,
-   "ema20": 450.42,
-   "ema50": 423.18,
-   "macdHist": 9.0899
+   "ema20": 450.32,
+   "ema50": 423.14,
+   "macdHist": 9.0286
   },
   {
    "symbol": "ASML",
@@ -777,8 +777,8 @@
    "name": "JPMorgan",
    "market": "US",
    "cur": "$",
-   "price": 362.25,
-   "changePct": 0.68,
+   "price": 362.68,
+   "changePct": 0.8,
    "lastDate": "2026-08-11",
    "score": 73,
    "signal": {
@@ -812,13 +812,13 @@
      "max": 10
     }
    ],
-   "rsi": 66.6,
-   "mom7": 2.04,
-   "mom30": 7.34,
-   "volRatio": 0.7,
-   "ema20": 351.42,
-   "ema50": 338.5,
-   "macdHist": 0.0537
+   "rsi": 66.9,
+   "mom7": 2.16,
+   "mom30": 7.47,
+   "volRatio": 0.71,
+   "ema20": 351.46,
+   "ema50": 338.52,
+   "macdHist": 0.0812
   },
   {
    "symbol": "BNP",
@@ -873,10 +873,10 @@
    "name": "Visa",
    "market": "US",
    "cur": "$",
-   "price": 363.31,
-   "changePct": 0.55,
+   "price": 363.11,
+   "changePct": 0.49,
    "lastDate": "2026-08-11",
-   "score": 69,
+   "score": 68,
    "signal": {
     "code": "BUY",
     "label": "ACHAT"
@@ -908,13 +908,13 @@
      "max": 10
     }
    ],
-   "rsi": 55.8,
-   "mom7": 0.43,
-   "mom30": 3.62,
+   "rsi": 55.6,
+   "mom7": 0.37,
+   "mom30": 3.56,
    "volRatio": 0.89,
-   "ema20": 361.19,
-   "ema50": 349.81,
-   "macdHist": -1.1982
+   "ema20": 361.17,
+   "ema50": 349.8,
+   "macdHist": -1.2113
   },
   {
    "symbol": "OR",
@@ -965,60 +965,12 @@
    "macdHist": 0.2118
   },
   {
-   "symbol": "META",
-   "name": "Meta",
-   "market": "US",
-   "cur": "$",
-   "price": 605.29,
-   "changePct": 1.74,
-   "lastDate": "2026-08-11",
-   "score": 61,
-   "signal": {
-    "code": "BUY",
-    "label": "ACHAT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 18,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 12,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 9,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 3,
-     "max": 10
-    }
-   ],
-   "rsi": 51.8,
-   "mom7": 4.09,
-   "mom30": -8.34,
-   "volRatio": 1.02,
-   "ema20": 597.88,
-   "ema50": 603.6,
-   "macdHist": 0.1521
-  },
-  {
    "symbol": "NFLX",
    "name": "Netflix",
    "market": "US",
    "cur": "$",
-   "price": 74.69,
-   "changePct": -2.1,
+   "price": 74.75,
+   "changePct": -2.01,
    "lastDate": "2026-08-11",
    "score": 52,
    "signal": {
@@ -1052,13 +1004,13 @@
      "max": 10
     }
    ],
-   "rsi": 53,
-   "mom7": 3.01,
-   "mom30": -0.99,
+   "rsi": 53.2,
+   "mom7": 3.09,
+   "mom30": -0.91,
    "volRatio": 0.76,
    "ema20": 73.44,
    "ema50": 76.18,
-   "macdHist": 0.7367
+   "macdHist": 0.7407
   },
   {
    "symbol": "AI",
@@ -1109,12 +1061,60 @@
    "macdHist": -0.4757
   },
   {
+   "symbol": "META",
+   "name": "Meta",
+   "market": "US",
+   "cur": "$",
+   "price": 602.84,
+   "changePct": 1.33,
+   "lastDate": "2026-08-11",
+   "score": 44,
+   "signal": {
+    "code": "WATCH",
+    "label": "SURVEILLER"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 10,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 11,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 0,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 3,
+     "max": 10
+    }
+   ],
+   "rsi": 51.1,
+   "mom7": 3.67,
+   "mom30": -8.71,
+   "volRatio": 1.02,
+   "ema20": 597.65,
+   "ema50": 603.5,
+   "macdHist": -0.0045
+  },
+  {
    "symbol": "GOOGL",
    "name": "Alphabet",
    "market": "US",
    "cur": "$",
-   "price": 347.21,
-   "changePct": -2.89,
+   "price": 346,
+   "changePct": -3.22,
    "lastDate": "2026-08-11",
    "score": 40,
    "signal": {
@@ -1129,7 +1129,7 @@
     },
     {
      "label": "Momentum",
-     "pts": 3,
+     "pts": 2,
      "max": 25
     },
     {
@@ -1148,13 +1148,13 @@
      "max": 10
     }
    ],
-   "rsi": 47.3,
-   "mom7": -5.71,
-   "mom30": -2.89,
-   "volRatio": 1.02,
-   "ema20": 352.32,
-   "ema50": 353.78,
-   "macdHist": 1.5485
+   "rsi": 46.8,
+   "mom7": -6.04,
+   "mom30": -3.22,
+   "volRatio": 1.03,
+   "ema20": 352.2,
+   "ema50": 353.73,
+   "macdHist": 1.4713
   },
   {
    "symbol": "MC",
@@ -1205,12 +1205,12 @@
    "macdHist": 1.0581
   },
   {
-   "symbol": "AAPL",
-   "name": "Apple",
+   "symbol": "AMD",
+   "name": "AMD",
    "market": "US",
    "cur": "$",
-   "price": 306.32,
-   "changePct": -0.63,
+   "price": 472.05,
+   "changePct": 0.53,
    "lastDate": "2026-08-11",
    "score": 35,
    "signal": {
@@ -1225,7 +1225,55 @@
     },
     {
      "label": "Momentum",
-     "pts": 10,
+     "pts": 0,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 0,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 3,
+     "max": 10
+    }
+   ],
+   "rsi": 45.2,
+   "mom7": -6.34,
+   "mom30": -13.23,
+   "volRatio": 1.06,
+   "ema20": 493.75,
+   "ema50": 485.93,
+   "macdHist": -2.7242
+  },
+  {
+   "symbol": "AAPL",
+   "name": "Apple",
+   "market": "US",
+   "cur": "$",
+   "price": 303.61,
+   "changePct": -1.51,
+   "lastDate": "2026-08-11",
+   "score": 34,
+   "signal": {
+    "code": "AVOID",
+    "label": "ÉVITER"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 12,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 8,
      "max": 25
     },
     {
@@ -1244,13 +1292,13 @@
      "max": 10
     }
    ],
-   "rsi": 42.8,
-   "mom7": 1.19,
-   "mom30": -2.67,
-   "volRatio": 1.12,
-   "ema20": 315.89,
-   "ema50": 309.73,
-   "macdHist": -3.1811
+   "rsi": 41.1,
+   "mom7": 0.29,
+   "mom30": -3.53,
+   "volRatio": 1.13,
+   "ema20": 315.63,
+   "ema50": 309.62,
+   "macdHist": -3.3541
   },
   {
    "symbol": "SAN",
@@ -1305,8 +1353,8 @@
    "name": "Tesla",
    "market": "US",
    "cur": "$",
-   "price": 331.87,
-   "changePct": 0.3,
+   "price": 331.23,
+   "changePct": 0.1,
    "lastDate": "2026-08-11",
    "score": 28,
    "signal": {
@@ -1340,71 +1388,23 @@
      "max": 10
     }
    ],
-   "rsi": 43,
-   "mom7": 2.43,
-   "mom30": -19.15,
+   "rsi": 42.7,
+   "mom7": 2.23,
+   "mom30": -19.31,
    "volRatio": 0.81,
-   "ema20": 338.43,
-   "ema50": 364.36,
-   "macdHist": 3.0238
-  },
-  {
-   "symbol": "AMD",
-   "name": "AMD",
-   "market": "US",
-   "cur": "$",
-   "price": 466.72,
-   "changePct": -0.6,
-   "lastDate": "2026-08-11",
-   "score": 25,
-   "signal": {
-    "code": "AVOID",
-    "label": "ÉVITER"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 12,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 0,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 10,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 0,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 3,
-     "max": 10
-    }
-   ],
-   "rsi": 44.2,
-   "mom7": -7.4,
-   "mom30": -14.21,
-   "volRatio": 1.05,
-   "ema20": 493.24,
-   "ema50": 485.72,
-   "macdHist": -3.0644
+   "ema20": 338.37,
+   "ema50": 364.34,
+   "macdHist": 2.983
   },
   {
    "symbol": "COIN",
    "name": "Coinbase",
    "market": "US",
    "cur": "$",
-   "price": 147.69,
-   "changePct": -0.67,
+   "price": 146.76,
+   "changePct": -1.29,
    "lastDate": "2026-08-11",
-   "score": 19,
+   "score": 18,
    "signal": {
     "code": "AVOID",
     "label": "ÉVITER"
@@ -1417,7 +1417,7 @@
     },
     {
      "label": "Momentum",
-     "pts": 5,
+     "pts": 4,
      "max": 25
     },
     {
@@ -1436,13 +1436,13 @@
      "max": 10
     }
    ],
-   "rsi": 43.2,
-   "mom7": 0.19,
-   "mom30": -11.39,
+   "rsi": 42.7,
+   "mom7": -0.43,
+   "mom30": -11.95,
    "volRatio": 1.12,
-   "ema20": 155.09,
-   "ema50": 162.27,
-   "macdHist": -0.9761
+   "ema20": 155.01,
+   "ema50": 162.24,
+   "macdHist": -1.0352
   }
  ]
 }
