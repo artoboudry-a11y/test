@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-17T20:16:51.771Z",
+ "updatedAt": "2026-08-17T20:51:08.774Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -287,7 +287,7 @@
    "rsi": 51.9,
    "mom7": 6.06,
    "mom30": 6.11,
-   "volRatio": 0.98,
+   "volRatio": 0.99,
    "ema20": 495.24,
    "ema50": 487.66,
    "macdHist": 2.6456
@@ -345,8 +345,8 @@
    "name": "ExxonMobil",
    "market": "US",
    "cur": "$",
-   "price": 161.52,
-   "changePct": 0.89,
+   "price": 161.46,
+   "changePct": 0.85,
    "lastDate": "2026-08-17",
    "score": 79,
    "signal": {
@@ -381,12 +381,12 @@
     }
    ],
    "rsi": 66.3,
-   "mom7": 4.54,
-   "mom30": 8.38,
-   "volRatio": 0.95,
+   "mom7": 4.5,
+   "mom30": 8.34,
+   "volRatio": 0.96,
    "ema20": 155.42,
    "ema50": 151.39,
-   "macdHist": 0.2831
+   "macdHist": 0.2792
   },
   {
    "symbol": "QQQ",
@@ -725,54 +725,6 @@
    "macdHist": -0.2443
   },
   {
-   "symbol": "LLY",
-   "name": "Eli Lilly",
-   "market": "US",
-   "cur": "$",
-   "price": 1185.16,
-   "changePct": 0.42,
-   "lastDate": "2026-08-17",
-   "score": 69,
-   "signal": {
-    "code": "BUY",
-    "label": "ACHAT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 20,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 10,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 15,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 4,
-     "max": 10
-    }
-   ],
-   "rsi": 51,
-   "mom7": 0.01,
-   "mom30": 2.22,
-   "volRatio": 1.14,
-   "ema20": 1185.51,
-   "ema50": 1155.47,
-   "macdHist": 0.0561
-  },
-  {
    "symbol": "BNP",
    "name": "BNP Paribas",
    "market": "FR",
@@ -915,6 +867,54 @@
    "ema20": 260.72,
    "ema50": 253.76,
    "macdHist": -0.3097
+  },
+  {
+   "symbol": "LLY",
+   "name": "Eli Lilly",
+   "market": "US",
+   "cur": "$",
+   "price": 1183.16,
+   "changePct": 0.25,
+   "lastDate": "2026-08-17",
+   "score": 60,
+   "signal": {
+    "code": "BUY",
+    "label": "ACHAT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 20,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 10,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 6,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 4,
+     "max": 10
+    }
+   ],
+   "rsi": 50.6,
+   "mom7": -0.16,
+   "mom30": 2.05,
+   "volRatio": 1.16,
+   "ema20": 1185.32,
+   "ema50": 1155.4,
+   "macdHist": -0.0716
   },
   {
    "symbol": "SAN",
