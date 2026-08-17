@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-17T20:51:08.774Z",
+ "updatedAt": "2026-08-17T21:18:06.120Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -184,14 +184,14 @@
     },
     {
      "label": "Volume",
-     "pts": 1,
+     "pts": 2,
      "max": 10
     }
    ],
    "rsi": 55.7,
    "mom7": 0.42,
    "mom30": 11.35,
-   "volRatio": 0.91,
+   "volRatio": 0.93,
    "ema20": 186.76,
    "ema50": 179.77,
    "macdHist": 0.5075
@@ -972,10 +972,10 @@
    "price": 358.84,
    "changePct": -1.46,
    "lastDate": "2026-08-17",
-   "score": 54,
+   "score": 55,
    "signal": {
-    "code": "WATCH",
-    "label": "SURVEILLER"
+    "code": "BUY",
+    "label": "ACHAT"
    },
    "parts": [
     {
@@ -1000,14 +1000,14 @@
     },
     {
      "label": "Volume",
-     "pts": 1,
+     "pts": 2,
      "max": 10
     }
    ],
    "rsi": 49.6,
    "mom7": -0.87,
    "mom30": -1.3,
-   "volRatio": 0.92,
+   "volRatio": 0.96,
    "ema20": 361.4,
    "ema50": 351.59,
    "macdHist": -1.5767
