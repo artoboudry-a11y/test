@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-19T20:17:36.169Z",
+ "updatedAt": "2026-08-19T20:51:46.885Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -53,6 +53,54 @@
    "macdHist": 0.7283
   },
   {
+   "symbol": "LLY",
+   "name": "Eli Lilly",
+   "market": "US",
+   "cur": "$",
+   "price": 1280.34,
+   "changePct": 4.46,
+   "lastDate": "2026-08-19",
+   "score": 89,
+   "signal": {
+    "code": "STRONG_BUY",
+    "label": "ACHAT FORT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 21,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 15,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 2,
+     "max": 10
+    }
+   ],
+   "rsi": 64.9,
+   "mom7": 6.54,
+   "mom30": 8.54,
+   "volRatio": 1,
+   "ema20": 1197.85,
+   "ema50": 1162.95,
+   "macdHist": 6.0593
+  },
+  {
    "symbol": "TTE",
    "name": "TotalEnergies",
    "market": "FR",
@@ -101,60 +149,12 @@
    "macdHist": 0.1165
   },
   {
-   "symbol": "LLY",
-   "name": "Eli Lilly",
-   "market": "US",
-   "cur": "$",
-   "price": 1281.49,
-   "changePct": 4.55,
-   "lastDate": "2026-08-19",
-   "score": 81,
-   "signal": {
-    "code": "STRONG_BUY",
-    "label": "ACHAT FORT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 21,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 12,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 15,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 2,
-     "max": 10
-    }
-   ],
-   "rsi": 65.1,
-   "mom7": 6.64,
-   "mom30": 8.63,
-   "volRatio": 0.98,
-   "ema20": 1197.96,
-   "ema50": 1162.99,
-   "macdHist": 6.1327
-  },
-  {
    "symbol": "XOM",
    "name": "ExxonMobil",
    "market": "US",
    "cur": "$",
-   "price": 164.82,
-   "changePct": -0.45,
+   "price": 164.77,
+   "changePct": -0.48,
    "lastDate": "2026-08-19",
    "score": 81,
    "signal": {
@@ -188,13 +188,13 @@
      "max": 10
     }
    ],
-   "rsi": 69.3,
-   "mom7": 3.95,
-   "mom30": 12.51,
-   "volRatio": 0.98,
-   "ema20": 157.19,
+   "rsi": 69.2,
+   "mom7": 3.92,
+   "mom30": 12.47,
+   "volRatio": 1,
+   "ema20": 157.18,
    "ema50": 152.45,
-   "macdHist": 0.58
+   "macdHist": 0.5768
   },
   {
    "symbol": "UBER",
@@ -489,10 +489,10 @@
    "name": "S&P 500 (ETF SPY)",
    "market": "ETF",
    "cur": "$",
-   "price": 769.1,
+   "price": 769.06,
    "changePct": 0.21,
    "lastDate": "2026-08-19",
-   "score": 74,
+   "score": 75,
    "signal": {
     "code": "STRONG_BUY",
     "label": "ACHAT FORT"
@@ -525,20 +525,20 @@
     }
    ],
    "rsi": 57.8,
-   "mom7": -0.72,
-   "mom30": 2.95,
-   "volRatio": 0.81,
-   "ema20": 763.62,
+   "mom7": -0.73,
+   "mom30": 2.94,
+   "volRatio": 0.82,
+   "ema20": 763.61,
    "ema50": 752.03,
-   "macdHist": 0.2619
+   "macdHist": 0.2593
   },
   {
    "symbol": "QQQ",
    "name": "Nasdaq 100 (ETF QQQ)",
    "market": "ETF",
    "cur": "$",
-   "price": 716.21,
-   "changePct": -0.18,
+   "price": 716.08,
+   "changePct": -0.2,
    "lastDate": "2026-08-19",
    "score": 73,
    "signal": {
@@ -573,12 +573,12 @@
     }
    ],
    "rsi": 51.5,
-   "mom7": -1.5,
-   "mom30": 2,
+   "mom7": -1.51,
+   "mom30": 1.98,
    "volRatio": 0.82,
-   "ema20": 714.91,
-   "ema50": 708.51,
-   "macdHist": 1.6837
+   "ema20": 714.9,
+   "ema50": 708.5,
+   "macdHist": 1.6754
   },
   {
    "symbol": "V",
@@ -863,7 +863,7 @@
    "rsi": 55.6,
    "mom7": -2.69,
    "mom30": 6.87,
-   "volRatio": 0.74,
+   "volRatio": 0.75,
    "ema20": 261.1,
    "ema50": 254.45,
    "macdHist": -0.8817
@@ -911,7 +911,7 @@
    "rsi": 53.8,
    "mom7": 3.84,
    "mom30": -5,
-   "volRatio": 0.8,
+   "volRatio": 0.81,
    "ema20": 312.43,
    "ema50": 309.3,
    "macdHist": -0.7351
