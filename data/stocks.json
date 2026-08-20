@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-20T21:19:36.729Z",
+ "updatedAt": "2026-08-20T21:51:15.777Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -47,7 +47,7 @@
    "rsi": 64.1,
    "mom7": 4.37,
    "mom30": 22.97,
-   "volRatio": 0.99,
+   "volRatio": 1,
    "ema20": 190.94,
    "ema50": 182.36,
    "macdHist": 0.8546
@@ -191,7 +191,7 @@
    "rsi": 58,
    "mom7": 0.49,
    "mom30": 8.87,
-   "volRatio": 0.96,
+   "volRatio": 0.97,
    "ema20": 1202.28,
    "ema50": 1166.14,
    "macdHist": 6.1009
@@ -485,6 +485,54 @@
    "macdHist": 0.0907
   },
   {
+   "symbol": "V",
+   "name": "Visa",
+   "market": "US",
+   "cur": "$",
+   "price": 365.73,
+   "changePct": 0.05,
+   "lastDate": "2026-08-20",
+   "score": 70,
+   "signal": {
+    "code": "STRONG_BUY",
+    "label": "ACHAT FORT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 11,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 6,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 2,
+     "max": 10
+    }
+   ],
+   "rsi": 56.4,
+   "mom7": 0.56,
+   "mom30": 2.45,
+   "volRatio": 1,
+   "ema20": 362.39,
+   "ema50": 353.13,
+   "macdHist": -0.9389
+  },
+  {
    "symbol": "MSFT",
    "name": "Microsoft",
    "market": "US",
@@ -531,54 +579,6 @@
    "ema20": 468.59,
    "ema50": 438.79,
    "macdHist": -2.7361
-  },
-  {
-   "symbol": "V",
-   "name": "Visa",
-   "market": "US",
-   "cur": "$",
-   "price": 365.73,
-   "changePct": 0.05,
-   "lastDate": "2026-08-20",
-   "score": 69,
-   "signal": {
-    "code": "BUY",
-    "label": "ACHAT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 11,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 6,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 2,
-     "max": 10
-    }
-   ],
-   "rsi": 56.4,
-   "mom7": 0.56,
-   "mom30": 2.45,
-   "volRatio": 1,
-   "ema20": 362.39,
-   "ema50": 353.13,
-   "macdHist": -0.9389
   },
   {
    "symbol": "COIN",
