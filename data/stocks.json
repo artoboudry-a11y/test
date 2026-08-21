@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-21T20:16:16.815Z",
+ "updatedAt": "2026-08-21T20:46:59.062Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -9,8 +9,8 @@
    "name": "Eli Lilly",
    "market": "US",
    "cur": "$",
-   "price": 1254.77,
-   "changePct": 0.83,
+   "price": 1255.4,
+   "changePct": 0.88,
    "lastDate": "2026-08-21",
    "score": 87,
    "signal": {
@@ -45,12 +45,12 @@
     }
    ],
    "rsi": 59.4,
-   "mom7": 5.09,
-   "mom30": 6.89,
-   "volRatio": 0.93,
-   "ema20": 1207.28,
-   "ema50": 1169.62,
-   "macdHist": 6.3523
+   "mom7": 5.14,
+   "mom30": 6.94,
+   "volRatio": 0.95,
+   "ema20": 1207.34,
+   "ema50": 1169.64,
+   "macdHist": 6.3925
   },
   {
    "symbol": "UBER",
@@ -287,7 +287,7 @@
    "rsi": 67.9,
    "mom7": 3.38,
    "mom30": 7.31,
-   "volRatio": 0.96,
+   "volRatio": 0.98,
    "ema20": 158.71,
    "ema50": 153.46,
    "macdHist": 0.5362
@@ -479,7 +479,7 @@
    "rsi": 67,
    "mom7": 23.16,
    "mom30": 8.27,
-   "volRatio": 1.18,
+   "volRatio": 1.19,
    "ema20": 158.36,
    "ema50": 161.51,
    "macdHist": 3.604
@@ -677,6 +677,54 @@
    "macdHist": -1.2233
   },
   {
+   "symbol": "TSLA",
+   "name": "Tesla",
+   "market": "US",
+   "cur": "$",
+   "price": 362.86,
+   "changePct": 5.14,
+   "lastDate": "2026-08-21",
+   "score": 64,
+   "signal": {
+    "code": "BUY",
+    "label": "ACHAT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 18,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 15,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 9,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 1,
+     "max": 10
+    }
+   ],
+   "rsi": 58,
+   "mom7": 6,
+   "mom30": -3.37,
+   "volRatio": 0.9,
+   "ema20": 342.1,
+   "ema50": 358.78,
+   "macdHist": 6.2295
+  },
+  {
    "symbol": "SPY",
    "name": "S&P 500 (ETF SPY)",
    "market": "ETF",
@@ -719,66 +767,18 @@
    "rsi": 54.2,
    "mom7": -1.65,
    "mom30": 2.56,
-   "volRatio": 0.82,
+   "volRatio": 0.83,
    "ema20": 763.73,
    "ema50": 752.96,
    "macdHist": -0.9193
-  },
-  {
-   "symbol": "TSLA",
-   "name": "Tesla",
-   "market": "US",
-   "cur": "$",
-   "price": 362.86,
-   "changePct": 5.14,
-   "lastDate": "2026-08-21",
-   "score": 63,
-   "signal": {
-    "code": "BUY",
-    "label": "ACHAT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 18,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 15,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 9,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 1,
-     "max": 10
-    }
-   ],
-   "rsi": 58,
-   "mom7": 6,
-   "mom30": -3.37,
-   "volRatio": 0.9,
-   "ema20": 342.1,
-   "ema50": 358.78,
-   "macdHist": 6.2295
   },
   {
    "symbol": "NVDA",
    "name": "NVIDIA",
    "market": "US",
    "cur": "$",
-   "price": 214.75,
-   "changePct": -0.97,
+   "price": 214.72,
+   "changePct": -0.98,
    "lastDate": "2026-08-21",
    "score": 53,
    "signal": {
@@ -813,12 +813,12 @@
     }
    ],
    "rsi": 51,
-   "mom7": -5.3,
-   "mom30": 4.35,
+   "mom7": -5.31,
+   "mom30": 4.33,
    "volRatio": 0.84,
    "ema20": 215.45,
    "ema50": 210.54,
-   "macdHist": -0.4014
+   "macdHist": -0.4032
   },
   {
    "symbol": "AMZN",
@@ -1151,7 +1151,7 @@
    "rsi": 47.3,
    "mom7": 1.09,
    "mom30": -5.65,
-   "volRatio": 0.81,
+   "volRatio": 0.82,
    "ema20": 312.04,
    "ema50": 309.38,
    "macdHist": -0.3801
