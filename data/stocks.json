@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-25T21:19:21.366Z",
+ "updatedAt": "2026-08-25T21:51:01.175Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -677,6 +677,54 @@
    "macdHist": -1.7326
   },
   {
+   "symbol": "JPM",
+   "name": "JPMorgan",
+   "market": "US",
+   "cur": "$",
+   "price": 356.69,
+   "changePct": 0.08,
+   "lastDate": "2026-08-25",
+   "score": 64,
+   "signal": {
+    "code": "BUY",
+    "label": "ACHAT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 7,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 6,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 0,
+     "max": 10
+    }
+   ],
+   "rsi": 54.4,
+   "mom7": -1.56,
+   "mom30": 1.73,
+   "volRatio": 0.81,
+   "ema20": 355.49,
+   "ema50": 345.08,
+   "macdHist": -1.6569
+  },
+  {
    "symbol": "XOM",
    "name": "ExxonMobil",
    "market": "US",
@@ -723,54 +771,6 @@
    "ema20": 159.35,
    "ema50": 154.14,
    "macdHist": -0.0447
-  },
-  {
-   "symbol": "JPM",
-   "name": "JPMorgan",
-   "market": "US",
-   "cur": "$",
-   "price": 356.69,
-   "changePct": 0.08,
-   "lastDate": "2026-08-25",
-   "score": 63,
-   "signal": {
-    "code": "BUY",
-    "label": "ACHAT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 7,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 6,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 0,
-     "max": 10
-    }
-   ],
-   "rsi": 54.4,
-   "mom7": -1.56,
-   "mom30": 1.73,
-   "volRatio": 0.81,
-   "ema20": 355.49,
-   "ema50": 345.08,
-   "macdHist": -1.6569
   },
   {
    "symbol": "TTE",
