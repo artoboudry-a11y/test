@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-26T20:24:31.515Z",
+ "updatedAt": "2026-08-26T23:53:30.958Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -95,7 +95,7 @@
    "rsi": 62.3,
    "mom7": 5.88,
    "mom30": 22.39,
-   "volRatio": 0.99,
+   "volRatio": 1.01,
    "ema20": 196.31,
    "ema50": 186.05,
    "macdHist": 0.4021
@@ -297,10 +297,10 @@
    "name": "Palantir",
    "market": "US",
    "cur": "$",
-   "price": 177.44,
-   "changePct": 2.73,
+   "price": 177.5,
+   "changePct": 2.76,
    "lastDate": "2026-08-26",
-   "score": 77,
+   "score": 78,
    "signal": {
     "code": "STRONG_BUY",
     "label": "ACHAT FORT"
@@ -313,7 +313,7 @@
     },
     {
      "label": "Momentum",
-     "pts": 21,
+     "pts": 22,
      "max": 25
     },
     {
@@ -332,13 +332,13 @@
      "max": 10
     }
    ],
-   "rsi": 64.6,
-   "mom7": 2.8,
-   "mom30": 40.65,
-   "volRatio": 0.73,
+   "rsi": 64.7,
+   "mom7": 2.83,
+   "mom30": 40.7,
+   "volRatio": 0.74,
    "ema20": 165.18,
-   "ema50": 151.14,
-   "macdHist": -0.2757
+   "ema50": 151.15,
+   "macdHist": -0.2719
   },
   {
    "symbol": "SAN",
@@ -489,8 +489,8 @@
    "name": "Microsoft",
    "market": "US",
    "cur": "$",
-   "price": 496.17,
-   "changePct": 0.91,
+   "price": 496.37,
+   "changePct": 0.95,
    "lastDate": "2026-08-26",
    "score": 70,
    "signal": {
@@ -525,12 +525,12 @@
     }
    ],
    "rsi": 67.4,
-   "mom7": 3.35,
-   "mom30": 27.2,
+   "mom7": 3.4,
+   "mom30": 27.25,
    "volRatio": 0.64,
-   "ema20": 475.7,
-   "ema50": 446.34,
-   "macdHist": -2.9379
+   "ema20": 475.72,
+   "ema50": 446.35,
+   "macdHist": -2.9248
   },
   {
    "symbol": "AAPL",
@@ -1068,7 +1068,7 @@
    "price": 209.66,
    "changePct": -1.59,
    "lastDate": "2026-08-26",
-   "score": 43,
+   "score": 44,
    "signal": {
     "code": "WATCH",
     "label": "SURVEILLER"
@@ -1103,7 +1103,7 @@
    "rsi": 46.3,
    "mom7": -5.42,
    "mom30": 0.7,
-   "volRatio": 0.88,
+   "volRatio": 0.91,
    "ema20": 214.15,
    "ema50": 210.53,
    "macdHist": -1.5317
@@ -1161,8 +1161,8 @@
    "name": "AMD",
    "market": "US",
    "cur": "$",
-   "price": 481.1,
-   "changePct": 0.4,
+   "price": 480.93,
+   "changePct": 0.37,
    "lastDate": "2026-08-26",
    "score": 35,
    "signal": {
@@ -1196,13 +1196,13 @@
      "max": 10
     }
    ],
-   "rsi": 48.5,
-   "mom7": -1.02,
-   "mom30": -8.8,
-   "volRatio": 0.72,
-   "ema20": 484.08,
-   "ema50": 484.07,
-   "macdHist": -0.0912
+   "rsi": 48.4,
+   "mom7": -1.06,
+   "mom30": -8.83,
+   "volRatio": 0.73,
+   "ema20": 484.06,
+   "ema50": 484.06,
+   "macdHist": -0.1021
   },
   {
    "symbol": "ASML",
@@ -1295,7 +1295,7 @@
    "rsi": 45.2,
    "mom7": -0.13,
    "mom30": 5.22,
-   "volRatio": 0.69,
+   "volRatio": 0.7,
    "ema20": 347.09,
    "ema50": 350.44,
    "macdHist": -0.2194
