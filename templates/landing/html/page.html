@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MonApp — La solution simple</title>
+  <!--
+    TEMPLATE: Landing page vanilla HTML/CSS
+    - Hero, features, témoignages, CTA, footer
+    - 100% responsive, aucune dépendance
+    - Personnaliser : couleurs (--primary), textes
+  -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --primary: #4f46e5; --primary-dark: #4338ca; --bg: #fff; --text: #0f172a; --muted: #64748b; --border: #e2e8f0; --section-bg: #f8fafc; }
+    body { font-family: system-ui, -apple-system, sans-serif; color: var(--text); line-height: 1.6; }
+    a { text-decoration: none; color: inherit; }
+
+    /* Navbar */
+    .navbar { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .navbar .inner { max-width: 1200px; margin: auto; padding: 0 1.5rem; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+    .navbar .brand { font-weight: 700; font-size: 1.25rem; color: var(--primary); }
+    .navbar .links { display: flex; align-items: center; gap: 1.5rem; }
+    .navbar .links a { font-size: .875rem; color: var(--muted); }
+    .navbar .links a:hover { color: var(--text); }
+    .btn-primary { display: inline-block; padding: .6rem 1.5rem; background: var(--primary); color: #fff; border-radius: .75rem; font-weight: 600; font-size: .875rem; transition: background .2s; border: none; cursor: pointer; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-outline { display: inline-block; padding: .6rem 1.5rem; border: 1px solid var(--border); border-radius: .75rem; font-weight: 600; font-size: .875rem; transition: background .2s; }
+    .btn-outline:hover { background: var(--section-bg); }
+    .btn-lg { padding: 1rem 2rem; font-size: 1.1rem; border-radius: 1rem; }
+
+    /* Hero */
+    .hero { max-width: 800px; margin: auto; padding: 6rem 1.5rem; text-align: center; }
+    .hero .badge { display: inline-flex; align-items: center; gap: .5rem; padding: .3rem .8rem; background: #eef2ff; color: var(--primary); border-radius: 2rem; font-size: .875rem; font-weight: 500; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.15; margin-bottom: 1.5rem; }
+    .hero p { font-size: 1.2rem; color: var(--muted); max-width: 600px; margin: 0 auto 2.5rem; }
+    .hero .buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+
+    /* Features */
+    .features { background: var(--section-bg); padding: 5rem 1.5rem; }
+    .features .inner { max-width: 1200px; margin: auto; }
+    .features .header { text-align: center; margin-bottom: 3rem; }
+    .features .header h2 { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; }
+    .features .header p { color: var(--muted); font-size: 1.1rem; }
+    .features .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .features .card { background: #fff; border-radius: 1rem; padding: 1.5rem; border: 1px solid var(--border); transition: box-shadow .2s; }
+    .features .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+    .features .card .icon { font-size: 2rem; margin-bottom: 1rem; }
+    .features .card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: .5rem; }
+    .features .card p { color: var(--muted); font-size: .9rem; }
+
+    /* Testimonials */
+    .testimonials { padding: 5rem 1.5rem; }
+    .testimonials .inner { max-width: 1200px; margin: auto; }
+    .testimonials .header { text-align: center; margin-bottom: 3rem; }
+    .testimonials .header h2 { font-size: 2rem; font-weight: 700; }
+    .testimonials .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .testimonials .card { background: var(--section-bg); border-radius: 1rem; padding: 1.5rem; border: 1px solid var(--border); }
+    .testimonials .card .text { color: var(--muted); font-style: italic; margin-bottom: 1rem; }
+    .testimonials .card .author { font-weight: 600; }
+    .testimonials .card .role { font-size: .85rem; color: var(--muted); }
+
+    /* CTA */
+    .cta { background: var(--primary); padding: 4rem 1.5rem; text-align: center; color: #fff; }
+    .cta h2 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; }
+    .cta p { color: rgba(255,255,255,.7); font-size: 1.1rem; margin-bottom: 2rem; }
+    .cta .btn-white { display: inline-block; padding: 1rem 2rem; background: #fff; color: var(--primary); border-radius: 1rem; font-weight: 600; font-size: 1.1rem; transition: background .2s; }
+    .cta .btn-white:hover { background: #eef2ff; }
+
+    /* Footer */
+    .footer { background: #0f172a; color: #94a3b8; padding: 3rem 1.5rem; }
+    .footer .inner { max-width: 1200px; margin: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
+    .footer .brand { color: #fff; font-weight: 700; }
+    .footer .links { display: flex; gap: 1.5rem; }
+    .footer .links a { font-size: .875rem; }
+    .footer .links a:hover { color: #fff; }
+    .footer .copy { font-size: .875rem; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="inner">
+      <span class="brand">MonApp</span>
+      <div class="links">
+        <a href="#features">Fonctionnalités</a>
+        <a href="#testimonials">Témoignages</a>
+        <a href="/auth" class="btn-primary">Commencer</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="badge">✨ Nouveau — Version 2.0</div>
+    <h1>La solution simple pour votre quotidien</h1>
+    <p>Gérez tout au même endroit. Simple, rapide, efficace.</p>
+    <div class="buttons">
+      <a href="/auth" class="btn-primary btn-lg">Commencer gratuitement</a>
+      <a href="#features" class="btn-outline btn-lg">En savoir plus</a>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="inner">
+      <div class="header">
+        <h2>Tout ce dont vous avez besoin</h2>
+        <p>Des outils puissants, une interface simple.</p>
+      </div>
+      <div class="grid">
+        <div class="card"><div class="icon">⚡</div><h3>Rapide</h3><p>Interface réactive et fluide, chargement instantané.</p></div>
+        <div class="card"><div class="icon">🔒</div><h3>Sécurisé</h3><p>Vos données sont chiffrées et protégées.</p></div>
+        <div class="card"><div class="icon">📱</div><h3>Mobile</h3><p>Fonctionne parfaitement sur tous vos appareils.</p></div>
+        <div class="card"><div class="icon">🎨</div><h3>Personnalisable</h3><p>Adaptez l'outil à vos besoins.</p></div>
+        <div class="card"><div class="icon">🤝</div><h3>Collaboratif</h3><p>Travaillez ensemble en temps réel.</p></div>
+        <div class="card"><div class="icon">📊</div><h3>Statistiques</h3><p>Suivez votre progression avec des tableaux clairs.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials" id="testimonials">
+    <div class="inner">
+      <div class="header"><h2>Ce qu'en disent nos utilisateurs</h2></div>
+      <div class="grid">
+        <div class="card"><p class="text">"Cet outil a transformé ma façon de travailler. Je recommande à 100%."</p><p class="author">Marie L.</p><p class="role">Entrepreneure</p></div>
+        <div class="card"><p class="text">"Simple, efficace, et le support est excellent."</p><p class="author">Thomas R.</p><p class="role">Développeur</p></div>
+        <div class="card"><p class="text">"L'interface est magnifique et intuitive. Un vrai plaisir."</p><p class="author">Sophie M.</p><p class="role">Designer</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Prêt à commencer ?</h2>
+    <p>Rejoignez des milliers d'utilisateurs satisfaits.</p>
+    <a href="/auth" class="btn-white">Créer mon compte gratuitement</a>
+  </section>
+
+  <footer class="footer">
+    <div class="inner">
+      <span class="brand">MonApp</span>
+      <div class="links">
+        <a href="/mentions-legales">Mentions légales</a>
+        <a href="/confidentialite">Confidentialité</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <p class="copy">© 2026 MonApp</p>
+    </div>
+  </footer>
+</body>
+</html>
