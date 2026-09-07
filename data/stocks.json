@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-07T16:33:51.549Z",
+ "updatedAt": "2026-09-07T20:18:18.981Z",
  "source": "TradingView (cours différés ~15 min)",
  "count": 30,
  "errors": [],
@@ -341,6 +341,54 @@
    "macdHist": -0.5407
   },
   {
+   "symbol": "SPY",
+   "name": "S&P 500 (ETF SPY)",
+   "market": "ETF",
+   "cur": "$",
+   "price": 770.19,
+   "changePct": -0.39,
+   "lastDate": "2026-09-07",
+   "score": 66,
+   "signal": {
+    "code": "BUY",
+    "label": "ACHAT"
+   },
+   "parts": [
+    {
+     "label": "Tendance",
+     "pts": 30,
+     "max": 30
+    },
+    {
+     "label": "Momentum",
+     "pts": 10,
+     "max": 25
+    },
+    {
+     "label": "RSI",
+     "pts": 20,
+     "max": 20
+    },
+    {
+     "label": "MACD",
+     "pts": 6,
+     "max": 15
+    },
+    {
+     "label": "Volume",
+     "pts": 0,
+     "max": 10
+    }
+   ],
+   "rsi": 55.6,
+   "mom7": 0.37,
+   "mom30": -0.11,
+   "volRatio": 0.82,
+   "ema20": 766.25,
+   "ema50": 757.75,
+   "macdHist": -0.6643
+  },
+  {
    "symbol": "QQQ",
    "name": "Nasdaq 100 (ETF QQQ)",
    "market": "ETF",
@@ -361,7 +409,7 @@
     },
     {
      "label": "Momentum",
-     "pts": 9,
+     "pts": 10,
      "max": 25
     },
     {
@@ -381,60 +429,12 @@
     }
    ],
    "rsi": 53.6,
-   "mom7": -0.11,
-   "mom30": 1.15,
+   "mom7": 0.53,
+   "mom30": -0.17,
    "volRatio": 0.82,
    "ema20": 714.25,
    "ema50": 710.45,
    "macdHist": -0.2808
-  },
-  {
-   "symbol": "SPY",
-   "name": "S&P 500 (ETF SPY)",
-   "market": "ETF",
-   "cur": "$",
-   "price": 770.19,
-   "changePct": -0.39,
-   "lastDate": "2026-09-07",
-   "score": 65,
-   "signal": {
-    "code": "BUY",
-    "label": "ACHAT"
-   },
-   "parts": [
-    {
-     "label": "Tendance",
-     "pts": 30,
-     "max": 30
-    },
-    {
-     "label": "Momentum",
-     "pts": 9,
-     "max": 25
-    },
-    {
-     "label": "RSI",
-     "pts": 20,
-     "max": 20
-    },
-    {
-     "label": "MACD",
-     "pts": 6,
-     "max": 15
-    },
-    {
-     "label": "Volume",
-     "pts": 0,
-     "max": 10
-    }
-   ],
-   "rsi": 55.6,
-   "mom7": -0.2,
-   "mom30": 0,
-   "volRatio": 0.82,
-   "ema20": 766.25,
-   "ema50": 757.75,
-   "macdHist": -0.6643
   },
   {
    "symbol": "SAP",
